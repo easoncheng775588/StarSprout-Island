@@ -162,6 +162,13 @@ body::before {
   line-height: 1.7;
 }
 
+.achievement-preview-text {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.65);
+}
+
 .family-panel-actions {
   display: flex;
   flex-wrap: wrap;
@@ -780,7 +787,9 @@ body::before {
 .summary-grid,
 .dashboard-grid,
 .weak-list,
-.rank-list {
+.rank-list,
+.badge-grid,
+.action-list {
   display: grid;
   gap: 18px;
 }
@@ -881,6 +890,50 @@ body::before {
   display: inline-block;
   margin-top: 8px;
   font-size: 0.88rem;
+}
+
+.action-list {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.action-chip {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(191, 231, 255, 0.72), rgba(255, 255, 255, 0.94));
+  font-weight: 700;
+}
+
+.badge-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.badge-card {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 36px rgba(33, 48, 77, 0.1);
+}
+
+.badge-card-unlocked {
+  background: linear-gradient(135deg, rgba(103, 205, 180, 0.24), rgba(255, 255, 255, 0.94));
+}
+
+.badge-card h3 {
+  margin: 0 0 10px;
+}
+
+.badge-card p {
+  margin: 0 0 12px;
+  line-height: 1.7;
+}
+
+.badge-card span {
+  display: inline-flex;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(33, 48, 77, 0.08);
+  font-size: 0.88rem;
+  font-weight: 700;
 }
 
 .island-card:hover,

@@ -1,14 +1,21 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { vi } from 'vitest';
 import { Leaderboard } from '../pages/Leaderboard';
 
 describe('Leaderboard', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   test('renders board tabs, my rank and nearby players', () => {
     render(
       <MemoryRouter>
         <Leaderboard
           data={{
             boardType: 'weekly_star',
+            boardTitle: '本周星星榜',
             myRank: { rank: 6, nickname: '小星星', stars: 126, trendLabel: '本周上升 2 名' },
             topPlayers: [
               { rank: 1, nickname: '小海豚', stars: 228, trendLabel: '保持领先' },
@@ -31,5 +38,68 @@ describe('Leaderboard', () => {
     expect(screen.getByText(/#1 小海豚/)).toBeInTheDocument();
     expect(screen.getByText(/#6 小星星/)).toBeInTheDocument();
     expect(screen.getByText('排行榜默认匿名展示，家长可随时关闭参与。')).toBeInTheDocument();
+  });
+
+  test('switches between real leaderboard boards', async () => {
+    const user = userEvent.setup();
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input);
+        const payloads: Record<string, unknown> = {
+          '/api/leaderboard/weekly_star': {
+            boardType: 'weekly_star',
+            boardTitle: '本周星星榜',
+            myRank: { rank: 6, nickname: '小星星', stars: 126, trendLabel: '本周上升 2 名' },
+            topPlayers: [{ rank: 1, nickname: '小海豚', stars: 228, trendLabel: '保持领先' }],
+            nearbyPlayers: [{ rank: 6, nickname: '小星星', stars: 126, trendLabel: '继续加油' }],
+            privacyTip: '排行榜默认匿名展示，家长可随时关闭参与。'
+          },
+          '/api/leaderboard/streak_master': {
+            boardType: 'streak_master',
+            boardTitle: '连续学习榜',
+            myRank: { rank: 3, nickname: '小星星', stars: 14, trendLabel: '已经连续学习 14 天' },
+            topPlayers: [{ rank: 1, nickname: '小火箭', stars: 21, trendLabel: '连续 21 天' }],
+            nearbyPlayers: [{ rank: 3, nickname: '小星星', stars: 14, trendLabel: '继续坚持' }],
+            privacyTip: '连续学习榜只展示坚持天数，不展示作答内容。'
+          },
+          '/api/leaderboard/challenge_hero': {
+            boardType: 'challenge_hero',
+            boardTitle: '挑战达人榜',
+            myRank: { rank: 4, nickname: '小星星', stars: 9, trendLabel: '本周完成 9 次挑战' },
+            topPlayers: [{ rank: 1, nickname: '小鲸鱼', stars: 15, trendLabel: '挑战节奏很稳' }],
+            nearbyPlayers: [{ rank: 4, nickname: '小星星', stars: 9, trendLabel: '再来 1 次就进前三' }],
+            privacyTip: '挑战达人榜鼓励多尝试，不强调一次全对。'
+          }
+        };
+
+        const matched = payloads[url];
+        if (!matched) {
+          throw new Error(`Unhandled fetch: ${url}`);
+        }
+
+        return {
+          ok: true,
+          json: async () => matched
+        } as Response;
+      })
+    );
+
+    render(
+      <MemoryRouter>
+        <Leaderboard />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole('heading', { name: '本周星星榜' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '连续学习榜' }));
+    expect(await screen.findByRole('heading', { name: '连续学习榜' })).toBeInTheDocument();
+    expect(screen.getByText(/已经连续学习 14 天/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '挑战达人榜' }));
+    expect(await screen.findByRole('heading', { name: '挑战达人榜' })).toBeInTheDocument();
+    expect(screen.getByText(/本周完成 9 次挑战/)).toBeInTheDocument();
   });
 });

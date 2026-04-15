@@ -9,6 +9,11 @@ export const homeOverview: HomeOverview = {
   },
   featuredWorld: '启航岛',
   todayTask: '完成数字小探险，点亮今天的第一颗星。',
+  achievementPreview: {
+    unlockedCount: 6,
+    totalCount: 10,
+    nextBadgeName: '本周小冠军'
+  },
   subjects: [
     { code: 'math', title: '数学岛', subtitle: '数感和规律正在闪闪发亮', color: '#ff8a5b' },
     { code: 'chinese', title: '语文岛', subtitle: '字形和拼音一起发芽', color: '#f2c14e' },

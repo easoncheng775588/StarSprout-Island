@@ -16,6 +16,11 @@ export interface HomeOverview {
   };
   featuredWorld: string;
   todayTask: string;
+  achievementPreview: {
+    unlockedCount: number;
+    totalCount: number;
+    nextBadgeName: string;
+  };
   subjects: SubjectSummary[];
 }
 

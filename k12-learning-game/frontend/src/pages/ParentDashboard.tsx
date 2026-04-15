@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getParentDashboard, type ParentDashboardData } from '../api';
 import { PageBackLink } from '../components/PageBackLink';
+import { Link } from 'react-router-dom';
 
 interface ParentDashboardProps {
   data?: ParentDashboardData;
@@ -43,6 +44,18 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
           <h2>建议时长 {dashboard.settings.dailyStudyMinutes} 分钟</h2>
           <p>{dashboard.settings.leaderboardEnabled ? '排行榜已开启' : '排行榜已关闭'}</p>
         </article>
+
+        <article className="summary-card">
+          <span className="node-step">今日目标</span>
+          <h2>今日目标完成 {dashboard.goalProgress.completionPercent}%</h2>
+          <p>已学习 {dashboard.goalProgress.completedMinutes} / {dashboard.goalProgress.goalMinutes} 分钟。</p>
+        </article>
+
+        <article className="summary-card">
+          <span className="node-step">成就进度</span>
+          <h2>已点亮 {dashboard.achievementSummary.unlockedCount} 枚成就徽章</h2>
+          <p>{dashboard.achievementSummary.nextMilestone}</p>
+        </article>
       </section>
 
       <section className="dashboard-grid">
@@ -84,6 +97,23 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="dashboard-grid">
+        <article className="panel-card">
+          <p className="eyebrow">推荐下一步</p>
+          <div className="action-list">
+            {dashboard.recommendedActions.map((item) => (
+              <div className="action-chip" key={item}>{item}</div>
+            ))}
+          </div>
+        </article>
+
+        <article className="panel-card">
+          <p className="eyebrow">成就系统</p>
+          <p>{dashboard.achievementSummary.nextMilestone}</p>
+          <Link className="cta-button cta-button-secondary" to="/achievements">查看成就墙</Link>
+        </article>
       </section>
     </main>
   );

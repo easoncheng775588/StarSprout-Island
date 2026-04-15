@@ -25,7 +25,12 @@ describe('App shell', () => {
                 { code: 'math', title: '数学岛', subtitle: '数字火花开始跳舞', accentColor: '#ff8a5b' },
                 { code: 'chinese', title: '语文岛', subtitle: '拼音种子正在发芽', accentColor: '#f2c14e' },
                 { code: 'english', title: '英语岛', subtitle: '单词海风轻轻吹', accentColor: '#39b7a5' }
-              ]
+              ],
+              achievementPreview: {
+                unlockedCount: 6,
+                totalCount: 10,
+                nextBadgeName: '本周小冠军'
+              }
             })
           } as Response;
         }
@@ -169,6 +174,48 @@ describe('App shell', () => {
     expect(await screen.findByText('银河探险家')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '家长中心' })).toHaveAttribute('href', '/parent');
     expect(screen.getByRole('link', { name: '排行榜' })).toHaveAttribute('href', '/leaderboard');
+    expect(screen.getByRole('link', { name: '成就墙' })).toHaveAttribute('href', '/achievements');
+    expect(screen.getByText(/已点亮/)).toHaveTextContent('再点亮 1 枚徽章，就能获得“本周小冠军”');
+  });
+
+  test('falls back when home overview omits achievement preview', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input);
+
+        if (url.endsWith('/api/home/overview')) {
+          return {
+            ok: true,
+            json: async () => ({
+              child: {
+                id: 1,
+                nickname: '小火箭',
+                streakDays: 9,
+                totalStars: 188,
+                title: '银河探险家'
+              },
+              subjects: [
+                { code: 'math', title: '数学岛', subtitle: '数字火花开始跳舞', accentColor: '#ff8a5b' },
+                { code: 'chinese', title: '语文岛', subtitle: '拼音种子正在发芽', accentColor: '#f2c14e' },
+                { code: 'english', title: '英语岛', subtitle: '单词海风轻轻吹', accentColor: '#39b7a5' }
+              ]
+            })
+          } as Response;
+        }
+
+        throw new Error(`Unhandled fetch: ${url}`);
+      })
+    );
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('银河探险家')).toBeInTheDocument();
+    expect(screen.getByText(/已点亮/)).toHaveTextContent('再点亮 1 枚徽章，就能获得“继续加油章”');
   });
 
   test('renders subject map nodes from route data', async () => {

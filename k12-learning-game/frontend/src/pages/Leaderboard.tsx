@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getWeeklyLeaderboard, type LeaderboardData } from '../api';
+import { getLeaderboard, type LeaderboardData } from '../api';
 import { PageBackLink } from '../components/PageBackLink';
 
 interface LeaderboardProps {
@@ -8,14 +8,17 @@ interface LeaderboardProps {
 
 export function Leaderboard({ data }: LeaderboardProps) {
   const [board, setBoard] = useState<LeaderboardData | null>(data ?? null);
+  const [selectedBoardType, setSelectedBoardType] = useState(data?.boardType ?? 'weekly_star');
 
   useEffect(() => {
     if (data) {
+      setBoard(data);
+      setSelectedBoardType(data.boardType);
       return;
     }
 
-    getWeeklyLeaderboard().then(setBoard);
-  }, [data]);
+    getLeaderboard(selectedBoardType).then(setBoard);
+  }, [data, selectedBoardType]);
 
   if (!board) {
     return <main className="screen"><p>正在整理本周排行榜...</p></main>;
@@ -27,14 +30,32 @@ export function Leaderboard({ data }: LeaderboardProps) {
 
       <section className="map-header">
         <p className="eyebrow">排行榜</p>
-        <h1>本周星星榜</h1>
+        <h1>{board.boardTitle}</h1>
         <p>轻竞技、低压力，只看成长和进步，不放大比较焦虑。</p>
       </section>
 
       <section className="board-tabs">
-        <button className="tab-chip tab-chip-active" type="button">本周星星榜</button>
-        <button className="tab-chip" type="button">连续学习榜</button>
-        <button className="tab-chip" type="button">活跃挑战榜</button>
+        <button
+          className={`tab-chip ${selectedBoardType === 'weekly_star' ? 'tab-chip-active' : ''}`}
+          onClick={() => setSelectedBoardType('weekly_star')}
+          type="button"
+        >
+          本周星星榜
+        </button>
+        <button
+          className={`tab-chip ${selectedBoardType === 'streak_master' ? 'tab-chip-active' : ''}`}
+          onClick={() => setSelectedBoardType('streak_master')}
+          type="button"
+        >
+          连续学习榜
+        </button>
+        <button
+          className={`tab-chip ${selectedBoardType === 'challenge_hero' ? 'tab-chip-active' : ''}`}
+          onClick={() => setSelectedBoardType('challenge_hero')}
+          type="button"
+        >
+          挑战达人榜
+        </button>
       </section>
 
       <section className="summary-grid">

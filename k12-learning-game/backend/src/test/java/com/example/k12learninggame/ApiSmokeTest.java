@@ -31,7 +31,8 @@ class ApiSmokeTest {
         mockMvc.perform(get("/api/home/overview"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.child.nickname").value("小星星"))
-                .andExpect(jsonPath("$.subjects[0].code").value("math"));
+                .andExpect(jsonPath("$.subjects[0].code").value("math"))
+                .andExpect(jsonPath("$.achievementPreview.unlockedCount").value(6));
     }
 
     @Test
@@ -134,16 +135,39 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.todaySummary.completedLevels").value(3))
                 .andExpect(jsonPath("$.subjectProgress[0].subjectCode").value("math"))
                 .andExpect(jsonPath("$.weakPoints[0].title").value("20 以内减法需要多练习"))
+                .andExpect(jsonPath("$.achievementSummary.unlockedCount").value(6))
+                .andExpect(jsonPath("$.goalProgress.completionPercent").value(90))
+                .andExpect(jsonPath("$.recommendedActions[0]").value("继续完成 20 以内减法"))
                 .andExpect(jsonPath("$.settings.leaderboardEnabled").value(true));
     }
 
     @Test
     void shouldReturnWeeklyLeaderboard() throws Exception {
-        mockMvc.perform(get("/api/leaderboard/weekly"))
+        mockMvc.perform(get("/api/leaderboard/weekly_star"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.boardType").value("weekly_star"))
+                .andExpect(jsonPath("$.boardTitle").value("本周星星榜"))
                 .andExpect(jsonPath("$.myRank.nickname").value("小星星"))
                 .andExpect(jsonPath("$.topPlayers[0].rank").value(1))
                 .andExpect(jsonPath("$.nearbyPlayers[1].nickname").value("小星星"));
+    }
+
+    @Test
+    void shouldReturnStreakLeaderboard() throws Exception {
+        mockMvc.perform(get("/api/leaderboard/streak_master"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.boardType").value("streak_master"))
+                .andExpect(jsonPath("$.boardTitle").value("连续学习榜"))
+                .andExpect(jsonPath("$.myRank.rank").value(3));
+    }
+
+    @Test
+    void shouldReturnAchievementWall() throws Exception {
+        mockMvc.perform(get("/api/achievements"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.childNickname").value("小星星"))
+                .andExpect(jsonPath("$.unlockedCount").value(6))
+                .andExpect(jsonPath("$.unlockedBadges[0].title").value("数字小达人"))
+                .andExpect(jsonPath("$.inProgressBadges[0].title").value("本周小冠军"));
     }
 }

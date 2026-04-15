@@ -31,6 +31,11 @@ interface HomeOverviewApiResponse {
     subtitle: string;
     accentColor: string;
   }>;
+  achievementPreview?: {
+    unlockedCount: number;
+    totalCount: number;
+    nextBadgeName: string;
+  };
 }
 
 interface SubjectMapApiResponse {
@@ -72,6 +77,16 @@ export interface ParentDashboardData {
     title: string;
     suggestion: string;
   }>;
+  achievementSummary: {
+    unlockedCount: number;
+    nextMilestone: string;
+  };
+  goalProgress: {
+    goalMinutes: number;
+    completedMinutes: number;
+    completionPercent: number;
+  };
+  recommendedActions: string[];
   settings: {
     leaderboardEnabled: boolean;
     dailyStudyMinutes: number;
@@ -80,6 +95,7 @@ export interface ParentDashboardData {
 
 export interface LeaderboardData {
   boardType: string;
+  boardTitle: string;
   myRank: {
     rank: number;
     nickname: string;
@@ -101,6 +117,28 @@ export interface LeaderboardData {
   privacyTip: string;
 }
 
+export interface AchievementBadgeData {
+  code: string;
+  title: string;
+  description: string;
+  progressText: string;
+  unlocked: boolean;
+}
+
+export interface AchievementsData {
+  childNickname: string;
+  unlockedCount: number;
+  totalCount: number;
+  unlockedBadges: AchievementBadgeData[];
+  inProgressBadges: AchievementBadgeData[];
+}
+
+const defaultAchievementPreview = {
+  unlockedCount: 0,
+  totalCount: 10,
+  nextBadgeName: '继续加油章'
+};
+
 export async function getHomeOverview(): Promise<HomeOverview> {
   const data = await fetchJson<HomeOverviewApiResponse>('/api/home/overview');
 
@@ -113,6 +151,7 @@ export async function getHomeOverview(): Promise<HomeOverview> {
     },
     featuredWorld: '启航岛',
     todayTask: '完成数字小探险，点亮今天的第一颗星。',
+    achievementPreview: data.achievementPreview ?? defaultAchievementPreview,
     subjects: data.subjects.map((subject) => ({
       code: subject.code,
       title: subject.title,
@@ -154,6 +193,14 @@ export function getParentDashboard(): Promise<ParentDashboardData> {
   return fetchJson<ParentDashboardData>('/api/parent/dashboard');
 }
 
+export function getLeaderboard(boardType: string): Promise<LeaderboardData> {
+  return fetchJson<LeaderboardData>(`/api/leaderboard/${boardType}`);
+}
+
 export function getWeeklyLeaderboard(): Promise<LeaderboardData> {
-  return fetchJson<LeaderboardData>('/api/leaderboard/weekly');
+  return getLeaderboard('weekly_star');
+}
+
+export function getAchievements(): Promise<AchievementsData> {
+  return fetchJson<AchievementsData>('/api/achievements');
 }

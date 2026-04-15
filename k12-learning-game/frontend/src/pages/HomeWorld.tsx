@@ -48,10 +48,15 @@ export function HomeWorld() {
           <p className="eyebrow">家长陪伴</p>
           <h2>看看成长记录，也给今天一点鼓励</h2>
           <p>家长可以快速查看学习小结和排行榜变化，陪孩子一起感受进步。</p>
+          <p className="achievement-preview-text">
+            已点亮 {homeOverview.achievementPreview.unlockedCount} / {homeOverview.achievementPreview.totalCount} 枚徽章，
+            再点亮 1 枚徽章，就能获得“{homeOverview.achievementPreview.nextBadgeName}”
+          </p>
         </div>
         <div className="family-panel-actions">
           <Link className="cta-button cta-button-secondary" to="/parent">家长中心</Link>
           <Link className="cta-button cta-button-secondary" to="/leaderboard">排行榜</Link>
+          <Link className="cta-button cta-button-secondary" to="/achievements">成就墙</Link>
         </div>
       </section>
 

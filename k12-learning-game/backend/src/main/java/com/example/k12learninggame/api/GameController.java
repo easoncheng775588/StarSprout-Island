@@ -3,6 +3,7 @@ package com.example.k12learninggame.api;
 import com.example.k12learninggame.dto.CompleteLevelRequest;
 import com.example.k12learninggame.dto.CompleteLevelResponse;
 import com.example.k12learninggame.dto.HomeOverviewResponse;
+import com.example.k12learninggame.dto.AchievementsResponse;
 import com.example.k12learninggame.dto.LeaderboardResponse;
 import com.example.k12learninggame.dto.LevelDetailResponse;
 import com.example.k12learninggame.dto.ParentDashboardResponse;
@@ -45,7 +46,17 @@ public class GameController {
 
     @GetMapping("/leaderboard/weekly")
     public LeaderboardResponse weeklyLeaderboard() {
-        return gameContentService.getWeeklyLeaderboard();
+        return gameContentService.getLeaderboard("weekly_star");
+    }
+
+    @GetMapping("/leaderboard/{boardType}")
+    public LeaderboardResponse leaderboard(@PathVariable String boardType) {
+        return gameContentService.getLeaderboard(boardType);
+    }
+
+    @GetMapping("/achievements")
+    public AchievementsResponse achievements() {
+        return gameContentService.getAchievements();
     }
 
     @GetMapping("/subjects/{subjectCode}/map")
