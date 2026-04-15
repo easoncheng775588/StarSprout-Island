@@ -40,11 +40,32 @@ class ApiSmokeTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.subject.code").value("math"))
                 .andExpect(jsonPath("$.chapters[0].levels[0].code").value("math-numbers-001"))
-                .andExpect(jsonPath("$.chapters[0].levels[2].code").value("math-thinking-001"))
-                .andExpect(jsonPath("$.chapters[0].levels[3].code").value("math-subtraction-001"))
-                .andExpect(jsonPath("$.chapters[0].levels[4].code").value("math-compare-001"))
-                .andExpect(jsonPath("$.chapters[0].levels[5].code").value("math-equation-001"))
-                .andExpect(jsonPath("$.chapters[0].levels[6].code").value("math-wordproblem-001"));
+                .andExpect(jsonPath("$.chapters[0].levels[1].code").value("math-numbers-002"))
+                .andExpect(jsonPath("$.chapters[0].levels[3].code").value("math-addition-002"))
+                .andExpect(jsonPath("$.chapters[0].levels[5].code").value("math-thinking-002"))
+                .andExpect(jsonPath("$.chapters[0].levels[7].code").value("math-subtraction-002"))
+                .andExpect(jsonPath("$.chapters[0].levels[10].code").value("math-wordproblem-001"));
+    }
+
+    @Test
+    void shouldReturnExpandedChineseSubjectMap() throws Exception {
+        mockMvc.perform(get("/api/subjects/chinese/map"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.subject.code").value("chinese"))
+                .andExpect(jsonPath("$.chapters[0].levels[1].code").value("chinese-characters-002"))
+                .andExpect(jsonPath("$.chapters[0].levels[3].code").value("chinese-pinyin-002"))
+                .andExpect(jsonPath("$.chapters[0].levels[5].code").value("chinese-strokes-002"));
+    }
+
+    @Test
+    void shouldReturnExpandedEnglishSubjectMap() throws Exception {
+        mockMvc.perform(get("/api/subjects/english/map"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.subject.code").value("english"))
+                .andExpect(jsonPath("$.chapters[0].levels[1].code").value("english-letters-002"))
+                .andExpect(jsonPath("$.chapters[0].levels[4].code").value("english-phonics-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[6].code").value("english-words-002"))
+                .andExpect(jsonPath("$.chapters[0].levels[8].code").value("english-story-002"));
     }
 
     @Test
@@ -78,6 +99,14 @@ class ApiSmokeTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("math-equation-001"))
                 .andExpect(jsonPath("$.steps[0].type").value("equation-choice"));
+    }
+
+    @Test
+    void shouldReturnExpandedEnglishPhonicsLevelDetails() throws Exception {
+        mockMvc.perform(get("/api/levels/english-phonics-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("english-phonics-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("listen-choice"));
     }
 
     @Test

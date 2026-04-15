@@ -79,6 +79,9 @@ type StepActivityConfig =
       instruction: string;
       audioPrompt: string;
       audioText?: string;
+      lang?: string;
+      playButtonLabel?: string;
+      choiceAriaLabelPrefix?: string;
       choices: string[];
       correctChoice: string;
       successFeedback: string;
@@ -149,6 +152,17 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再试试看，换一块石牌吧'
     }
   },
+  'math-numbers-002': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '看看数字朋友，找到表示 14 的石牌。',
+      choices: [12, 14, 16],
+      correctChoice: 14,
+      optionLabelPrefix: '数字石牌',
+      successFeedback: '找对了，14 就是 10 和 4 合在一起',
+      failureFeedback: '再数一数，14 里有 1 个十和 4 个一'
+    }
+  },
   'math-addition-001': {
     'step-1': {
       kind: 'number-choice',
@@ -158,6 +172,17 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       optionLabelPrefix: '数字石牌',
       successFeedback: '答对了，2 + 3 = 5',
       failureFeedback: '差一点点，再算一遍看看'
+    }
+  },
+  'math-addition-002': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '先把 9 和 5 合在一起，再点出正确答案。',
+      choices: [13, 14, 15],
+      correctChoice: 14,
+      optionLabelPrefix: '数字石牌',
+      successFeedback: '答对了，9 + 5 = 14',
+      failureFeedback: '可以先想 9 再往后数 5 个'
     }
   },
   'math-thinking-001': {
@@ -180,6 +205,27 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再看看前面两组车厢的颜色顺序'
     }
   },
+  'math-thinking-002': {
+    'step-1': {
+      kind: 'pattern-choice',
+      instruction: '观察图形火车的顺序，找出下一节该出现什么。',
+      sequence: [
+        { label: '圆形车厢', emoji: '🟡' },
+        { label: '三角车厢', emoji: '🔺' },
+        { label: '方形车厢', emoji: '🟦' },
+        { label: '圆形车厢', emoji: '🟡' },
+        { label: '三角车厢', emoji: '🔺' }
+      ],
+      choices: [
+        { label: '方形车厢', emoji: '🟦' },
+        { label: '星星车厢', emoji: '⭐' },
+        { label: '圆形车厢', emoji: '🟡' }
+      ],
+      correctChoice: '方形车厢',
+      successFeedback: '答对了，圆形、三角、方形的规律继续向前开',
+      failureFeedback: '再把前三节车厢连起来看看'
+    }
+  },
   'math-subtraction-001': {
     'step-1': {
       kind: 'take-away',
@@ -198,6 +244,19 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       optionLabelPrefix: '数字石牌',
       successFeedback: '答对了，8 - 3 = 5',
       failureFeedback: '再数一数盘子里的草莓'
+    }
+  },
+  'math-subtraction-002': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '先听故事，再算算还剩多少。',
+      emoji: '🐦',
+      characterLabel: '树上的小鸟',
+      detailLines: ['树上原来有 15 只小鸟', '飞走了 6 只小鸟'],
+      choices: [8, 9, 10],
+      correctChoice: 9,
+      successFeedback: '答对了，15 - 6 = 9',
+      failureFeedback: '把 15 只小鸟减去飞走的 6 只再想一想'
     }
   },
   'math-compare-001': {
@@ -264,10 +323,41 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       instruction: '先听老师读，再选出一样的拼音泡泡。',
       audioPrompt: 'ma',
       audioText: '妈',
+      lang: 'zh-CN',
       choices: ['ma', 'ba', 'da'],
       correctChoice: 'ma',
       successFeedback: '听对了，这个泡泡读作 ma',
       failureFeedback: '再听一遍，注意嘴巴张开的声音'
+    }
+  },
+  'chinese-characters-002': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '看看图意和字形，找到表示“小手”的汉字。',
+      choices: [
+        { label: '手', hint: '小手' },
+        { label: '口', hint: '嘴巴' },
+        { label: '目', hint: '眼睛' }
+      ],
+      correctChoice: '手',
+      successFeedback: '答对了，“手”就是我们拍手、握手的手',
+      detailLines: ['小朋友常见字：手、口、目都来自生活动作和器官'],
+      failureFeedback: '再想一想，哪一个字和小手最有关系'
+    }
+  },
+  'chinese-pinyin-002': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '听一听老师读的拼读，再选出正确的小火车。',
+      audioPrompt: 'gua',
+      audioText: '瓜',
+      lang: 'zh-CN',
+      playButtonLabel: '播放拼读读音',
+      choiceAriaLabelPrefix: '拼读火车',
+      choices: ['gua', 'guo', 'hua'],
+      correctChoice: 'gua',
+      successFeedback: '拼对了，g-u-a 连起来就读 gua',
+      failureFeedback: '再听一遍，注意最后的 a 音'
     }
   },
   'chinese-strokes-001': {
@@ -285,6 +375,22 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再想一想，要按从上到下、从左到右的顺序'
     }
   },
+  'chinese-strokes-002': {
+    'step-1': {
+      kind: 'stroke-order',
+      instruction: '按顺序点一点，把“日”字的笔顺排好。',
+      character: '日',
+      strokes: [
+        { label: '竖', hint: '先写左边' },
+        { label: '横折', hint: '再绕到右上角' },
+        { label: '横（中间）', hint: '先写中间' },
+        { label: '横（底部）', hint: '最后封底' }
+      ],
+      successFeedback: '太好了，“日”字也会写啦',
+      detailLines: ['笔顺口诀：先外后里，再把下面写完整'],
+      failureFeedback: '试试看从左边开始写，会更顺手'
+    }
+  },
   'english-letters-001': {
     'step-1': {
       kind: 'follow-read',
@@ -299,6 +405,65 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       ]
     }
   },
+  'english-letters-002': {
+    'step-1': {
+      kind: 'follow-read',
+      instruction: '继续点一点字母卡，把 G 到 L 都读出来。',
+      letters: [
+        { label: 'G', phonetic: '/dʒiː/', exampleWord: 'goat', emoji: '🐐' },
+        { label: 'H', phonetic: '/eɪtʃ/', exampleWord: 'hat', emoji: '🎩' },
+        { label: 'I', phonetic: '/aɪ/', exampleWord: 'ice', emoji: '🧊' },
+        { label: 'J', phonetic: '/dʒeɪ/', exampleWord: 'jam', emoji: '🍓' },
+        { label: 'K', phonetic: '/keɪ/', exampleWord: 'kite', emoji: '🪁' },
+        { label: 'L', phonetic: '/el/', exampleWord: 'lion', emoji: '🦁' }
+      ]
+    }
+  },
+  'english-letters-003': {
+    'step-1': {
+      kind: 'follow-read',
+      instruction: '把 M 到 R 的字母朋友也读一遍。',
+      letters: [
+        { label: 'M', phonetic: '/em/', exampleWord: 'moon', emoji: '🌙' },
+        { label: 'N', phonetic: '/en/', exampleWord: 'nest', emoji: '🪺' },
+        { label: 'O', phonetic: '/oʊ/', exampleWord: 'orange', emoji: '🍊' },
+        { label: 'P', phonetic: '/piː/', exampleWord: 'pig', emoji: '🐷' },
+        { label: 'Q', phonetic: '/kjuː/', exampleWord: 'queen', emoji: '👑' },
+        { label: 'R', phonetic: '/ɑr/', exampleWord: 'rain', emoji: '🌧️' }
+      ]
+    }
+  },
+  'english-letters-004': {
+    'step-1': {
+      kind: 'follow-read',
+      instruction: '最后一组字母来了，把 S 到 Z 都点亮吧。',
+      letters: [
+        { label: 'S', phonetic: '/es/', exampleWord: 'sun', emoji: '☀️' },
+        { label: 'T', phonetic: '/tiː/', exampleWord: 'tree', emoji: '🌳' },
+        { label: 'U', phonetic: '/juː/', exampleWord: 'umbrella', emoji: '☂️' },
+        { label: 'V', phonetic: '/viː/', exampleWord: 'van', emoji: '🚐' },
+        { label: 'W', phonetic: '/ˈdʌbəl.juː/', exampleWord: 'water', emoji: '💧' },
+        { label: 'X', phonetic: '/eks/', exampleWord: 'x-ray', emoji: '🩻' },
+        { label: 'Y', phonetic: '/waɪ/', exampleWord: 'yoyo', emoji: '🪀' },
+        { label: 'Z', phonetic: '/ziː/', exampleWord: 'zebra', emoji: '🦓' }
+      ]
+    }
+  },
+  'english-phonics-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '先听字母开头的声音，再点出发音一样的单词。',
+      audioPrompt: '/b/',
+      audioText: 'buh',
+      lang: 'en-US',
+      playButtonLabel: '播放字母发音',
+      choiceAriaLabelPrefix: '发音单词',
+      choices: ['ball', 'sun', 'cat'],
+      correctChoice: 'ball',
+      successFeedback: '答对了，ball 开头就是 /b/ 的声音',
+      failureFeedback: '再听一遍，想想哪个单词一开始嘴巴会轻轻闭上'
+    }
+  },
   'english-words-001': {
     'step-1': {
       kind: 'word-match',
@@ -307,6 +472,17 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { word: 'apple', pictureLabel: '苹果', emoji: '🍎', phonetic: '/ˈaepəl/' },
         { word: 'book', pictureLabel: '书本', emoji: '📘', phonetic: '/bʊk/' },
         { word: 'cat', pictureLabel: '小猫', emoji: '🐱', phonetic: '/kaet/' }
+      ]
+    }
+  },
+  'english-words-002': {
+    'step-1': {
+      kind: 'word-match',
+      instruction: '再玩一轮单词配对，边点边跟读。',
+      pairs: [
+        { word: 'sun', pictureLabel: '太阳', emoji: '☀️', phonetic: '/sʌn/' },
+        { word: 'bag', pictureLabel: '书包', emoji: '🎒', phonetic: '/bæg/' },
+        { word: 'milk', pictureLabel: '牛奶', emoji: '🥛', phonetic: '/mɪlk/' }
       ]
     }
   },
@@ -320,6 +496,18 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { text: 'I can wave hi.', emoji: '👋', scene: '我会挥手说嗨' }
       ],
       successFeedback: '小绘本读完啦，给自己一个掌声'
+    }
+  },
+  'english-story-002': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '点一点晨光绘本，按顺序把三句话读完。',
+      sentences: [
+        { text: 'The sun is up.', emoji: '☀️', scene: '太阳升起来了' },
+        { text: 'I pack my bag.', emoji: '🎒', scene: '我背好书包' },
+        { text: 'I say hello.', emoji: '👋', scene: '我开口打招呼' }
+      ],
+      successFeedback: '晨光小绘本读完啦'
     }
   }
 };
@@ -546,7 +734,7 @@ export function LevelPlayer() {
 
   function handlePlayAudio(stepId: string, config: Extract<StepActivityConfig, { kind: 'listen-choice' }>) {
     const audioText = config.audioText ?? config.audioPrompt;
-    speakText(audioText, 'zh-CN');
+    speakText(audioText, config.lang ?? 'zh-CN');
 
     setStepProgress((current) => ({
       ...current,
@@ -1031,7 +1219,7 @@ export function LevelPlayer() {
                   <div className="play-surface">
                     <p className="play-instruction">{config.instruction}</p>
                     <button className="audio-button" onClick={() => handlePlayAudio(step.id, config)} type="button">
-                      播放拼音读音
+                      {config.playButtonLabel ?? '播放拼音读音'}
                     </button>
                     <div className="bubble-row">
                       {config.choices.map((choice) => {
@@ -1040,7 +1228,7 @@ export function LevelPlayer() {
 
                         return (
                           <button
-                            aria-label={`拼音泡泡 ${choice}`}
+                            aria-label={`${config.choiceAriaLabelPrefix ?? '拼音泡泡'} ${choice}`}
                             className={`bubble-choice ${isSelected ? 'bubble-choice-selected' : ''} ${isCorrect ? 'bubble-choice-correct' : ''}`}
                             key={choice}
                             onClick={() => handleListenChoiceSelected(step.id, choice, config)}

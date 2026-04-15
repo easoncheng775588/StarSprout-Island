@@ -46,6 +46,16 @@ function mockLevelResponse(levelCode: string) {
         { id: 'step-1', type: 'story-choice', prompt: '小兔子有 4 根胡萝卜，又收到 2 根，一共有几根？' }
       ],
       reward: { stars: 2, badgeName: '应用题小勇士' }
+    },
+    'math-addition-002': {
+      code: 'math-addition-002',
+      title: '彩虹桥加法',
+      subjectTitle: '数学岛',
+      description: '用 20 以内的数字继续练习加法。',
+      steps: [
+        { id: 'step-1', type: 'tap-choice', prompt: '9 只小鸟又飞来 5 只，一共有几只？' }
+      ],
+      reward: { stars: 2, badgeName: '20 以内加法星' }
     }
   };
 
@@ -59,7 +69,7 @@ describe('Expanded math levels', () => {
       vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input);
 
-        for (const levelCode of ['math-subtraction-001', 'math-compare-001', 'math-equation-001', 'math-wordproblem-001']) {
+        for (const levelCode of ['math-subtraction-001', 'math-compare-001', 'math-equation-001', 'math-wordproblem-001', 'math-addition-002']) {
           if (url.endsWith(`/api/levels/${levelCode}`) && !init?.method) {
             return {
               ok: true,
@@ -171,6 +181,25 @@ describe('Expanded math levels', () => {
     await user.click(screen.getByRole('button', { name: '答案卡片 6' }));
 
     expect(screen.getByText('答对了，4 + 2 = 6')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
+  });
+
+  test('renders interactive within-20 addition level', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/math-addition-002']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('彩虹桥加法')).toBeInTheDocument();
+    expect(screen.getByText('9 只小鸟又飞来 5 只，一共有几只？')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '数字石牌 14' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '数字石牌 14' }));
+
+    expect(screen.getByText('答对了，9 + 5 = 14')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
   });
 });
