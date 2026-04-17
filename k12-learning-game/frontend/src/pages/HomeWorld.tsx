@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getHomeOverview } from '../api';
+import { PageTopBar } from '../components/PageTopBar';
+import { useSession } from '../session';
 import type { HomeOverview } from '../types';
 
 export function HomeWorld() {
   const [homeOverview, setHomeOverview] = useState<HomeOverview | null>(null);
+  const { session } = useSession();
 
   useEffect(() => {
     getHomeOverview().then(setHomeOverview);
-  }, []);
+  }, [session]);
 
   if (!homeOverview) {
     return <main className="screen"><p>正在唤醒今天的学习小岛...</p></main>;
@@ -16,10 +19,12 @@ export function HomeWorld() {
 
   return (
     <main className="screen screen-home">
+      <PageTopBar />
+
       <section className="hero-card">
         <div>
           <p className="eyebrow">{homeOverview.featuredWorld}</p>
-          <h1>小星星，准备再次出发吧</h1>
+          <h1>{homeOverview.child.nickname}，准备再次出发吧</h1>
           <p className="hero-copy">{homeOverview.todayTask}</p>
         </div>
         <div className="hero-stats">
@@ -40,7 +45,9 @@ export function HomeWorld() {
           <h2>点亮今天的学习星轨</h2>
           <p>{homeOverview.child.title}</p>
         </div>
-        <Link className="cta-button" to="/levels/math-numbers-001">开始任务</Link>
+        <Link className="cta-button" to={homeOverview.nextLevelCode ? `/levels/${homeOverview.nextLevelCode}` : '/levels/math-numbers-001'}>
+          {homeOverview.nextLevelTitle ? `继续挑战 ${homeOverview.nextLevelTitle}` : '开始任务'}
+        </Link>
       </section>
 
       <section className="family-panel" aria-label="家长与激励入口">

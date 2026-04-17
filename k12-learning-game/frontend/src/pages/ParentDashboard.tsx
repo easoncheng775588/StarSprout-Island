@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { getParentDashboard, type ParentDashboardData } from '../api';
-import { PageBackLink } from '../components/PageBackLink';
+import { getParentDashboard, type ParentDashboardData, updateParentSettings } from '../api';
+import { PageTopBar } from '../components/PageTopBar';
 import { Link } from 'react-router-dom';
+import { useSession } from '../session';
 
 interface ParentDashboardProps {
   data?: ParentDashboardData;
@@ -9,6 +10,11 @@ interface ParentDashboardProps {
 
 export function ParentDashboard({ data }: ParentDashboardProps) {
   const [dashboard, setDashboard] = useState<ParentDashboardData | null>(data ?? null);
+  const [dailyStudyMinutes, setDailyStudyMinutes] = useState(data?.settings.dailyStudyMinutes ?? 20);
+  const [leaderboardEnabled, setLeaderboardEnabled] = useState(data?.settings.leaderboardEnabled ?? true);
+  const [reminderEnabled, setReminderEnabled] = useState(data?.settings.reminderEnabled ?? false);
+  const [isSaving, setIsSaving] = useState(false);
+  const { session } = useSession();
 
   useEffect(() => {
     if (data) {
@@ -16,15 +22,53 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
     }
 
     getParentDashboard().then(setDashboard);
-  }, [data]);
+  }, [data, session?.childProfileId]);
+
+  useEffect(() => {
+    if (!dashboard) {
+      return;
+    }
+
+    setDailyStudyMinutes(dashboard.settings.dailyStudyMinutes);
+    setLeaderboardEnabled(dashboard.settings.leaderboardEnabled);
+    setReminderEnabled(dashboard.settings.reminderEnabled);
+  }, [dashboard]);
 
   if (!dashboard) {
     return <main className="screen"><p>正在整理孩子今天的学习报告...</p></main>;
   }
 
+  async function handleSaveSettings() {
+    setIsSaving(true);
+    try {
+      const nextSettings = await updateParentSettings({
+        leaderboardEnabled,
+        dailyStudyMinutes,
+        reminderEnabled
+      });
+
+      setDashboard((current) => {
+        if (!current) {
+          return current;
+        }
+
+        return {
+          ...current,
+          settings: nextSettings,
+          goalProgress: {
+            ...current.goalProgress,
+            goalMinutes: nextSettings.dailyStudyMinutes
+          }
+        };
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   return (
     <main className="screen screen-parent">
-      <PageBackLink label="返回首页" to="/" />
+      <PageTopBar backLabel="返回首页" backTo="/" />
 
       <section className="map-header">
         <p className="eyebrow">家长中心</p>
@@ -43,6 +87,7 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
           <span className="node-step">学习建议</span>
           <h2>建议时长 {dashboard.settings.dailyStudyMinutes} 分钟</h2>
           <p>{dashboard.settings.leaderboardEnabled ? '排行榜已开启' : '排行榜已关闭'}</p>
+          <p>{dashboard.settings.reminderEnabled ? '连续学习提醒已开启' : '连续学习提醒未开启'}</p>
         </article>
 
         <article className="summary-card">
@@ -94,6 +139,7 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
             <article className="weak-card" key={item.title}>
               <h3>{item.title}</h3>
               <p>{item.suggestion}</p>
+              <span className="weak-card-reason">{item.reason}</span>
             </article>
           ))}
         </div>
@@ -101,10 +147,60 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
 
       <section className="dashboard-grid">
         <article className="panel-card">
+          <p className="eyebrow">家长设置</p>
+          <div className="settings-form">
+            <label className="settings-field" htmlFor="daily-study-minutes">
+              <span>每日目标学习时长</span>
+              <input
+                id="daily-study-minutes"
+                min={5}
+                step={5}
+                type="number"
+                value={dailyStudyMinutes}
+                onChange={(event) => setDailyStudyMinutes(Number(event.target.value))}
+              />
+            </label>
+
+            <label className="settings-toggle" htmlFor="leaderboard-enabled">
+              <input
+                id="leaderboard-enabled"
+                checked={!leaderboardEnabled}
+                type="checkbox"
+                onChange={(event) => setLeaderboardEnabled(!event.target.checked)}
+              />
+              <span>关闭排行榜参与</span>
+            </label>
+
+            <label className="settings-toggle" htmlFor="reminder-enabled">
+              <input
+                id="reminder-enabled"
+                checked={reminderEnabled}
+                type="checkbox"
+                onChange={(event) => setReminderEnabled(event.target.checked)}
+              />
+              <span>开启连续学习提醒</span>
+            </label>
+
+            <button
+              className="cta-button"
+              disabled={isSaving}
+              type="button"
+              onClick={handleSaveSettings}
+            >
+              {isSaving ? '正在保存...' : '保存家长设置'}
+            </button>
+          </div>
+        </article>
+
+        <article className="panel-card">
           <p className="eyebrow">推荐下一步</p>
           <div className="action-list">
             {dashboard.recommendedActions.map((item) => (
-              <div className="action-chip" key={item}>{item}</div>
+              <article className="action-chip" key={`${item.targetSubject}-${item.title}`}>
+                <strong>{item.title}</strong>
+                <p>{item.reason}</p>
+                <span>{item.targetSubject}</span>
+              </article>
             ))}
           </div>
         </article>
@@ -113,6 +209,58 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
           <p className="eyebrow">成就系统</p>
           <p>{dashboard.achievementSummary.nextMilestone}</p>
           <Link className="cta-button cta-button-secondary" to="/achievements">查看成就墙</Link>
+        </article>
+      </section>
+
+      <section className="dashboard-grid">
+        <article className="panel-card">
+          <p className="eyebrow">学习画像</p>
+          <div className="summary-grid">
+            <article className="summary-card">
+              <span className="node-step">累计完成</span>
+              <h2>累计完成 {dashboard.learningVitals.totalCompletedLevels} 关</h2>
+              <p>正在稳稳推进 {dashboard.learningVitals.strongestSubjectTitle} 的学习节奏。</p>
+            </article>
+            <article className="summary-card">
+              <span className="node-step">平均准确率</span>
+              <h2>平均准确率 {dashboard.learningVitals.averageAccuracyPercent}%</h2>
+              <p>保持轻松练习，让会的内容更稳、不会的内容慢慢变熟。</p>
+            </article>
+            <article className="summary-card">
+              <span className="node-step">学习节奏</span>
+              <h2>平均单关用时 {dashboard.learningVitals.averageSessionMinutes} 分钟</h2>
+              <p>最投入时段：{dashboard.learningVitals.bestLearningPeriodLabel}</p>
+              <p>近 7 天有效学习 {dashboard.learningVitals.effectiveLearningDays} 天</p>
+            </article>
+          </div>
+        </article>
+
+        <article className="panel-card">
+          <p className="eyebrow">学科拆解</p>
+          <div className="badge-grid">
+            {dashboard.subjectInsights.map((item) => (
+              <article className="badge-card" key={item.subjectCode}>
+                <h3>{item.subjectTitle}</h3>
+                <p>已完成 {item.completedLevels} / {item.totalLevels} 关</p>
+                <span>准确率 {item.accuracyPercent}% · 本周学习 {item.studyMinutes} 分钟</span>
+                <p>{`下一关建议：${item.nextLevelTitle}`}</p>
+                <p>{item.nextLevelReason}</p>
+              </article>
+            ))}
+          </div>
+        </article>
+
+        <article className="panel-card">
+          <p className="eyebrow">最近完成</p>
+          <div className="rank-list">
+            {dashboard.recentActivities.map((item) => (
+              <article className="rank-card" key={`${item.subjectTitle}-${item.levelTitle}-${item.completedAtLabel}`}>
+                <strong>{item.levelTitle}</strong>
+                <p>{item.subjectTitle}</p>
+                <span>{item.completedAtLabel} · {item.earnedStars} 颗星星</span>
+              </article>
+            ))}
+          </div>
         </article>
       </section>
     </main>

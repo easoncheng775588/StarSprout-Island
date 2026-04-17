@@ -2,6 +2,8 @@ package com.example.k12learninggame.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
@@ -25,6 +27,14 @@ public class ChildProfileEntity {
 
     private String title;
 
+    private String stageLabel;
+
+    private String avatarColor;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_account_id", nullable = false)
+    private ParentAccountEntity parentAccount;
+
     @OneToOne(mappedBy = "childProfile")
     private ParentTodaySummaryEntity todaySummary;
 
@@ -44,6 +54,26 @@ public class ChildProfileEntity {
     private List<WeakPointEntity> weakPoints = new ArrayList<>();
 
     protected ChildProfileEntity() {
+    }
+
+    public ChildProfileEntity(
+            Long id,
+            String nickname,
+            int streakDays,
+            int totalStars,
+            String title,
+            String stageLabel,
+            String avatarColor,
+            ParentAccountEntity parentAccount
+    ) {
+        this.id = id;
+        this.nickname = nickname;
+        this.streakDays = streakDays;
+        this.totalStars = totalStars;
+        this.title = title;
+        this.stageLabel = stageLabel;
+        this.avatarColor = avatarColor;
+        this.parentAccount = parentAccount;
     }
 
     public Long getId() {
@@ -66,8 +96,36 @@ public class ChildProfileEntity {
         return totalStars;
     }
 
+    public void addStars(int stars) {
+        this.totalStars += stars;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getStageLabel() {
+        return stageLabel;
+    }
+
+    public void setStageLabel(String stageLabel) {
+        this.stageLabel = stageLabel;
+    }
+
+    public String getAvatarColor() {
+        return avatarColor;
+    }
+
+    public void setAvatarColor(String avatarColor) {
+        this.avatarColor = avatarColor;
+    }
+
+    public ParentAccountEntity getParentAccount() {
+        return parentAccount;
     }
 
     public ParentTodaySummaryEntity getTodaySummary() {

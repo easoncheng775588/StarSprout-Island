@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getAchievements, type AchievementsData } from '../api';
-import { PageBackLink } from '../components/PageBackLink';
+import { PageTopBar } from '../components/PageTopBar';
+import { useSession } from '../session';
 
 interface AchievementsPageProps {
   data?: AchievementsData;
@@ -8,6 +9,7 @@ interface AchievementsPageProps {
 
 export function AchievementsPage({ data }: AchievementsPageProps) {
   const [achievements, setAchievements] = useState<AchievementsData | null>(data ?? null);
+  const { session } = useSession();
 
   useEffect(() => {
     if (data) {
@@ -15,7 +17,7 @@ export function AchievementsPage({ data }: AchievementsPageProps) {
     }
 
     getAchievements().then(setAchievements);
-  }, [data]);
+  }, [data, session?.childProfileId]);
 
   if (!achievements) {
     return <main className="screen"><p>正在点亮孩子的成就墙...</p></main>;
@@ -23,7 +25,7 @@ export function AchievementsPage({ data }: AchievementsPageProps) {
 
   return (
     <main className="screen screen-achievements">
-      <PageBackLink label="返回首页" to="/" />
+      <PageTopBar backLabel="返回首页" backTo="/" />
 
       <section className="map-header">
         <p className="eyebrow">成就系统</p>
@@ -46,8 +48,10 @@ export function AchievementsPage({ data }: AchievementsPageProps) {
             {achievements.unlockedBadges.map((badge) => (
               <article className="badge-card badge-card-unlocked" key={badge.code}>
                 <h3>{badge.title}</h3>
+                <p>{badge.category} · {badge.rarityLabel}</p>
                 <p>{badge.description}</p>
                 <span>{badge.progressText}</span>
+                <p>{badge.encouragement}</p>
               </article>
             ))}
           </div>
@@ -59,8 +63,13 @@ export function AchievementsPage({ data }: AchievementsPageProps) {
             {achievements.inProgressBadges.map((badge) => (
               <article className="badge-card" key={badge.code}>
                 <h3>{badge.title}</h3>
+                <p>{badge.category} · {badge.rarityLabel}</p>
                 <p>{badge.description}</p>
                 <span>{badge.progressText}</span>
+                <div className="badge-progress-track" aria-label={`${badge.title}进度`}>
+                  <span style={{ width: `${badge.progressPercent}%` }} />
+                </div>
+                <p>{badge.encouragement}</p>
               </article>
             ))}
           </div>

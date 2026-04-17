@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { PageBackLink } from '../components/PageBackLink';
-import { useParams } from 'react-router-dom';
+import { PageTopBar } from '../components/PageTopBar';
+import { Link, useParams } from 'react-router-dom';
 import { completeLevel, getLevel } from '../api';
 import applePhoto from '../assets/apple-photo.jpg';
 import basketImage from '../assets/basket-cartoon.svg';
+import { subjectMaps } from '../data/mockData';
 import type { LevelDetail } from '../types';
 
 type StepActivityConfig =
@@ -345,6 +346,21 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再想一想，哪一个字和小手最有关系'
     }
   },
+  'chinese-characters-003': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '想一想身体的小伙伴，找到表示“耳朵”的汉字。',
+      choices: [
+        { label: '耳', hint: '耳朵' },
+        { label: '目', hint: '眼睛' },
+        { label: '手', hint: '小手' }
+      ],
+      correctChoice: '耳',
+      successFeedback: '答对了，“耳”就是耳朵的耳',
+      detailLines: ['身体常见字：耳、目、手，都是生活里经常会用到的字'],
+      failureFeedback: '再想一想，哪个字最像我们听声音的小耳朵'
+    }
+  },
   'chinese-pinyin-002': {
     'step-1': {
       kind: 'listen-choice',
@@ -358,6 +374,19 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       correctChoice: 'gua',
       successFeedback: '拼对了，g-u-a 连起来就读 gua',
       failureFeedback: '再听一遍，注意最后的 a 音'
+    }
+  },
+  'chinese-pinyin-003': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '先听一听声母发音，再选出一样的拼音泡泡。',
+      audioPrompt: 'sh',
+      audioText: 'sh',
+      lang: 'zh-CN',
+      choices: ['sh', 's', 'm'],
+      correctChoice: 'sh',
+      successFeedback: '答对了，声母 sh 读起来像小狮子轻轻呼气',
+      failureFeedback: '再听一遍，注意这是卷舌一点点的 sh 音'
     }
   },
   'chinese-strokes-001': {
@@ -389,6 +418,20 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       successFeedback: '太好了，“日”字也会写啦',
       detailLines: ['笔顺口诀：先外后里，再把下面写完整'],
       failureFeedback: '试试看从左边开始写，会更顺手'
+    }
+  },
+  'chinese-strokes-003': {
+    'step-1': {
+      kind: 'stroke-order',
+      instruction: '按顺序点一点，把“人”字的两笔排好。',
+      character: '人',
+      strokes: [
+        { label: '撇', hint: '先从左上往下轻轻撇出去' },
+        { label: '捺', hint: '再从右上往下舒展开来' }
+      ],
+      successFeedback: '真棒，“人”字也会写啦',
+      detailLines: ['笔顺口诀：先撇后捺，左右舒展开'],
+      failureFeedback: '再想一想，“人”字要先写左边的撇'
     }
   },
   'english-letters-001': {
@@ -464,6 +507,21 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再听一遍，想想哪个单词一开始嘴巴会轻轻闭上'
     }
   },
+  'english-phonics-002': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '先听开头音，再找出发音一样的单词。',
+      audioPrompt: '/s/',
+      audioText: 'sss',
+      lang: 'en-US',
+      playButtonLabel: '播放字母发音',
+      choiceAriaLabelPrefix: '发音单词',
+      choices: ['sun', 'milk', 'dog'],
+      correctChoice: 'sun',
+      successFeedback: '答对了，sun 开头就是 /s/ 的声音',
+      failureFeedback: '再听一遍，想想哪个单词像小蛇一样发出 sss 的声音'
+    }
+  },
   'english-words-001': {
     'step-1': {
       kind: 'word-match',
@@ -483,6 +541,17 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { word: 'sun', pictureLabel: '太阳', emoji: '☀️', phonetic: '/sʌn/' },
         { word: 'bag', pictureLabel: '书包', emoji: '🎒', phonetic: '/bæg/' },
         { word: 'milk', pictureLabel: '牛奶', emoji: '🥛', phonetic: '/mɪlk/' }
+      ]
+    }
+  },
+  'english-words-003': {
+    'step-1': {
+      kind: 'word-match',
+      instruction: '把颜色单词和沙堡旗子配成正确的一对。',
+      pairs: [
+        { word: 'red', pictureLabel: '红色旗子', emoji: '🚩', phonetic: '/red/' },
+        { word: 'blue', pictureLabel: '蓝色旗子', emoji: '🟦', phonetic: '/bluː/' },
+        { word: 'green', pictureLabel: '绿色旗子', emoji: '🟩', phonetic: '/griːn/' }
       ]
     }
   },
@@ -508,6 +577,18 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { text: 'I say hello.', emoji: '👋', scene: '我开口打招呼' }
       ],
       successFeedback: '晨光小绘本读完啦'
+    }
+  },
+  'english-story-003': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '点一点晚安绘本，把夜晚故事按顺序读完。',
+      sentences: [
+        { text: 'The moon is bright.', emoji: '🌙', scene: '月亮亮起来了' },
+        { text: 'I hug my bear.', emoji: '🧸', scene: '我抱抱小熊' },
+        { text: 'I say good night.', emoji: '💤', scene: '我说晚安啦' }
+      ],
+      successFeedback: '晚安小绘本读完啦'
     }
   }
 };
@@ -535,15 +616,20 @@ function getPreferredVoice(lang: string) {
   return languageMatches[0];
 }
 
-function speakText(text: string, lang: string) {
+function speakText(text: string, lang: string, speedMode: 'normal' | 'slow' = 'normal') {
   if (typeof window === 'undefined' || !('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
-    return;
+    return {
+      played: false,
+      voiceLabel: '当前设备暂未准备好语音老师'
+    };
   }
 
   window.speechSynthesis.cancel();
   const utterance = new window.SpeechSynthesisUtterance(text);
   utterance.lang = lang;
-  utterance.rate = lang.startsWith('zh') ? 0.85 : 0.92;
+  utterance.rate = speedMode === 'slow'
+    ? (lang.startsWith('zh') ? 0.72 : 0.78)
+    : (lang.startsWith('zh') ? 0.85 : 0.92);
   utterance.pitch = lang.startsWith('zh') ? 1.05 : 1;
 
   const preferredVoice = getPreferredVoice(lang);
@@ -552,6 +638,10 @@ function speakText(text: string, lang: string) {
   }
 
   window.speechSynthesis.speak(utterance);
+  return {
+    played: true,
+    voiceLabel: preferredVoice ? `${preferredVoice.lang} · ${preferredVoice.name}` : `${lang} · 系统默认老师`
+  };
 }
 
 const subjectTitleToCode: Record<string, string> = {
@@ -560,12 +650,48 @@ const subjectTitleToCode: Record<string, string> = {
   英语岛: 'english'
 };
 
+const celebrationStars = ['★', '✦', '★', '✦', '★', '✦'];
+const AUDIO_MODE_STORAGE_KEY = 'k12-learning-game-audio-mode';
+
+function readAudioSpeedMode(): 'normal' | 'slow' {
+  if (typeof window === 'undefined') {
+    return 'normal';
+  }
+
+  return window.localStorage.getItem(AUDIO_MODE_STORAGE_KEY) === 'slow' ? 'slow' : 'normal';
+}
+
+function getNextLevelCode(levelCode: string, subjectCode?: string) {
+  if (!subjectCode || !(subjectCode in subjectMaps)) {
+    return null;
+  }
+
+  const orderedLevels = subjectMaps[subjectCode as keyof typeof subjectMaps].chapters.flatMap((chapter) =>
+    chapter.levels.map((level) => level.code)
+  );
+  const currentIndex = orderedLevels.indexOf(levelCode);
+
+  if (currentIndex === -1 || currentIndex === orderedLevels.length - 1) {
+    return null;
+  }
+
+  return orderedLevels[currentIndex + 1];
+}
+
 export function LevelPlayer() {
   const { levelCode } = useParams<{ levelCode: string }>();
   const [level, setLevel] = useState<LevelDetail | null>(null);
-  const [reward, setReward] = useState<LevelDetail['reward'] | null>(null);
+  const [completionResult, setCompletionResult] = useState<Awaited<ReturnType<typeof completeLevel>> | null>(null);
   const [stepProgress, setStepProgress] = useState<Record<string, StepProgressState>>({});
   const [draggingApple, setDraggingApple] = useState<{ stepId: string; appleId: number } | null>(null);
+  const [showNextLevelNudge, setShowNextLevelNudge] = useState(false);
+  const [audioSpeedMode, setAudioSpeedMode] = useState<'normal' | 'slow'>(readAudioSpeedMode);
+  const [audioTeacherLabel, setAudioTeacherLabel] = useState('系统默认老师');
+  const [levelStartedAt, setLevelStartedAt] = useState(() => Date.now());
+  const currentLevel = level;
+  const subjectCode = currentLevel ? subjectTitleToCode[currentLevel.subjectTitle] : undefined;
+  const nextLevelCode = currentLevel ? getNextLevelCode(currentLevel.code, subjectCode) : null;
+  const reward = completionResult?.reward ?? null;
 
   useEffect(() => {
     if (!levelCode) {
@@ -573,27 +699,54 @@ export function LevelPlayer() {
     }
 
     setLevel(null);
-    setReward(null);
+    setCompletionResult(null);
     setStepProgress({});
+    setShowNextLevelNudge(false);
+    setLevelStartedAt(Date.now());
     getLevel(levelCode).then(setLevel);
   }, [levelCode]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.localStorage.setItem(AUDIO_MODE_STORAGE_KEY, audioSpeedMode);
+  }, [audioSpeedMode]);
+
+  useEffect(() => {
+    if (!completionResult || !nextLevelCode) {
+      setShowNextLevelNudge(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setShowNextLevelNudge(true);
+    }, 1500);
+
+    return () => window.clearTimeout(timer);
+  }, [completionResult, nextLevelCode]);
 
   if (!levelCode) {
     return <main className="screen"><p>这道关卡还在准备中。</p></main>;
   }
 
-  if (!level) {
+  if (!currentLevel) {
     return <main className="screen"><p>正在装载这一关的任务道具...</p></main>;
   }
 
-  const currentLevel = level;
   const allStepsCompleted = currentLevel.steps.every((step) => stepProgress[step.id]?.completed);
-  const subjectCode = subjectTitleToCode[currentLevel.subjectTitle];
   const backTarget = subjectCode ? `/subjects/${subjectCode}` : '/';
   const backLabel = subjectCode ? `返回${currentLevel.subjectTitle}` : '返回首页';
 
   function getStepConfig(stepId: string): StepActivityConfig | undefined {
-    return levelActivityConfigs[currentLevel.code]?.[stepId];
+    return levelActivityConfigs[currentLevel!.code]?.[stepId];
+  }
+
+  function playNarration(text: string, lang: string) {
+    const result = speakText(text, lang, audioSpeedMode);
+    setAudioTeacherLabel(result.voiceLabel);
+    return result.played;
   }
 
   function handleAppleCollected(stepId: string, appleId: number, targetCount: number) {
@@ -734,7 +887,7 @@ export function LevelPlayer() {
 
   function handlePlayAudio(stepId: string, config: Extract<StepActivityConfig, { kind: 'listen-choice' }>) {
     const audioText = config.audioText ?? config.audioPrompt;
-    speakText(audioText, config.lang ?? 'zh-CN');
+    const played = playNarration(audioText, config.lang ?? 'zh-CN');
 
     setStepProgress((current) => ({
       ...current,
@@ -742,7 +895,11 @@ export function LevelPlayer() {
         ...current[stepId],
         completed: current[stepId]?.completed ?? false,
         audioPlayed: true,
-        feedback: `老师正在读：${audioText}`
+        feedback: played
+          ? audioSpeedMode === 'slow'
+            ? `老师正在用慢速模式读：${audioText}`
+            : `老师正在读：${audioText}`
+          : '这个设备暂时不能播放语音，先看文字提示继续闯关吧'
       }
     }));
   }
@@ -770,7 +927,7 @@ export function LevelPlayer() {
     letter: Extract<StepActivityConfig, { kind: 'follow-read' }>['letters'][number],
     totalCount: number
   ) {
-    speakText(letter.audioText ?? letter.label, 'en-US');
+    const played = playNarration(letter.audioText ?? letter.label, 'en-US');
     setStepProgress((current) => {
       const completedItems = current[stepId]?.completedItems ?? [];
       const nextCompletedItems = completedItems.includes(letter.label) ? completedItems : [...completedItems, letter.label];
@@ -784,14 +941,16 @@ export function LevelPlayer() {
           feedback:
             nextCompletedItems.length === totalCount
               ? `已跟读 ${totalCount} / ${totalCount} 个字母`
-              : `${letter.label} ${letter.phonetic} · ${letter.exampleWord}`
+              : played
+                ? `${letter.label} ${letter.phonetic} · ${letter.exampleWord}`
+                : `先看口型和提示词：${letter.label} ${letter.phonetic} · ${letter.exampleWord}`
         }
       };
     });
   }
 
   function handleWordSelected(stepId: string, pair: Extract<StepActivityConfig, { kind: 'word-match' }>['pairs'][number]) {
-    speakText(pair.word, 'en-US');
+    playNarration(pair.word, 'en-US');
     setStepProgress((current) => ({
       ...current,
       [stepId]: {
@@ -822,7 +981,7 @@ export function LevelPlayer() {
       const nextCompletedItems = isCorrect ? [...completedItems, pair.word] : completedItems;
 
       if (isCorrect) {
-        speakText(pair.word, 'en-US');
+        playNarration(pair.word, 'en-US');
       }
 
       return {
@@ -893,7 +1052,7 @@ export function LevelPlayer() {
     totalCount: number,
     successFeedback: string
   ) {
-    speakText(sentence.audioText ?? sentence.text, 'en-US');
+    playNarration(sentence.audioText ?? sentence.text, 'en-US');
 
     setStepProgress((current) => {
       const completedItems = current[stepId]?.completedItems ?? [];
@@ -912,6 +1071,26 @@ export function LevelPlayer() {
         }
       };
     });
+  }
+
+  function handleReadStoryAll(
+    stepId: string,
+    config: Extract<StepActivityConfig, { kind: 'sentence-read' }>
+  ) {
+    const played = playNarration(
+      config.sentences.map((sentence) => sentence.audioText ?? sentence.text).join(' ... '),
+      'en-US'
+    );
+
+    setStepProgress((current) => ({
+      ...current,
+      [stepId]: {
+        ...current[stepId],
+        completed: current[stepId]?.completed ?? false,
+        completedItems: current[stepId]?.completedItems ?? [],
+        feedback: played ? '老师先把整段小绘本读了一遍，轮到你来一句一句跟读啦' : '当前设备不能整段领读，可以继续点句子卡练习'
+      }
+    }));
   }
 
   function handleStoryChoiceSelected(
@@ -937,13 +1116,17 @@ export function LevelPlayer() {
       return;
     }
 
-    const response = await completeLevel(currentLevel.code);
-    setReward(response.reward);
+    const response = await completeLevel(currentLevel!.code, {
+      correctCount: currentLevel!.steps.length,
+      wrongCount: 0,
+      durationSeconds: Math.max(30, Math.round((Date.now() - levelStartedAt) / 1000))
+    });
+    setCompletionResult(response);
   }
 
   return (
     <main className="screen screen-level">
-      <PageBackLink label={backLabel} to={backTarget} />
+      <PageTopBar backLabel={backLabel} backTo={backTarget} />
 
       <section className="level-card">
         <div className="level-heading">
@@ -1218,6 +1401,23 @@ export function LevelPlayer() {
                 {config?.kind === 'listen-choice' ? (
                   <div className="play-surface">
                     <p className="play-instruction">{config.instruction}</p>
+                    <div className="audio-mode-row">
+                      <button
+                        className={`audio-mode-chip ${audioSpeedMode === 'normal' ? 'audio-mode-chip-active' : ''}`}
+                        onClick={() => setAudioSpeedMode('normal')}
+                        type="button"
+                      >
+                        标准速度
+                      </button>
+                      <button
+                        className={`audio-mode-chip ${audioSpeedMode === 'slow' ? 'audio-mode-chip-active' : ''}`}
+                        onClick={() => setAudioSpeedMode('slow')}
+                        type="button"
+                      >
+                        慢速跟读
+                      </button>
+                    </div>
+                    <p className="audio-helper-text">当前老师音色：{audioTeacherLabel}</p>
                     <button className="audio-button" onClick={() => handlePlayAudio(step.id, config)} type="button">
                       {config.playButtonLabel ?? '播放拼音读音'}
                     </button>
@@ -1245,6 +1445,23 @@ export function LevelPlayer() {
                 {config?.kind === 'follow-read' ? (
                   <div className="play-surface">
                     <p className="play-instruction">{config.instruction}</p>
+                    <div className="audio-mode-row">
+                      <button
+                        className={`audio-mode-chip ${audioSpeedMode === 'normal' ? 'audio-mode-chip-active' : ''}`}
+                        onClick={() => setAudioSpeedMode('normal')}
+                        type="button"
+                      >
+                        标准速度
+                      </button>
+                      <button
+                        className={`audio-mode-chip ${audioSpeedMode === 'slow' ? 'audio-mode-chip-active' : ''}`}
+                        onClick={() => setAudioSpeedMode('slow')}
+                        type="button"
+                      >
+                        慢速跟读
+                      </button>
+                    </div>
+                    <p className="audio-helper-text">当前老师音色：{audioTeacherLabel}</p>
                     <div className="letter-row">
                       {config.letters.map((letter) => {
                         const isRead = progress?.completedItems?.includes(letter.label) ?? false;
@@ -1343,6 +1560,26 @@ export function LevelPlayer() {
                 {config?.kind === 'sentence-read' ? (
                   <div className="play-surface">
                     <p className="play-instruction">{config.instruction}</p>
+                    <div className="audio-mode-row">
+                      <button
+                        className={`audio-mode-chip ${audioSpeedMode === 'normal' ? 'audio-mode-chip-active' : ''}`}
+                        onClick={() => setAudioSpeedMode('normal')}
+                        type="button"
+                      >
+                        标准速度
+                      </button>
+                      <button
+                        className={`audio-mode-chip ${audioSpeedMode === 'slow' ? 'audio-mode-chip-active' : ''}`}
+                        onClick={() => setAudioSpeedMode('slow')}
+                        type="button"
+                      >
+                        慢速跟读
+                      </button>
+                    </div>
+                    <p className="audio-helper-text">当前老师音色：{audioTeacherLabel}</p>
+                    <button className="audio-button audio-button-secondary" onClick={() => handleReadStoryAll(step.id, config)} type="button">
+                      老师先整段领读
+                    </button>
                     <div className="story-card-row">
                       {config.sentences.map((sentence) => {
                         const isRead = progress?.completedItems?.includes(sentence.text) ?? false;
@@ -1422,11 +1659,52 @@ export function LevelPlayer() {
         </button>
       </section>
 
-      {reward ? (
-        <section className="reward-card" aria-live="polite">
+      {completionResult && reward ? (
+        <section className="reward-card reward-card-celebration" aria-live="polite">
+          <div aria-label="通关庆祝动画" className="celebration-burst">
+            {celebrationStars.map((star, index) => (
+              <span
+                aria-label="庆祝星星"
+                className={`celebration-star celebration-star-${index + 1}`}
+                key={`${star}-${index}`}
+              >
+                {star}
+              </span>
+            ))}
+          </div>
           <p className="eyebrow">奖励已送达</p>
-          <h2>获得 {reward.stars} 颗星星</h2>
-          <p>{reward.badgeName}</p>
+          <h2>{completionResult.isFirstCompletion ? `获得 ${reward.stars} 颗星星` : '复习完成啦'}</h2>
+          {nextLevelCode ? <p className="reward-unlock-pill">下一关已解锁</p> : null}
+          <p className="reward-card-copy">
+            {completionResult.isFirstCompletion ? '太棒啦，继续去点亮下一关' : '这次是复习练习，星星奖励已在首通时发放'}
+          </p>
+          {!completionResult.isFirstCompletion ? (
+            <p className="reward-total-stars">累计星星 {completionResult.totalStars} 颗</p>
+          ) : null}
+          <p className="reward-badge-pill">{reward.badgeName}</p>
+          {completionResult.newlyUnlockedBadges.length > 0 ? (
+            <div className="reward-achievement-stack">
+              <p className="eyebrow">新成就解锁</p>
+              {completionResult.newlyUnlockedBadges.map((badge) => (
+                <article className="reward-achievement-card" key={badge.code}>
+                  <strong>{badge.title}</strong>
+                  <p>{badge.description}</p>
+                </article>
+              ))}
+            </div>
+          ) : null}
+          <div className="reward-card-actions">
+            {nextLevelCode ? (
+              <Link className="cta-button reward-next-button" to={`/levels/${nextLevelCode}`}>
+                前往下一关
+                {showNextLevelNudge ? <span aria-label="下一关提示箭头" className="reward-next-arrow">→</span> : null}
+              </Link>
+            ) : (
+              <Link className="cta-button reward-next-button" to={backTarget}>
+                返回{currentLevel.subjectTitle}
+              </Link>
+            )}
+          </div>
         </section>
       ) : null}
     </main>

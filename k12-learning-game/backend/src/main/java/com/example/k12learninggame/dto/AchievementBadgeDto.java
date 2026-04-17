@@ -5,6 +5,10 @@ public record AchievementBadgeDto(
         String title,
         String description,
         String progressText,
-        boolean unlocked
+        boolean unlocked,
+        String category,
+        String rarityLabel,
+        int progressPercent,
+        String encouragement
 ) {
 }

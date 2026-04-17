@@ -1,4 +1,4 @@
 package com.example.k12learninggame.dto;
 
-public record ParentSettingsDto(boolean leaderboardEnabled, int dailyStudyMinutes) {
+public record ParentSettingsDto(boolean leaderboardEnabled, int dailyStudyMinutes, boolean reminderEnabled) {
 }

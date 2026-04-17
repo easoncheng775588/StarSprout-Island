@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getLeaderboard, type LeaderboardData } from '../api';
-import { PageBackLink } from '../components/PageBackLink';
+import { PageTopBar } from '../components/PageTopBar';
+import { useSession } from '../session';
 
 interface LeaderboardProps {
   data?: LeaderboardData;
@@ -9,6 +10,7 @@ interface LeaderboardProps {
 export function Leaderboard({ data }: LeaderboardProps) {
   const [board, setBoard] = useState<LeaderboardData | null>(data ?? null);
   const [selectedBoardType, setSelectedBoardType] = useState(data?.boardType ?? 'weekly_star');
+  const { session } = useSession();
 
   useEffect(() => {
     if (data) {
@@ -18,7 +20,7 @@ export function Leaderboard({ data }: LeaderboardProps) {
     }
 
     getLeaderboard(selectedBoardType).then(setBoard);
-  }, [data, selectedBoardType]);
+  }, [data, selectedBoardType, session?.childProfileId]);
 
   if (!board) {
     return <main className="screen"><p>正在整理本周排行榜...</p></main>;
@@ -26,7 +28,7 @@ export function Leaderboard({ data }: LeaderboardProps) {
 
   return (
     <main className="screen screen-leaderboard">
-      <PageBackLink label="返回首页" to="/" />
+      <PageTopBar backLabel="返回首页" backTo="/" />
 
       <section className="map-header">
         <p className="eyebrow">排行榜</p>
@@ -61,10 +63,28 @@ export function Leaderboard({ data }: LeaderboardProps) {
       <section className="summary-grid">
         <article className="summary-card">
           <span className="node-step">我的排名</span>
-          <h2>第 {board.myRank.rank} 名</h2>
+          <h2>{board.participationEnabled ? `第 ${board.myRank.rank} 名` : '榜单展示已暂停'}</h2>
           <p>{board.myRank.nickname}，{board.myRank.trendLabel}</p>
         </article>
+        <article className="summary-card">
+          <span className="node-step">结算说明</span>
+          <h2>{board.settlementWindowLabel}</h2>
+          <p>{board.updatedAtLabel}</p>
+        </article>
+        <article className="summary-card">
+          <span className="node-step">下一目标</span>
+          <h2>继续往前冲</h2>
+          <p>{board.participationEnabled ? board.nextTargetText : '可在家长中心重新开启参与'}</p>
+        </article>
       </section>
+
+      {!board.participationEnabled ? (
+        <section className="panel-card">
+          <p className="eyebrow">当前状态</p>
+          <h2>未参与排行榜</h2>
+          <p>{board.nextTargetText}</p>
+        </section>
+      ) : null}
 
       <section className="dashboard-grid">
         <article className="panel-card">
@@ -73,7 +93,7 @@ export function Leaderboard({ data }: LeaderboardProps) {
             {board.topPlayers.map((player) => (
               <div className="rank-card" key={`${player.rank}-${player.nickname}`}>
                 <strong>#{player.rank} {player.nickname}</strong>
-                <p>{player.stars} 颗星星</p>
+                <p>{player.stars} {board.metricUnit}</p>
                 <span>{player.trendLabel}</span>
               </div>
             ))}
@@ -86,7 +106,7 @@ export function Leaderboard({ data }: LeaderboardProps) {
             {board.nearbyPlayers.map((player) => (
               <div className={`rank-card ${player.nickname === board.myRank.nickname ? 'rank-card-self' : ''}`} key={`${player.rank}-${player.nickname}`}>
                 <strong>#{player.rank} {player.nickname}</strong>
-                <p>{player.stars} 颗星星</p>
+                <p>{player.stars} {board.metricUnit}</p>
                 <span>{player.trendLabel}</span>
               </div>
             ))}

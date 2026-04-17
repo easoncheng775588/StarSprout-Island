@@ -9,6 +9,8 @@ export const homeOverview: HomeOverview = {
   },
   featuredWorld: '启航岛',
   todayTask: '完成数字小探险，点亮今天的第一颗星。',
+  nextLevelCode: 'math-numbers-001',
+  nextLevelTitle: '认识 0-10',
   achievementPreview: {
     unlockedCount: 6,
     totalCount: 10,
@@ -24,49 +26,108 @@ export const homeOverview: HomeOverview = {
 export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
   math: {
     subjectCode: 'math',
-    chapterTitle: '数字启蒙站',
-    chapterSubtitle: '从看见数量到会认数字，完成第一段数学冒险。',
-    levels: [
-      { code: 'math-numbers-001', title: '认识 0-10', status: 'recommended' },
-      { code: 'math-numbers-002', title: '认识 11-20', status: 'available' },
-      { code: 'math-addition-001', title: '10 以内加法', status: 'available' },
-      { code: 'math-addition-002', title: '20 以内加法', status: 'available' },
-      { code: 'math-thinking-001', title: '规律小火车', status: 'available' },
-      { code: 'math-thinking-002', title: '图形规律屋', status: 'available' },
-      { code: 'math-subtraction-001', title: '水果减减看', status: 'available' },
-      { code: 'math-subtraction-002', title: '20 以内减法', status: 'available' },
-      { code: 'math-compare-001', title: '谁更多挑战', status: 'available' },
-      { code: 'math-equation-001', title: '图像列式屋', status: 'available' },
-      { code: 'math-wordproblem-001', title: '故事应用题', status: 'available' }
+    subjectTitle: '数学岛',
+    chapters: [
+      {
+        code: 'math-numbers',
+        title: '数字启蒙站',
+        subtitle: '从看见数量到会认数字，完成第一段数学冒险。',
+        levels: [
+          { code: 'math-numbers-001', title: '认识 0-10', status: 'recommended' },
+          { code: 'math-numbers-002', title: '认识 11-20', status: 'available' },
+          { code: 'math-addition-001', title: '10 以内加法', status: 'available' },
+          { code: 'math-addition-002', title: '20 以内加法', status: 'available' },
+          { code: 'math-thinking-001', title: '规律小火车', status: 'available' },
+          { code: 'math-thinking-002', title: '图形规律屋', status: 'available' },
+          { code: 'math-subtraction-001', title: '水果减减看', status: 'available' },
+          { code: 'math-subtraction-002', title: '20 以内减法', status: 'available' },
+          { code: 'math-compare-001', title: '谁更多挑战', status: 'available' },
+          { code: 'math-equation-001', title: '图像列式屋', status: 'available' },
+          { code: 'math-wordproblem-001', title: '故事应用题', status: 'available' }
+        ]
+      }
     ]
   },
   chinese: {
     subjectCode: 'chinese',
-    chapterTitle: '汉字花园',
-    chapterSubtitle: '跟着笔画和图像认识生活里的常见字。',
-    levels: [
-      { code: 'chinese-characters-001', title: '太阳和月亮', status: 'recommended' },
-      { code: 'chinese-characters-002', title: '生活常见字', status: 'available' },
-      { code: 'chinese-pinyin-001', title: '拼音泡泡', status: 'available' },
-      { code: 'chinese-pinyin-002', title: '拼读小火车', status: 'available' },
-      { code: 'chinese-strokes-001', title: '笔顺小画家', status: 'available' },
-      { code: 'chinese-strokes-002', title: '日字描描乐', status: 'available' }
+    subjectTitle: '语文岛',
+    chapters: [
+      {
+        code: 'chinese-characters',
+        title: '汉字花园',
+        subtitle: '跟着图像和生活场景认识常见字。',
+        levels: [
+          { code: 'chinese-characters-001', title: '太阳和月亮', status: 'recommended' },
+          { code: 'chinese-characters-002', title: '生活常见字', status: 'available' },
+          { code: 'chinese-characters-003', title: '身体小伙伴', status: 'available' }
+        ]
+      },
+      {
+        code: 'chinese-pinyin',
+        title: '拼音乐园',
+        subtitle: '听声音、认拼读，把拼音读得更稳。',
+        levels: [
+          { code: 'chinese-pinyin-001', title: '拼音泡泡', status: 'available' },
+          { code: 'chinese-pinyin-002', title: '拼读小火车', status: 'available' },
+          { code: 'chinese-pinyin-003', title: '声母找朋友', status: 'available' }
+        ]
+      },
+      {
+        code: 'chinese-writing',
+        title: '笔画写字屋',
+        subtitle: '跟着笔顺把字写整齐，越写越有信心。',
+        levels: [
+          { code: 'chinese-strokes-001', title: '笔顺小画家', status: 'available' },
+          { code: 'chinese-strokes-002', title: '日字描描乐', status: 'available' },
+          { code: 'chinese-strokes-003', title: '人字起步', status: 'available' }
+        ]
+      }
     ]
   },
   english: {
     subjectCode: 'english',
-    chapterTitle: '字母海湾',
-    chapterSubtitle: '在轻快节奏里认识字母和单词的声音。',
-    levels: [
-      { code: 'english-letters-001', title: '字母 A 到 F', status: 'recommended' },
-      { code: 'english-letters-002', title: '字母 G 到 L', status: 'available' },
-      { code: 'english-letters-003', title: '字母 M 到 R', status: 'available' },
-      { code: 'english-letters-004', title: '字母 S 到 Z', status: 'available' },
-      { code: 'english-phonics-001', title: '字母藏在单词里', status: 'available' },
-      { code: 'english-words-001', title: '日常单词配对', status: 'available' },
-      { code: 'english-words-002', title: '生活单词跟读', status: 'available' },
-      { code: 'english-story-001', title: '海湾小绘本', status: 'available' },
-      { code: 'english-story-002', title: '晨光小绘本', status: 'available' }
+    subjectTitle: '英语岛',
+    chapters: [
+      {
+        code: 'english-letters',
+        title: '字母海湾',
+        subtitle: '把 26 个字母分段点亮，读出熟悉的节奏。',
+        levels: [
+          { code: 'english-letters-001', title: '字母 A 到 F', status: 'recommended' },
+          { code: 'english-letters-002', title: '字母 G 到 L', status: 'available' },
+          { code: 'english-letters-003', title: '字母 M 到 R', status: 'available' },
+          { code: 'english-letters-004', title: '字母 S 到 Z', status: 'available' }
+        ]
+      },
+      {
+        code: 'english-phonics',
+        title: '拼读码头',
+        subtitle: '听字母和开头音，把声音和单词连起来。',
+        levels: [
+          { code: 'english-phonics-001', title: '字母藏在单词里', status: 'available' },
+          { code: 'english-phonics-002', title: '开头声音侦探', status: 'available' }
+        ]
+      },
+      {
+        code: 'english-words',
+        title: '单词沙滩',
+        subtitle: '把生活常见单词和图片配成一对。',
+        levels: [
+          { code: 'english-words-001', title: '日常单词配对', status: 'available' },
+          { code: 'english-words-002', title: '生活单词跟读', status: 'available' },
+          { code: 'english-words-003', title: '颜色单词沙堡', status: 'available' }
+        ]
+      },
+      {
+        code: 'english-story',
+        title: '绘本港湾',
+        subtitle: '跟着图画和句子，把简单绘本一页页读下来。',
+        levels: [
+          { code: 'english-story-001', title: '海湾小绘本', status: 'available' },
+          { code: 'english-story-002', title: '晨光小绘本', status: 'available' },
+          { code: 'english-story-003', title: '晚安小绘本', status: 'available' }
+        ]
+      }
     ]
   }
 };
@@ -243,6 +304,19 @@ export const levelDetails: Record<string, LevelDetail> = {
       badgeName: '生活识字员'
     }
   },
+  'chinese-characters-003': {
+    code: 'chinese-characters-003',
+    title: '身体小伙伴',
+    subjectTitle: '语文岛',
+    description: '把耳朵、眼睛和小手这些身体常见字认出来。',
+    steps: [
+      { id: 'step-1', type: 'tap-choice', prompt: '找到表示“耳朵”的汉字' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '身体识字员'
+    }
+  },
   'chinese-pinyin-001': {
     code: 'chinese-pinyin-001',
     title: '拼音泡泡大作战',
@@ -269,6 +343,19 @@ export const levelDetails: Record<string, LevelDetail> = {
       badgeName: '拼读小火车长'
     }
   },
+  'chinese-pinyin-003': {
+    code: 'chinese-pinyin-003',
+    title: '声母找朋友',
+    subjectTitle: '语文岛',
+    description: '听一听声母的声音，把一样的发音找出来。',
+    steps: [
+      { id: 'step-1', type: 'listen-choice', prompt: '听老师读，选出正确的声母' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '声母小侦探'
+    }
+  },
   'chinese-strokes-001': {
     code: 'chinese-strokes-001',
     title: '笔顺小画家',
@@ -293,6 +380,19 @@ export const levelDetails: Record<string, LevelDetail> = {
     reward: {
       stars: 2,
       badgeName: '小小写字家'
+    }
+  },
+  'chinese-strokes-003': {
+    code: 'chinese-strokes-003',
+    title: '人字起步',
+    subjectTitle: '语文岛',
+    description: '从简单的两笔开始，把“人”字写稳写好。',
+    steps: [
+      { id: 'step-1', type: 'stroke-order', prompt: '按笔顺点出“人”的两笔' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '起步写字星'
     }
   },
   'english-letters-001': {
@@ -360,6 +460,19 @@ export const levelDetails: Record<string, LevelDetail> = {
       badgeName: '拼读小船员'
     }
   },
+  'english-phonics-002': {
+    code: 'english-phonics-002',
+    title: '开头声音侦探',
+    subjectTitle: '英语岛',
+    description: '听一听单词开头的声音，再找出发音一样的单词。',
+    steps: [
+      { id: 'step-1', type: 'listen-choice', prompt: '听一听 /s/ 的声音，找到正确单词' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '声音侦探员'
+    }
+  },
   'english-words-001': {
     code: 'english-words-001',
     title: '单词海风配对赛',
@@ -386,6 +499,19 @@ export const levelDetails: Record<string, LevelDetail> = {
       badgeName: '单词跟读手'
     }
   },
+  'english-words-003': {
+    code: 'english-words-003',
+    title: '颜色单词沙堡',
+    subjectTitle: '英语岛',
+    description: '把颜色单词和对应的彩色旗子配成一对。',
+    steps: [
+      { id: 'step-1', type: 'drag-match', prompt: '把 red、blue、green 和颜色旗子连起来' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '颜色小沙堡师'
+    }
+  },
   'english-story-001': {
     code: 'english-story-001',
     title: '海湾小绘本',
@@ -410,6 +536,19 @@ export const levelDetails: Record<string, LevelDetail> = {
     reward: {
       stars: 2,
       badgeName: '晨光朗读员'
+    }
+  },
+  'english-story-003': {
+    code: 'english-story-003',
+    title: '晚安小绘本',
+    subjectTitle: '英语岛',
+    description: '跟着夜晚场景读句子，把晚安小绘本完整读下来。',
+    steps: [
+      { id: 'step-1', type: 'sentence-read', prompt: '按顺序读完晚安小绘本' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '晚安朗读星'
     }
   }
 };

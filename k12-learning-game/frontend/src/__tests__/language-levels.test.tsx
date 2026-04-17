@@ -36,6 +36,16 @@ function mockLevelResponse(levelCode: string) {
       ],
       reward: { stars: 2, badgeName: '拼读小火车长' }
     },
+    'chinese-pinyin-003': {
+      code: 'chinese-pinyin-003',
+      title: '声母找朋友',
+      subjectTitle: '语文岛',
+      description: '听一听声母发音，把一样的声音找出来。',
+      steps: [
+        { id: 'step-1', type: 'listen-choice', prompt: '听老师读，选出正确的声母' }
+      ],
+      reward: { stars: 2, badgeName: '声母小侦探' }
+    },
     'english-letters-001': {
       code: 'english-letters-001',
       title: '字母小船出发',
@@ -55,6 +65,16 @@ function mockLevelResponse(levelCode: string) {
         { id: 'step-1', type: 'listen-choice', prompt: '听一听 /b/ 的声音，找到正确单词' }
       ],
       reward: { stars: 2, badgeName: '拼读小船员' }
+    },
+    'english-phonics-002': {
+      code: 'english-phonics-002',
+      title: '开头声音侦探',
+      subjectTitle: '英语岛',
+      description: '听单词开头的声音，再找出同样声音的图片。',
+      steps: [
+        { id: 'step-1', type: 'listen-choice', prompt: '听一听 /s/ 的声音，找到正确单词' }
+      ],
+      reward: { stars: 2, badgeName: '声音侦探员' }
     },
     'english-words-001': {
       code: 'english-words-001',
@@ -106,8 +126,10 @@ describe('Language level interactions', () => {
           'chinese-characters-001',
           'chinese-pinyin-001',
           'chinese-pinyin-002',
+          'chinese-pinyin-003',
           'english-letters-001',
           'english-phonics-001',
+          'english-phonics-002',
           'english-words-001'
         ]) {
           if (url.endsWith(`/api/levels/${levelCode}`) && !init?.method) {
@@ -176,15 +198,18 @@ describe('Language level interactions', () => {
     );
 
     expect(await screen.findByRole('button', { name: '播放拼音读音' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '慢速跟读' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '拼音泡泡 ma' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '拼音泡泡 ba' })).toBeInTheDocument();
 
+    await user.click(screen.getByRole('button', { name: '慢速跟读' }));
     await user.click(screen.getByRole('button', { name: '播放拼音读音' }));
-    expect(screen.getByText('老师正在读：妈')).toBeInTheDocument();
+    expect(screen.getByText('老师正在用慢速模式读：妈')).toBeInTheDocument();
     expect(speakMock).toHaveBeenCalledTimes(1);
     expect(speakMock.mock.calls[0]?.[0]).toMatchObject({
       text: '妈',
       lang: 'zh-CN',
+      rate: 0.72,
       voice: {
         name: 'Tingting',
         lang: 'zh-CN'
@@ -217,6 +242,24 @@ describe('Language level interactions', () => {
 
     await user.click(screen.getByRole('button', { name: '拼读火车 gua' }));
     expect(screen.getByText('拼对了，g-u-a 连起来就读 gua')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
+  });
+
+  test('renders chinese initial consonant listening choice', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/chinese-pinyin-003']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole('button', { name: '播放拼音读音' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '播放拼音读音' }));
+    expect(screen.getByText('老师正在读：sh')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '拼音泡泡 sh' }));
+    expect(screen.getByText('答对了，声母 sh 读起来像小狮子轻轻呼气')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
   });
 
@@ -311,6 +354,24 @@ describe('Language level interactions', () => {
 
     await user.click(screen.getByRole('button', { name: '发音单词 ball' }));
     expect(screen.getByText('答对了，ball 开头就是 /b/ 的声音')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
+  });
+
+  test('renders expanded english phonics detective level', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/english-phonics-002']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole('button', { name: '播放字母发音' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '播放字母发音' }));
+    expect(screen.getByText('老师正在读：sss')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '发音单词 sun' }));
+    expect(screen.getByText('答对了，sun 开头就是 /s/ 的声音')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
   });
 });

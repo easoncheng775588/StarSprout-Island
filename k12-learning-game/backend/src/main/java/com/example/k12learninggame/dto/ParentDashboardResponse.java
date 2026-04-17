@@ -10,7 +10,10 @@ public record ParentDashboardResponse(
         List<WeakPointDto> weakPoints,
         AchievementSummaryDto achievementSummary,
         GoalProgressDto goalProgress,
-        List<String> recommendedActions,
-        ParentSettingsDto settings
+        List<RecommendedActionDto> recommendedActions,
+        ParentSettingsDto settings,
+        LearningVitalsDto learningVitals,
+        List<ParentSubjectInsightDto> subjectInsights,
+        List<RecentActivityDto> recentActivities
 ) {
 }

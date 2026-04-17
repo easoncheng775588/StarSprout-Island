@@ -5,6 +5,10 @@ import java.util.List;
 public record HomeOverviewResponse(
         ChildProfileDto child,
         List<SubjectCardDto> subjects,
-        AchievementPreviewDto achievementPreview
+        AchievementPreviewDto achievementPreview,
+        String featuredWorld,
+        String todayTask,
+        String nextLevelCode,
+        String nextLevelTitle
 ) {
 }

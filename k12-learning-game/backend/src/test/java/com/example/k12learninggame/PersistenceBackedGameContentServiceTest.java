@@ -1,6 +1,7 @@
 package com.example.k12learninggame;
 
 import com.example.k12learninggame.domain.LevelCompletionEntity;
+import com.example.k12learninggame.dto.AuthLoginRequest;
 import com.example.k12learninggame.dto.CompleteLevelRequest;
 import com.example.k12learninggame.dto.HomeOverviewResponse;
 import com.example.k12learninggame.dto.SubjectCardDto;
@@ -11,6 +12,7 @@ import com.example.k12learninggame.service.GameContentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,7 +41,7 @@ class PersistenceBackedGameContentServiceTest {
         mathSubject.setTitle("数学冒险岛");
         subjectRepository.save(mathSubject);
 
-        HomeOverviewResponse response = gameContentService.getHomeOverview();
+        HomeOverviewResponse response = gameContentService.getHomeOverview(1L);
 
         assertThat(response.child().nickname()).isEqualTo("小勇士");
         assertThat(response.subjects())
@@ -49,16 +51,106 @@ class PersistenceBackedGameContentServiceTest {
 
     @Test
     void shouldPersistLevelCompletionRecords() {
+        long initialCount = levelCompletionRepository.count();
         gameContentService.completeLevel("math-numbers-001", new CompleteLevelRequest(1L, 2, 0, 74));
 
-        assertThat(levelCompletionRepository.count()).isEqualTo(1);
+        assertThat(levelCompletionRepository.count()).isEqualTo(initialCount + 1);
 
-        LevelCompletionEntity completion = levelCompletionRepository.findAll().get(0);
+        LevelCompletionEntity completion = levelCompletionRepository.findAll().get(levelCompletionRepository.findAll().size() - 1);
         assertThat(completion.getLevel().getCode()).isEqualTo("math-numbers-001");
         assertThat(completion.getChildProfile().getId()).isEqualTo(1L);
         assertThat(completion.getCorrectCount()).isEqualTo(2);
         assertThat(completion.getWrongCount()).isEqualTo(0);
         assertThat(completion.getDurationSeconds()).isEqualTo(74);
         assertThat(completion.getResultMessage()).isEqualTo("perfect");
+    }
+
+    @Test
+    @Transactional
+    void shouldDifferentiateFirstCompletionFromRepeatPracticeSettlement() {
+        int initialStars = childProfileRepository.findById(1L).orElseThrow().getTotalStars();
+
+        var firstCompletion = gameContentService.completeLevel("math-addition-001", new CompleteLevelRequest(1L, 1, 0, 66));
+
+        assertThat(firstCompletion.isFirstCompletion()).isTrue();
+        assertThat(firstCompletion.effectiveStars()).isEqualTo(2);
+        assertThat(firstCompletion.totalStars()).isEqualTo(initialStars + 2);
+
+        var repeatedCompletion = gameContentService.completeLevel("math-addition-001", new CompleteLevelRequest(1L, 1, 0, 61));
+
+        assertThat(repeatedCompletion.isFirstCompletion()).isFalse();
+        assertThat(repeatedCompletion.effectiveStars()).isZero();
+        assertThat(repeatedCompletion.totalStars()).isEqualTo(initialStars + 2);
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnNewlyUnlockedAchievementsOnCompletion() {
+        var completion = gameContentService.completeLevel("math-addition-001", new CompleteLevelRequest(1L, 1, 0, 66));
+
+        assertThat(completion.newlyUnlockedBadges())
+                .extracting(badge -> badge.title())
+                .contains("本周小冠军");
+    }
+
+    @Test
+    @Transactional
+    void shouldComputeDynamicStreakForLeaderboardAndSessionProfiles() {
+        var leaderboard = gameContentService.getLeaderboard("streak_master", 1L);
+        var session = gameContentService.login(new AuthLoginRequest("13800000001", "demo1234"));
+        var achievements = gameContentService.getAchievements(1L);
+
+        assertThat(leaderboard.myRank().rank()).isEqualTo(3);
+        assertThat(leaderboard.myRank().stars()).isEqualTo(3);
+        assertThat(leaderboard.myRank().trendLabel()).isEqualTo("已经连续学习 3 天");
+        assertThat(leaderboard.topPlayers())
+                .extracting(item -> item.nickname(), item -> item.stars())
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple("小火箭", 6),
+                        org.assertj.core.groups.Tuple.tuple("小海豚", 6),
+                        org.assertj.core.groups.Tuple.tuple("小星星", 3)
+                );
+        assertThat(session.children())
+                .extracting(child -> child.nickname(), child -> child.streakDays())
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple("小星星", 3),
+                        org.assertj.core.groups.Tuple.tuple("小火箭", 6),
+                        org.assertj.core.groups.Tuple.tuple("小海豚", 6)
+                );
+        assertThat(achievements.inProgressBadges())
+                .filteredOn(badge -> badge.code().equals("steady_streak"))
+                .singleElement()
+                .satisfies(badge -> {
+                    assertThat(badge.progressText()).isEqualTo("3 / 10");
+                    assertThat(badge.encouragement()).contains("7");
+                });
+    }
+
+    @Test
+    @Transactional
+    void shouldSettleWeeklyBoardsUsingOnlyEffectiveCompletions() {
+        var initialWeeklyBoard = gameContentService.getLeaderboard("weekly_star", 1L);
+        var initialChallengeBoard = gameContentService.getLeaderboard("challenge_hero", 1L);
+
+        gameContentService.completeLevel("math-addition-001", new CompleteLevelRequest(1L, 1, 0, 66));
+
+        var boardAfterFirstCompletion = gameContentService.getLeaderboard("weekly_star", 1L);
+        var challengeAfterFirstCompletion = gameContentService.getLeaderboard("challenge_hero", 1L);
+        var achievementsAfterFirstCompletion = gameContentService.getAchievements(1L);
+
+        gameContentService.completeLevel("math-addition-001", new CompleteLevelRequest(1L, 1, 0, 61));
+
+        var boardAfterRepeatCompletion = gameContentService.getLeaderboard("weekly_star", 1L);
+        var challengeAfterRepeatCompletion = gameContentService.getLeaderboard("challenge_hero", 1L);
+
+        assertThat(initialWeeklyBoard.myRank().stars()).isEqualTo(9);
+        assertThat(initialChallengeBoard.myRank().stars()).isEqualTo(5);
+        assertThat(boardAfterFirstCompletion.myRank().stars()).isEqualTo(11);
+        assertThat(challengeAfterFirstCompletion.myRank().stars()).isEqualTo(6);
+        assertThat(boardAfterRepeatCompletion.myRank().stars()).isEqualTo(11);
+        assertThat(challengeAfterRepeatCompletion.myRank().stars()).isEqualTo(6);
+        assertThat(achievementsAfterFirstCompletion.unlockedBadges())
+                .extracting(badge -> badge.code())
+                .contains("weekly_champion");
     }
 }

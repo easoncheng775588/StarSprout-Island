@@ -5,18 +5,41 @@ import { SubjectMap } from './pages/SubjectMap';
 import { LevelPlayer } from './pages/LevelPlayer';
 import { ParentDashboard } from './pages/ParentDashboard';
 import { AchievementsPage } from './pages/AchievementsPage';
+import { LoginPage } from './pages/LoginPage';
+import { SessionProvider, useSession } from './session';
 import './styles.css';
+
+function ProtectedRoute({ children }: { children: JSX.Element }) {
+  const { isAuthenticated } = useSession();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+function AppRoutes() {
+  const { isAuthenticated } = useSession();
+
+  return (
+    <Routes>
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} />
+      <Route path="/" element={<ProtectedRoute><HomeWorld /></ProtectedRoute>} />
+      <Route path="/subjects/:subjectCode" element={<ProtectedRoute><SubjectMap /></ProtectedRoute>} />
+      <Route path="/levels/:levelCode" element={<ProtectedRoute><LevelPlayer /></ProtectedRoute>} />
+      <Route path="/parent" element={<ProtectedRoute><ParentDashboard /></ProtectedRoute>} />
+      <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+      <Route path="/achievements" element={<ProtectedRoute><AchievementsPage /></ProtectedRoute>} />
+      <Route path="*" element={<Navigate to={isAuthenticated ? '/' : '/login'} replace />} />
+    </Routes>
+  );
+}
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomeWorld />} />
-      <Route path="/subjects/:subjectCode" element={<SubjectMap />} />
-      <Route path="/levels/:levelCode" element={<LevelPlayer />} />
-      <Route path="/parent" element={<ParentDashboard />} />
-      <Route path="/leaderboard" element={<Leaderboard />} />
-      <Route path="/achievements" element={<AchievementsPage />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <SessionProvider>
+      <AppRoutes />
+    </SessionProvider>
   );
 }

@@ -16,6 +16,8 @@ export interface HomeOverview {
   };
   featuredWorld: string;
   todayTask: string;
+  nextLevelCode: string | null;
+  nextLevelTitle: string | null;
   achievementPreview: {
     unlockedCount: number;
     totalCount: number;
@@ -27,14 +29,20 @@ export interface HomeOverview {
 export interface LevelSummary {
   code: string;
   title: string;
-  status: 'available' | 'recommended' | 'locked';
+  status: 'available' | 'recommended' | 'locked' | 'completed';
+}
+
+export interface SubjectChapter {
+  code: string;
+  title: string;
+  subtitle: string;
+  levels: LevelSummary[];
 }
 
 export interface SubjectMapData {
   subjectCode: SubjectCode;
-  chapterTitle: string;
-  chapterSubtitle: string;
-  levels: LevelSummary[];
+  subjectTitle: string;
+  chapters: SubjectChapter[];
 }
 
 export interface LevelStep {

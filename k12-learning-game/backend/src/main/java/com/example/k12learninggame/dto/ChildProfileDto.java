@@ -1,4 +1,12 @@
 package com.example.k12learninggame.dto;
 
-public record ChildProfileDto(long id, String nickname, int streakDays, int totalStars, String title) {
+public record ChildProfileDto(
+        long id,
+        String nickname,
+        int streakDays,
+        int totalStars,
+        String title,
+        String stageLabel,
+        String avatarColor
+) {
 }
