@@ -228,6 +228,38 @@ class ApiSmokeTest {
     }
 
     @Test
+    @Transactional
+    void shouldFilterCurriculumByChildStage() throws Exception {
+        mockMvc.perform(patch("/api/parent/children/2")
+                        .header("X-Parent-Account-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nickname": "小火箭",
+                                  "title": "银河探险家",
+                                  "stageLabel": "一年级",
+                                  "avatarColor": "#8ad1ff"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.stageLabel").value("一年级"));
+
+        mockMvc.perform(get("/api/home/overview").header("X-Child-Profile-Id", 2))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nextLevelCode").value("math-grade1-numbers-001"))
+                .andExpect(jsonPath("$.nextLevelTitle").value("认识 100 以内的数"));
+
+        mockMvc.perform(get("/api/subjects/math/map").header("X-Child-Profile-Id", 2))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.chapters[0].code").value("math-grade1-numbers"))
+                .andExpect(jsonPath("$.chapters[0].title").value("百数启航站"))
+                .andExpect(jsonPath("$.chapters[0].levels[0].code").value("math-grade1-numbers-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[0].status").value("recommended"))
+                .andExpect(jsonPath("$.chapters[1].code").value("math-grade1-life"))
+                .andExpect(jsonPath("$.chapters[1].levels[1].code").value("math-grade1-wordproblem-001"));
+    }
+
+    @Test
     void shouldReturnLevelDetails() throws Exception {
         mockMvc.perform(get("/api/levels/math-numbers-001"))
                 .andExpect(status().isOk())

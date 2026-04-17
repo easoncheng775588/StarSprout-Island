@@ -1,0 +1,71 @@
+# Findings
+
+## Environment
+
+- 工作区已有 `.git`，但当前大部分文件均未跟踪
+- 现有 `HR System/` 与本次新项目无直接关系，需避免混改
+- `node` 版本：22.22.1
+- `npm` 版本：11.8.0
+- `java` 版本：17.0.18
+
+## Product Scope
+
+- 目标为幼小衔接学习游戏 Web 应用
+- MVP 先聚焦数学、语文、英语三科学习岛
+- 第一批要优先做统一关卡容器与内容驱动配置
+
+## Engineering Direction
+
+- 独立新建项目目录，避免污染现有文件
+- 先搭可测试骨架，再实现 UI 与 API
+- 自动化测试必须随实现同步补齐
+
+## Session Recovery 2026-04-14
+
+- 已创建 `k12-learning-game/frontend` 与 `k12-learning-game/backend` 目录骨架
+- 已写入前端测试文件与后端 API smoke test
+- 后端首次 `mvn test` 失败原因一：默认尝试写入 `~/.m2`，沙箱无权限
+- 后端二次 `mvn test` 失败原因二：即使切换到工作区本地仓库，仍因网络 DNS 受限无法下载 Maven 依赖
+- 前端 `npm install` 尚未成功完成，推测同样受网络下载限制影响
+
+## Parent Dashboard & Leaderboard
+
+- 后端现已提供家长中心与周排行榜接口
+- 前端现已提供家长中心与排行榜页面组件及测试
+- 本轮尝试使用 subagents，但供应商侧返回 503 熔断，因此实际实现由主线程完成
+
+## Persistence Migration
+
+- `GameContentService` 已从硬编码内存数据迁移为通过 JPA Repository 读取
+- 后端默认使用 H2 内存库配合 `data.sql` 建立 MVP 内容种子
+- 已新增 `application-mysql.yml`，可通过 `mysql` profile 切换 MySQL 驱动与连接参数
+- 关卡列表标题与关卡详情标题已拆分，避免迁移后接口文案悄悄变更
+
+## Interactive Level Rendering
+
+- 当前前端没有扩后端 step payload 协议，而是在 `LevelPlayer` 内按已知 `levelCode + stepId` 做玩法配置映射
+- 已覆盖的玩法包括：数字拖拽计数、数字选择、汉字识别、拼音听辨、字母跟读、英语单词配对
+- 这条路径适合 MVP 快速落地，后续如果关卡规模扩大，建议把玩法配置下沉到后端内容模型
+
+## Main Content Expansion 2026-04-14
+
+- 主玩法内容已从“每科 2 个基础关卡”扩展到覆盖数学规律、语文笔顺、英语简单句子/绘本跟读
+- 新增玩法类型包括：`pattern-choice`、`stroke-order`、`sentence-read`
+- 关卡地图、前端 mock 数据、后端 `data.sql` 种子数据已同步补齐，新增关卡不再只能手输 URL 访问
+
+## Math Island Expansion 2026-04-14
+
+- 数学岛继续扩展到减法与数量比较两条主能力线
+- 新增玩法类型包括：`take-away`、`comparison-choice`
+- 当前数学岛已覆盖：数量认识、10 以内加法、规律思维、减法启蒙、数量比较
+
+## Curriculum Expansion 2026-04-17
+
+- 当前内容总量为：
+  - 数学 11 关
+  - 语文 9 关
+  - 英语 12 关
+- 这些关卡目前本质上都属于“幼小衔接”单阶段内容
+- 孩子档案虽然已有 `stageLabel`，但课程地图、首页推荐、下一关推荐、家长端学科总量并未真正按学段过滤
+- 当前最需要的不是立刻堆一年级到四年级关卡，而是先补“按学段出内容”的底座
+- `LevelPlayer` 的前进关卡顺序当前基于前端 `mockData.subjectMaps` 静态表，需要同步支持学段过滤，否则新学段加入后下一关会串学段

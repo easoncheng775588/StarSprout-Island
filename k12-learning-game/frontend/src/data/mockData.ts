@@ -30,6 +30,7 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
     chapters: [
       {
         code: 'math-numbers',
+        stageLabel: '幼小衔接',
         title: '数字启蒙站',
         subtitle: '从看见数量到会认数字，完成第一段数学冒险。',
         levels: [
@@ -45,6 +46,26 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
           { code: 'math-equation-001', title: '图像列式屋', status: 'available' },
           { code: 'math-wordproblem-001', title: '故事应用题', status: 'available' }
         ]
+      },
+      {
+        code: 'math-grade1-numbers',
+        stageLabel: '一年级',
+        title: '百数启航站',
+        subtitle: '认识 100 以内的数，把位值和大小规律慢慢看清楚。',
+        levels: [
+          { code: 'math-grade1-numbers-001', title: '认识 100 以内的数', status: 'recommended' },
+          { code: 'math-grade1-addition-001', title: '20 以内进位加法', status: 'available' }
+        ]
+      },
+      {
+        code: 'math-grade1-life',
+        stageLabel: '一年级',
+        title: '生活应用站',
+        subtitle: '把 20 以内加减法放进生活场景，学会用数学想问题。',
+        levels: [
+          { code: 'math-grade1-subtraction-001', title: '20 以内退位减法', status: 'available' },
+          { code: 'math-grade1-wordproblem-001', title: '生活应用题', status: 'available' }
+        ]
       }
     ]
   },
@@ -54,6 +75,7 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
     chapters: [
       {
         code: 'chinese-characters',
+        stageLabel: '幼小衔接',
         title: '汉字花园',
         subtitle: '跟着图像和生活场景认识常见字。',
         levels: [
@@ -64,6 +86,7 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
       },
       {
         code: 'chinese-pinyin',
+        stageLabel: '幼小衔接',
         title: '拼音乐园',
         subtitle: '听声音、认拼读，把拼音读得更稳。',
         levels: [
@@ -74,12 +97,33 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
       },
       {
         code: 'chinese-writing',
+        stageLabel: '幼小衔接',
         title: '笔画写字屋',
         subtitle: '跟着笔顺把字写整齐，越写越有信心。',
         levels: [
           { code: 'chinese-strokes-001', title: '笔顺小画家', status: 'available' },
           { code: 'chinese-strokes-002', title: '日字描描乐', status: 'available' },
           { code: 'chinese-strokes-003', title: '人字起步', status: 'available' }
+        ]
+      },
+      {
+        code: 'chinese-grade1-words',
+        stageLabel: '一年级',
+        title: '识字组词站',
+        subtitle: '从常见生字出发，试着把字放进词语里读一读。',
+        levels: [
+          { code: 'chinese-grade1-words-001', title: '生字组词', status: 'recommended' },
+          { code: 'chinese-grade1-pinyin-001', title: '拼音拼读提升', status: 'available' }
+        ]
+      },
+      {
+        code: 'chinese-grade1-reading',
+        stageLabel: '一年级',
+        title: '看图读句屋',
+        subtitle: '从拼音到词语再到句子，一步步把一年级基础读起来。',
+        levels: [
+          { code: 'chinese-grade1-sentence-001', title: '看图读句', status: 'available' },
+          { code: 'chinese-grade1-punctuation-001', title: '标点小卫士', status: 'available' }
         ]
       }
     ]
@@ -90,6 +134,7 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
     chapters: [
       {
         code: 'english-letters',
+        stageLabel: '幼小衔接',
         title: '字母海湾',
         subtitle: '把 26 个字母分段点亮，读出熟悉的节奏。',
         levels: [
@@ -101,6 +146,7 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
       },
       {
         code: 'english-phonics',
+        stageLabel: '幼小衔接',
         title: '拼读码头',
         subtitle: '听字母和开头音，把声音和单词连起来。',
         levels: [
@@ -110,6 +156,7 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
       },
       {
         code: 'english-words',
+        stageLabel: '幼小衔接',
         title: '单词沙滩',
         subtitle: '把生活常见单词和图片配成一对。',
         levels: [
@@ -120,12 +167,33 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
       },
       {
         code: 'english-story',
+        stageLabel: '幼小衔接',
         title: '绘本港湾',
         subtitle: '跟着图画和句子，把简单绘本一页页读下来。',
         levels: [
           { code: 'english-story-001', title: '海湾小绘本', status: 'available' },
           { code: 'english-story-002', title: '晨光小绘本', status: 'available' },
           { code: 'english-story-003', title: '晚安小绘本', status: 'available' }
+        ]
+      },
+      {
+        code: 'english-grade1-words',
+        stageLabel: '一年级',
+        title: '校园单词港',
+        subtitle: '把一年级常见校园和动作单词认出来、配起来。',
+        levels: [
+          { code: 'english-grade1-words-001', title: '校园单词配对', status: 'recommended' },
+          { code: 'english-grade1-phonics-001', title: 'CVC 拼读入门', status: 'available' }
+        ]
+      },
+      {
+        code: 'english-grade1-sentences',
+        stageLabel: '一年级',
+        title: '问候句海湾',
+        subtitle: '从自然拼读到问候句，把英语说得更完整。',
+        levels: [
+          { code: 'english-grade1-sentence-001', title: '问候句跟读', status: 'available' },
+          { code: 'english-grade1-actions-001', title: '动作单词配对', status: 'available' }
         ]
       }
     ]

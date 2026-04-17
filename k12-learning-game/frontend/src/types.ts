@@ -36,6 +36,7 @@ export interface SubjectChapter {
   code: string;
   title: string;
   subtitle: string;
+  stageLabel?: string;
   levels: LevelSummary[];
 }
 

@@ -1,0 +1,58 @@
+# Task Plan
+
+## Goal
+
+在现有幼小衔接学习游戏基础上，继续扩展一年级、二年级、三年级、四年级的阶段化课程 MVP，并按阶段完成内容、前后端联动、自动化测试与代码提交。
+
+## Phases
+
+| Phase | Status | Notes |
+| --- | --- | --- |
+| 1. 项目规划与目录初始化 | completed | 已完成计划文件、实现计划、独立项目目录与首批测试骨架 |
+| 2. 前端基础工程与首页/主世界 | completed | React 页面、样式、测试、打包已通过 |
+| 3. 后端基础工程与核心接口 | completed | Spring Boot API、测试、打包已通过 |
+| 4. 前后端主链路联调 | completed | 前端已切到真实 API，Vite 代理已配置 |
+| 5. 家长中心与排行榜扩展 | completed | 前后端页面、接口、测试已完成 |
+| 6. 自动化测试与整体验证 | completed | 前端单测、后端单测、前端 build、后端 package 已完成 |
+| 7. 首页导航补强与后端 JPA 持久化一期 | completed | 首页新增家长中心/排行榜入口；后端已迁移为 JPA + H2/MySQL profile |
+| 8. 多学科互动玩法扩展 | completed | 语文与英语关卡已补可交互玩法，前端测试与构建通过 |
+| 9. 主玩法内容扩容二期 | completed | 新增数学规律、语文笔顺、英语绘本跟读关卡；前后端测试通过 |
+| 10. 数学岛主玩法扩容三期 | completed | 新增减法与数量比较关卡；前后端测试通过 |
+| 11. 学段化课程底座（幼小衔接-四年级） | in_progress | 先补按学段过滤课程内容的底座，再进入一年级 MVP |
+| 12. 一年级 MVP | pending | 数学/语文/英语三个学科的一年级基础关卡与测试 |
+| 13. 二年级 MVP | pending | 在同一学段框架上继续补二年级内容 |
+| 14. 三年级 MVP | pending | 补三年级主线能力与配套测试 |
+| 15. 四年级 MVP | pending | 补四年级主线能力与配套测试 |
+| 16. 阶段提交与远端推送 | pending | 每完成一个学段 MVP，验证并提交，条件允许时推送到 GitHub |
+
+## Decisions
+
+- 新项目使用独立目录 `k12-learning-game/`
+- 前端优先使用 React + Vite + TypeScript
+- 后端优先使用 Spring Boot 3 + Java 17
+- 数据库生产目标为 MySQL，测试与本地单测优先使用 H2
+- MVP 首批实现主世界首页、学科地图、关卡详情和学习记录提交
+- Maven 本地仓库固定在工作区 `.cache/m2`
+- npm 缓存固定在工作区 `.cache/npm`
+- 当前前端已切换为真实 API 取数，保留测试用 fetch mock
+- 家长中心与排行榜页面先用页面级测试保障，后续可再补 E2E
+- 首页现在提供家长中心与排行榜显式入口
+- 后端默认使用 H2 + `data.sql` 种子数据，生产可切换 `mysql` profile
+- 本轮继续沿用 `LevelPlayer` 的前端玩法配置映射策略，先快速扩充可玩内容，再考虑把配置下沉到后端
+- 先把课程模型升级为“按孩子学段过滤章节/关卡”，避免一年级到四年级内容直接混在同一张地图里
+- 每个新学段先做 MVP 粒度：每科 1-2 个主题章节、每章 2-4 个关卡、优先复用现有互动玩法
+- 幼小衔接内容继续保留，作为 `幼小衔接` 学段课程；一年级到四年级按相同结构继续扩充
+
+## Errors Encountered
+
+| Error | Attempt | Resolution |
+| --- | --- | --- |
+| `mvn -v` 在 login shell 下回包异常慢 | 1 | 改用 `login=false` 运行环境检查 |
+| Maven 默认写入 `~/.m2` 被拒绝 | 1 | 改为 `-Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2` |
+| Maven 下载依赖时 DNS 失败 | 2 | 通过允许外网下载依赖解决 |
+| npm 安装长时间无结果 | 1 | 通过允许外网下载依赖解决 |
+| Vitest 未注入全局 `describe/test` | 1 | 在 `vite.config.ts` 中启用 `test.globals` |
+| Mockito inline mock maker 在当前 JDK 环境失败 | 1 | 切换到 `mock-maker-subclass` |
+| subagent 调用供应商 503 熔断 | 1 | 停止重试，改为主线程继续实现 |
+| MySQL 驱动依赖下载受沙箱网络限制 | 1 | 申请联网下载 `mysql-connector-j` 后继续测试 |
+| 当前课程内容未按孩子 `stageLabel` 过滤 | 1 | 本轮先补学段字段与过滤逻辑，再扩一年级到四年级内容 |

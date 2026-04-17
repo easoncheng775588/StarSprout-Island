@@ -235,6 +235,9 @@ export function PageTopBar({ backTo, backLabel }: PageTopBarProps) {
                   >
                     <option value="幼小衔接">幼小衔接</option>
                     <option value="一年级">一年级</option>
+                    <option value="二年级">二年级</option>
+                    <option value="三年级">三年级</option>
+                    <option value="四年级">四年级</option>
                   </select>
                 </label>
                 <label className="login-field">

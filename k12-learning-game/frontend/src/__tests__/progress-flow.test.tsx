@@ -95,7 +95,7 @@ describe('Level completion flow', () => {
 
     expect(await screen.findByRole('button', { name: '苹果 1' })).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: /苹果 \d/ })).toHaveLength(5);
-    expect(screen.getAllByAltText('苹果图片')).toHaveLength(5);
+    expect(screen.getAllByText('🍎')).toHaveLength(5);
     expect(screen.getByLabelText('苹果篮子')).toBeInTheDocument();
     expect(screen.getByAltText('篮子图片')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '数字石牌 5' })).toBeInTheDocument();

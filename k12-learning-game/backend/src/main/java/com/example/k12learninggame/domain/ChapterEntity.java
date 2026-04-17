@@ -23,6 +23,8 @@ public class ChapterEntity {
 
     private String subtitle;
 
+    private String stageLabel;
+
     private int displayOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,6 +48,14 @@ public class ChapterEntity {
 
     public String getSubtitle() {
         return subtitle;
+    }
+
+    public String getStageLabel() {
+        return stageLabel;
+    }
+
+    public int getDisplayOrder() {
+        return displayOrder;
     }
 
     public SubjectEntity getSubject() {

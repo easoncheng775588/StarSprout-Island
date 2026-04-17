@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { PageTopBar } from '../components/PageTopBar';
 import { Link, useParams } from 'react-router-dom';
 import { completeLevel, getLevel } from '../api';
-import applePhoto from '../assets/apple-photo.jpg';
 import basketImage from '../assets/basket-cartoon.svg';
 import { subjectMaps } from '../data/mockData';
+import { useSession } from '../session';
 import type { LevelDetail } from '../types';
 
 type StepActivityConfig =
@@ -590,6 +590,160 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       ],
       successFeedback: '晚安小绘本读完啦'
     }
+  },
+  'math-grade1-numbers-001': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '看看数字卡，找到和题目一样的两位数。',
+      choices: [36, 46, 64],
+      correctChoice: 46,
+      optionLabelPrefix: '数字卡',
+      successFeedback: '找对了，46 这个两位数已经点亮',
+      failureFeedback: '再看看十位和个位，4 在前面，6 在后面'
+    }
+  },
+  'math-grade1-addition-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '把故事里的两个数量合在一起，想想一共有多少。',
+      emoji: '🦆',
+      characterLabel: '小鸭',
+      detailLines: ['先算 9 + 8，再想想满 10 以后还剩多少。'],
+      choices: [16, 17, 18],
+      correctChoice: 17,
+      successFeedback: '答对了，9 + 8 = 17',
+      failureFeedback: '再把 8 分成 1 和 7，先和 9 凑成 10 试试看'
+    }
+  },
+  'math-grade1-subtraction-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '先想想飞走了多少，再算还剩几个。',
+      emoji: '🎈',
+      characterLabel: '气球',
+      detailLines: ['16 - 7 可以先想 16 - 6 = 10，再减 1。'],
+      choices: [8, 9, 10],
+      correctChoice: 9,
+      successFeedback: '答对了，16 - 7 = 9',
+      failureFeedback: '再试试看从 16 先退到 10，再继续减'
+    }
+  },
+  'math-grade1-wordproblem-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '把文具盒里的数量连起来想，算出最后一共有几支。',
+      emoji: '✏️',
+      characterLabel: '铅笔',
+      detailLines: ['先看原来有几支，再看又放进几支。'],
+      choices: [12, 13, 14],
+      correctChoice: 14,
+      successFeedback: '答对了，8 + 6 = 14',
+      failureFeedback: '再把两部分铅笔合起来数一数'
+    }
+  },
+  'chinese-grade1-words-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '看看词语火车，找到能和“花”组成词语的字。',
+      choices: [
+        { label: '园', hint: '花园' },
+        { label: '跑', hint: '跑步' },
+        { label: '看', hint: '看见' }
+      ],
+      correctChoice: '园',
+      successFeedback: '答对了，“花园”是春天里常见的词语',
+      detailLines: ['一年级常见词语会把熟悉的字连起来，一起读更顺口。'],
+      failureFeedback: '再想一想，哪个字和“花”放在一起最像一个地方'
+    }
+  },
+  'chinese-grade1-pinyin-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '先听老师读，再选出一样的音节。',
+      audioPrompt: 'xue',
+      audioText: '学',
+      lang: 'zh-CN',
+      choices: ['xue', 'xiao', 'xiu'],
+      correctChoice: 'xue',
+      successFeedback: '听对了，这个音节读作 xue',
+      failureFeedback: '再听一遍，注意最后是 e 的声音'
+    }
+  },
+  'chinese-grade1-sentence-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '点一点句子卡，按顺序把图画短句读完。',
+      sentences: [
+        { text: '小鸟在唱歌。', emoji: '🐦', scene: '小鸟在树上唱歌' },
+        { text: '我背着书包。', emoji: '🎒', scene: '我背好书包去上学' },
+        { text: '太阳笑眯眯。', emoji: '☀️', scene: '太阳高高挂在天上' }
+      ],
+      successFeedback: '三句图画短句都读完啦'
+    }
+  },
+  'chinese-grade1-punctuation-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '句子说完了，要给它选一个合适的标点。',
+      choices: [
+        { label: '。', hint: '句号' },
+        { label: '？', hint: '问号' },
+        { label: '！', hint: '感叹号' }
+      ],
+      correctChoice: '。',
+      successFeedback: '答对了，句子说完了，后面要加句号',
+      detailLines: ['一年级先认识最常见的三种标点：句号、问号、感叹号。'],
+      failureFeedback: '再想一想，这句话是在平静地把意思说完整'
+    }
+  },
+  'english-grade1-words-001': {
+    'step-1': {
+      kind: 'word-match',
+      instruction: '先点单词卡，再点对应的图片卡，把校园单词配成一对。',
+      pairs: [
+        { word: 'teacher', pictureLabel: '老师', emoji: '🧑‍🏫', phonetic: '/ˈtiːtʃər/' },
+        { word: 'desk', pictureLabel: '课桌', emoji: '🪑', phonetic: '/desk/' },
+        { word: 'book', pictureLabel: '书本', emoji: '📘', phonetic: '/bʊk/' }
+      ]
+    }
+  },
+  'english-grade1-phonics-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '先听开头音，再找出发音一样的短单词。',
+      audioPrompt: '/k/',
+      audioText: 'kuh',
+      lang: 'en-US',
+      playButtonLabel: '播放开头音',
+      choiceAriaLabelPrefix: '拼读单词',
+      choices: ['cat', 'sun', 'pig'],
+      correctChoice: 'cat',
+      successFeedback: '答对了，cat 开头就是 /k/ 的声音',
+      failureFeedback: '再听一遍，想想哪个单词一开始像轻轻敲门的 k 声'
+    }
+  },
+  'english-grade1-sentence-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '点一点句子卡，按顺序把问候句读完。',
+      sentences: [
+        { text: 'Hello, teacher.', emoji: '👋', scene: '我向老师打招呼' },
+        { text: 'I am ready.', emoji: '⭐', scene: '我准备好开始上课' },
+        { text: 'Good morning.', emoji: '☀️', scene: '我说早上好', audioText: 'Good morning.' }
+      ],
+      successFeedback: '三句问候句都读完啦'
+    }
+  },
+  'english-grade1-actions-001': {
+    'step-1': {
+      kind: 'word-match',
+      instruction: '把动作单词和图标配起来，边配边读。',
+      pairs: [
+        { word: 'run', pictureLabel: '跑步', emoji: '🏃', phonetic: '/rʌn/' },
+        { word: 'jump', pictureLabel: '跳跃', emoji: '🦘', phonetic: '/dʒʌmp/' },
+        { word: 'read', pictureLabel: '读书', emoji: '📖', phonetic: '/riːd/' }
+      ]
+    }
   }
 };
 
@@ -661,14 +815,14 @@ function readAudioSpeedMode(): 'normal' | 'slow' {
   return window.localStorage.getItem(AUDIO_MODE_STORAGE_KEY) === 'slow' ? 'slow' : 'normal';
 }
 
-function getNextLevelCode(levelCode: string, subjectCode?: string) {
+function getNextLevelCode(levelCode: string, subjectCode?: string, stageLabel = '幼小衔接') {
   if (!subjectCode || !(subjectCode in subjectMaps)) {
     return null;
   }
 
-  const orderedLevels = subjectMaps[subjectCode as keyof typeof subjectMaps].chapters.flatMap((chapter) =>
-    chapter.levels.map((level) => level.code)
-  );
+  const orderedLevels = subjectMaps[subjectCode as keyof typeof subjectMaps].chapters
+    .filter((chapter) => (chapter.stageLabel ?? '幼小衔接') === stageLabel)
+    .flatMap((chapter) => chapter.levels.map((level) => level.code));
   const currentIndex = orderedLevels.indexOf(levelCode);
 
   if (currentIndex === -1 || currentIndex === orderedLevels.length - 1) {
@@ -680,6 +834,7 @@ function getNextLevelCode(levelCode: string, subjectCode?: string) {
 
 export function LevelPlayer() {
   const { levelCode } = useParams<{ levelCode: string }>();
+  const { session } = useSession();
   const [level, setLevel] = useState<LevelDetail | null>(null);
   const [completionResult, setCompletionResult] = useState<Awaited<ReturnType<typeof completeLevel>> | null>(null);
   const [stepProgress, setStepProgress] = useState<Record<string, StepProgressState>>({});
@@ -689,8 +844,9 @@ export function LevelPlayer() {
   const [audioTeacherLabel, setAudioTeacherLabel] = useState('系统默认老师');
   const [levelStartedAt, setLevelStartedAt] = useState(() => Date.now());
   const currentLevel = level;
+  const activeChildStageLabel = session?.children.find((child) => child.id === session.childProfileId)?.stageLabel ?? '幼小衔接';
   const subjectCode = currentLevel ? subjectTitleToCode[currentLevel.subjectTitle] : undefined;
-  const nextLevelCode = currentLevel ? getNextLevelCode(currentLevel.code, subjectCode) : null;
+  const nextLevelCode = currentLevel ? getNextLevelCode(currentLevel.code, subjectCode, activeChildStageLabel) : null;
   const reward = completionResult?.reward ?? null;
 
   useEffect(() => {
@@ -1167,7 +1323,7 @@ export function LevelPlayer() {
                               onDragStart={() => setDraggingApple({ stepId: step.id, appleId })}
                               type="button"
                             >
-                              <img alt="苹果图片" className="apple-token-image" src={applePhoto} />
+                              <span aria-hidden="true" className="apple-token-emoji">🍎</span>
                             </button>
                           );
                         })}

@@ -153,4 +153,33 @@ class PersistenceBackedGameContentServiceTest {
                 .extracting(badge -> badge.code())
                 .contains("weekly_champion");
     }
+
+    @Test
+    @Transactional
+    void shouldUseStageSpecificCurriculumForYearOneChildren() {
+        var child = childProfileRepository.findById(2L).orElseThrow();
+        child.setStageLabel("一年级");
+        childProfileRepository.save(child);
+
+        var homeOverview = gameContentService.getHomeOverview(2L);
+        var mathMap = gameContentService.getSubjectMap("math", 2L);
+        var dashboard = gameContentService.getParentDashboard(2L);
+
+        assertThat(homeOverview.nextLevelCode()).isEqualTo("math-grade1-numbers-001");
+        assertThat(homeOverview.nextLevelTitle()).isEqualTo("认识 100 以内的数");
+        assertThat(mathMap.chapters())
+                .extracting(chapter -> chapter.code(), chapter -> chapter.title())
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple("math-grade1-numbers", "百数启航站"),
+                        org.assertj.core.groups.Tuple.tuple("math-grade1-life", "生活应用站")
+                );
+        assertThat(dashboard.subjectInsights())
+                .filteredOn(insight -> insight.subjectCode().equals("math"))
+                .singleElement()
+                .satisfies(insight -> {
+                    assertThat(insight.completedLevels()).isZero();
+                    assertThat(insight.totalLevels()).isEqualTo(4);
+                    assertThat(insight.nextLevelTitle()).isEqualTo("认识 100 以内的数");
+                });
+    }
 }
