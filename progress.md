@@ -153,3 +153,12 @@
   - 前端测试：`npm test -- --run`，13 个测试文件、57 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`
+- P0 阶段已提交并推送：`ea7517d feat: add real task settlement and review mastery`
+- 已完成 P1 通关庆祝与榜单反馈：
+  - `CompleteLevelResponse` 新增 `leaderboardFeedback`，包含榜单名、通关前后排名、趋势文案、反馈文案和累计星星
+  - 后端按现有本周星星榜规则计算通关前后名次，未参与排行榜时返回隐私友好提示
+  - 关卡奖励卡新增榜单反馈区，孩子完成关卡后可直接看到排名保持或上升反馈
+  - 前端保留旧后端响应兜底，避免联调期间响应缺字段导致页面报错
+- P1 定向验证通过：
+  - 前端测试：`npm test -- --run src/__tests__/progress-flow.test.tsx`
+  - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 -Dtest=ApiSmokeTest#shouldCompleteLevelAndReturnReward test`

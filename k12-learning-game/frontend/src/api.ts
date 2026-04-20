@@ -131,6 +131,14 @@ interface CompleteLevelApiResponse {
   effectiveStars: number;
   totalStars: number;
   newlyUnlockedBadges: AchievementBadgeData[];
+  leaderboardFeedback: {
+    boardTitle: string;
+    rankBefore: number;
+    rankAfter: number;
+    trendLabel: string;
+    message: string;
+    totalStars: number;
+  };
 }
 
 export interface ParentDashboardData {
@@ -482,7 +490,15 @@ export async function completeLevel(
     isFirstCompletion: data.isFirstCompletion ?? true,
     effectiveStars: data.effectiveStars ?? data.reward.stars,
     totalStars: data.totalStars ?? data.reward.stars,
-    newlyUnlockedBadges: data.newlyUnlockedBadges ?? []
+    newlyUnlockedBadges: data.newlyUnlockedBadges ?? [],
+    leaderboardFeedback: data.leaderboardFeedback ?? {
+      boardTitle: '本周星星榜',
+      rankBefore: 0,
+      rankAfter: 0,
+      trendLabel: '榜单已更新',
+      message: '星光榜已经记录这次闯关。',
+      totalStars: data.totalStars ?? data.reward.stars
+    }
   };
 }
 

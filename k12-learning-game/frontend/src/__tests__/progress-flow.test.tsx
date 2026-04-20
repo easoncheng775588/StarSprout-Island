@@ -27,6 +27,14 @@ describe('Level completion flow', () => {
       progressPercent: number;
       encouragement: string;
     }>;
+    leaderboardFeedback: {
+      boardTitle: string;
+      rankBefore: number;
+      rankAfter: number;
+      trendLabel: string;
+      message: string;
+      totalStars: number;
+    };
   };
 
   beforeEach(() => {
@@ -40,7 +48,15 @@ describe('Level completion flow', () => {
       isFirstCompletion: true,
       effectiveStars: 3,
       totalStars: 129,
-      newlyUnlockedBadges: []
+      newlyUnlockedBadges: [],
+      leaderboardFeedback: {
+        boardTitle: '本周星星榜',
+        rankBefore: 5,
+        rankAfter: 3,
+        trendLabel: '上升 2 名',
+        message: '星光榜更新啦，排名上升到第 3 名。',
+        totalStars: 129
+      }
     };
 
     vi.stubGlobal(
@@ -121,6 +137,9 @@ describe('Level completion flow', () => {
     expect(screen.getByText('数字小达人')).toBeInTheDocument();
     expect(screen.getByText('太棒啦，继续去点亮下一关')).toBeInTheDocument();
     expect(screen.getByText('下一关已解锁')).toBeInTheDocument();
+    expect(screen.getByText('本周星星榜')).toBeInTheDocument();
+    expect(screen.getByText('上升 2 名')).toBeInTheDocument();
+    expect(screen.getByText('星光榜更新啦，排名上升到第 3 名。')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '前往下一关' })).toHaveAttribute('href', '/levels/math-numbers-002');
     expect(screen.getByLabelText('通关庆祝动画')).toBeInTheDocument();
     expect(screen.getAllByLabelText('庆祝星星')).toHaveLength(6);
@@ -148,7 +167,15 @@ describe('Level completion flow', () => {
       isFirstCompletion: false,
       effectiveStars: 0,
       totalStars: 129,
-      newlyUnlockedBadges: []
+      newlyUnlockedBadges: [],
+      leaderboardFeedback: {
+        boardTitle: '本周星星榜',
+        rankBefore: 3,
+        rankAfter: 3,
+        trendLabel: '稳定第 3 名',
+        message: '复习完成，星光榜排名保持第 3 名。',
+        totalStars: 129
+      }
     };
 
     const user = userEvent.setup();
@@ -184,6 +211,14 @@ describe('Level completion flow', () => {
       isFirstCompletion: true,
       effectiveStars: 3,
       totalStars: 129,
+      leaderboardFeedback: {
+        boardTitle: '本周星星榜',
+        rankBefore: 5,
+        rankAfter: 3,
+        trendLabel: '上升 2 名',
+        message: '星光榜更新啦，排名上升到第 3 名。',
+        totalStars: 129
+      },
       newlyUnlockedBadges: [
         {
           code: 'weekly_champion',

@@ -22,6 +22,7 @@ import com.example.k12learninggame.dto.ContentConfigItemDto;
 import com.example.k12learninggame.dto.ChapterDto;
 import com.example.k12learninggame.dto.ChildProfileDto;
 import com.example.k12learninggame.dto.ChildProfileUpsertRequest;
+import com.example.k12learninggame.dto.CompletionLeaderboardFeedbackDto;
 import com.example.k12learninggame.dto.DailyTaskBoardResponse;
 import com.example.k12learninggame.dto.DailyTaskClaimResponse;
 import com.example.k12learninggame.dto.DailyTaskDto;
@@ -547,6 +548,8 @@ public class GameContentService {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Level not found"));
         ChildProfileEntity child = childProfileRepository.findById(request.childProfileId())
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Child not found"));
+        int leaderboardScoreBefore = scoreForBoard("weekly_star", child);
+        LocalDateTime latestActivityBefore = latestActivityAt(child);
         Set<String> unlockedBadgeCodesBeforeCompletion = buildAchievements(child).unlockedBadges().stream()
                 .map(AchievementBadgeDto::code)
                 .collect(LinkedHashSet::new, Set::add, Set::addAll);
@@ -555,6 +558,7 @@ public class GameContentService {
                         && item.getLevel().getCode().equals(levelCode));
 
         String resultMessage = request.correctCount() == level.getSteps().size() ? "perfect" : "completed";
+        LocalDateTime completedAt = LocalDateTime.now();
         levelCompletionRepository.save(new LevelCompletionEntity(
                 child,
                 level,
@@ -562,7 +566,7 @@ public class GameContentService {
                 request.wrongCount(),
                 request.durationSeconds(),
                 resultMessage,
-                LocalDateTime.now()
+                completedAt
         ));
         int effectiveStars = isFirstCompletion ? level.getRewardStars() : 0;
         if (effectiveStars > 0) {
@@ -579,7 +583,14 @@ public class GameContentService {
                 isFirstCompletion,
                 effectiveStars,
                 child.getTotalStars(),
-                newlyUnlockedBadges
+                newlyUnlockedBadges,
+                buildCompletionLeaderboardFeedback(
+                        child,
+                        leaderboardScoreBefore,
+                        scoreForBoard("weekly_star", child),
+                        latestActivityBefore,
+                        completedAt
+                )
         );
     }
 
@@ -1545,6 +1556,65 @@ public class GameContentService {
         }
 
         throw new ResponseStatusException(NOT_FOUND, "Child rank not found");
+    }
+
+    private CompletionLeaderboardFeedbackDto buildCompletionLeaderboardFeedback(
+            ChildProfileEntity child,
+            int scoreBefore,
+            int scoreAfter,
+            LocalDateTime latestActivityBefore,
+            LocalDateTime latestActivityAfter
+    ) {
+        if (child.getParentSettings() != null && !child.getParentSettings().isLeaderboardEnabled()) {
+            return new CompletionLeaderboardFeedbackDto(
+                    getBoardTitle("weekly_star"),
+                    0,
+                    0,
+                    "未参与排行榜",
+                    "家长已关闭排行榜展示，星星仍会计入自己的成长记录。",
+                    child.getTotalStars()
+            );
+        }
+
+        int rankBefore = findRankWithOverride(child, scoreBefore, latestActivityBefore);
+        int rankAfter = findRankWithOverride(child, scoreAfter, latestActivityAfter);
+        int rankDelta = rankBefore - rankAfter;
+        String trendLabel = rankDelta > 0 ? "上升 " + rankDelta + " 名" : "稳定第 " + rankAfter + " 名";
+        String message = rankDelta > 0
+                ? "星光榜更新啦，排名上升到第 " + rankAfter + " 名。"
+                : "星光榜保持第 " + rankAfter + " 名，继续收集星星就能追上前面的小伙伴。";
+
+        return new CompletionLeaderboardFeedbackDto(
+                getBoardTitle("weekly_star"),
+                rankBefore,
+                rankAfter,
+                trendLabel,
+                message,
+                child.getTotalStars()
+        );
+    }
+
+    private int findRankWithOverride(ChildProfileEntity targetChild, int scoreOverride, LocalDateTime latestActivityOverride) {
+        List<RankedChild> rankedChildren = childProfileRepository.findAllByOrderByIdAsc().stream()
+                .filter(profile -> profile.getParentSettings() == null || profile.getParentSettings().isLeaderboardEnabled())
+                .map(profile -> {
+                    boolean isTarget = profile.getId().equals(targetChild.getId());
+                    int score = isTarget ? scoreOverride : scoreForBoard("weekly_star", profile);
+                    return new RankedChild(
+                            profile,
+                            score,
+                            trendLabelForBoard("weekly_star", score),
+                            isTarget ? latestActivityOverride : latestActivityAt(profile)
+                    );
+                })
+                .sorted(Comparator
+                        .comparingInt(RankedChild::score)
+                        .reversed()
+                        .thenComparing(RankedChild::latestActivityAt, Comparator.reverseOrder())
+                        .thenComparing(item -> item.child().getId()))
+                .toList();
+
+        return findRankIndex(rankedChildren, targetChild.getId()) + 1;
     }
 
     private ChildProfileDto toChildProfileDto(ChildProfileEntity child) {

@@ -9,6 +9,7 @@ public record CompleteLevelResponse(
         boolean isFirstCompletion,
         int effectiveStars,
         int totalStars,
-        List<AchievementBadgeDto> newlyUnlockedBadges
+        List<AchievementBadgeDto> newlyUnlockedBadges,
+        CompletionLeaderboardFeedbackDto leaderboardFeedback
 ) {
 }

@@ -657,10 +657,15 @@ class ApiSmokeTest {
                                   \"wrongCount\": 0,
                                   \"durationSeconds\": 74
                                 }
-                                """))
+                """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.reward.stars").value(3))
-                .andExpect(jsonPath("$.reward.badgeName").value("数字小达人"));
+                .andExpect(jsonPath("$.reward.badgeName").value("数字小达人"))
+                .andExpect(jsonPath("$.leaderboardFeedback.boardTitle").value("本周星星榜"))
+                .andExpect(jsonPath("$.leaderboardFeedback.rankBefore").value(3))
+                .andExpect(jsonPath("$.leaderboardFeedback.rankAfter").value(3))
+                .andExpect(jsonPath("$.leaderboardFeedback.trendLabel").value("稳定第 3 名"))
+                .andExpect(jsonPath("$.leaderboardFeedback.message").value(org.hamcrest.Matchers.containsString("星光榜")));
     }
 
     @Test

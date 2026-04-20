@@ -2466,6 +2466,14 @@ export function LevelPlayer() {
               ))}
             </div>
           ) : null}
+          <div className="reward-leaderboard-card" aria-label="通关后的星光榜反馈">
+            <div>
+              <p className="eyebrow">{completionResult.leaderboardFeedback.boardTitle}</p>
+              <strong>{completionResult.leaderboardFeedback.trendLabel}</strong>
+              <p>{completionResult.leaderboardFeedback.message}</p>
+            </div>
+            <span>累计 {completionResult.leaderboardFeedback.totalStars} 星</span>
+          </div>
           <div className="reward-card-actions">
             {nextLevelCode ? (
               <Link className="cta-button reward-next-button" to={`/levels/${nextLevelCode}`}>
