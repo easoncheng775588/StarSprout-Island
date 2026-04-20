@@ -102,7 +102,7 @@ export function HomeWorld() {
             再点亮 1 枚徽章，就能获得“{homeOverview.achievementPreview.nextBadgeName}”
           </p>
         </div>
-        <div className="family-panel-actions">
+        <div className="family-panel-actions" aria-label="家长功能入口">
           <Link className="cta-button cta-button-secondary" to="/parent">家长中心</Link>
           <Link className="cta-button cta-button-secondary" to="/daily-tasks">每日任务</Link>
           <Link className="cta-button cta-button-secondary" to="/mistakes">错题本</Link>

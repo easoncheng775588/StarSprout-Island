@@ -431,18 +431,27 @@ body::before {
 
 .family-panel {
   display: grid;
-  grid-template-columns: 1.4fr auto;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  align-items: center;
+  gap: clamp(18px, 4vw, 44px);
   margin-top: 24px;
   padding: 24px 28px;
   border-radius: 28px;
-  background: linear-gradient(135deg, rgba(191, 231, 255, 0.72), rgba(255, 255, 255, 0.94));
+  background:
+    radial-gradient(circle at 92% 18%, rgba(255, 212, 107, 0.26), transparent 30%),
+    linear-gradient(135deg, rgba(191, 231, 255, 0.72), rgba(255, 255, 255, 0.94));
   box-shadow: 0 20px 48px var(--shadow);
+}
+
+.family-panel-copy {
+  min-width: 0;
 }
 
 .family-panel h2 {
   margin: 0;
   font-size: clamp(1.5rem, 2vw, 2rem);
+  line-height: 1.22;
+  max-width: 13em;
 }
 
 .family-panel-copy p:last-child {
@@ -458,11 +467,18 @@ body::before {
 }
 
 .family-panel-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: end;
-  align-items: center;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+}
+
+.family-panel-actions .cta-button {
+  min-width: 0;
+  width: 100%;
+  padding: 13px 14px;
+  white-space: nowrap;
 }
 
 .island-grid {
@@ -2037,7 +2053,7 @@ body::before {
   }
 
   .family-panel-actions {
-    justify-content: start;
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
   }
 
   .page-top-bar {

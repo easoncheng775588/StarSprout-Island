@@ -63,6 +63,7 @@ describe('Product engagement surfaces', () => {
     expect(screen.getByRole('link', { name: '学习路径' })).toHaveAttribute('href', '/learning-path');
     expect(screen.getByText('今日待推进')).toBeInTheDocument();
     expect(screen.getByText('连续 7 天，小岛火苗正在发光')).toBeInTheDocument();
+    expect(screen.getByLabelText('家长功能入口')).toBeInTheDocument();
   });
 
   test('home world turns today task into a completion state when mainline is done', async () => {
