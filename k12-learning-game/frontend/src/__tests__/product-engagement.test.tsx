@@ -113,6 +113,63 @@ describe('Product engagement surfaces', () => {
     expect(screen.getByRole('link', { name: '去学习路径看看' })).toHaveAttribute('href', '/learning-path');
   });
 
+  test('home world shows a retry action when the overview request fails', async () => {
+    const user = userEvent.setup();
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+
+      if (url.endsWith('/api/home/overview') && fetchMock.mock.calls.length === 1) {
+        return {
+          ok: false,
+          json: async () => ({})
+        } as Response;
+      }
+
+      if (url.endsWith('/api/home/overview')) {
+        return {
+          ok: true,
+          json: async () => ({
+            child: {
+              id: 1,
+              nickname: '小星星',
+              streakDays: 7,
+              totalStars: 126,
+              title: '晨光冒险家'
+            },
+            subjects: [
+              { code: 'math', title: '数学岛', subtitle: '数字火花开始跳舞', accentColor: '#ff8a5b' }
+            ],
+            achievementPreview: {
+              unlockedCount: 4,
+              totalCount: 12,
+              nextBadgeName: '本周小冠军'
+            },
+            featuredWorld: '启航岛',
+            todayTask: '继续挑战 10 以内加法，把今天的学习星轨再点亮一格。',
+            nextLevelCode: 'math-addition-001',
+            nextLevelTitle: '10 以内加法'
+          })
+        } as Response;
+      }
+
+      throw new Error(`Unhandled fetch: ${url}`);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(
+      <MemoryRouter>
+        <HomeWorld />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('学习小岛暂时没有醒来')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '重新唤醒小岛' }));
+
+    expect(await screen.findByText('今日待推进')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
   test('daily tasks page shows task completion and target level actions', () => {
     render(
       <MemoryRouter>

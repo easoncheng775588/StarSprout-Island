@@ -7,11 +7,40 @@ import type { HomeOverview } from '../types';
 
 export function HomeWorld() {
   const [homeOverview, setHomeOverview] = useState<HomeOverview | null>(null);
+  const [loadError, setLoadError] = useState('');
   const { session } = useSession();
 
+  const loadHomeOverview = () => {
+    setLoadError('');
+    getHomeOverview()
+      .then(setHomeOverview)
+      .catch(() => {
+        setHomeOverview(null);
+        setLoadError('学习小岛暂时没有醒来');
+      });
+  };
+
   useEffect(() => {
-    getHomeOverview().then(setHomeOverview);
+    loadHomeOverview();
   }, [session]);
+
+  if (loadError) {
+    return (
+      <main className="screen screen-home">
+        <PageTopBar />
+        <section className="task-panel home-error-panel" aria-live="polite">
+          <div>
+            <p className="eyebrow">连接小岛</p>
+            <h1>{loadError}</h1>
+            <p>可能是前后端刚刚启动完成，点一下重新唤醒就好。</p>
+          </div>
+          <button className="cta-button" type="button" onClick={loadHomeOverview}>
+            重新唤醒小岛
+          </button>
+        </section>
+      </main>
+    );
+  }
 
   if (!homeOverview) {
     return <main className="screen"><p>正在唤醒今天的学习小岛...</p></main>;
