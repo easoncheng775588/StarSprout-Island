@@ -1057,6 +1057,161 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       ],
       successFeedback: '主题表达完成，可以试着说说自己的一天'
     }
+  },
+  'math-grade4-decimal-001': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '看一看 10 格里涂色的部分，选出对应的小数。',
+      choices: [0.5, 0.7, 0.9],
+      correctChoice: 0.7,
+      optionLabelPrefix: '数字石牌',
+      successFeedback: '答对了，10 格里有 7 格就是 0.7',
+      failureFeedback: '再想想 10 份中的 7 份可以写成 0.7'
+    }
+  },
+  'math-grade4-angle-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '找到像书本打开后形成的锐角。',
+      choices: [
+        { label: '小于 90° 的角', hint: '张口比较小' },
+        { label: '等于 90° 的角', hint: '像直直的墙角' },
+        { label: '大于 90° 的角', hint: '张口比较大' }
+      ],
+      correctChoice: '小于 90° 的角',
+      successFeedback: '答对了，小于 90° 的角叫锐角',
+      detailLines: ['四年级先认识锐角、直角、钝角，再观察图形里的角。'],
+      failureFeedback: '再想一想，锐角的张口比直角更小'
+    }
+  },
+  'math-grade4-operation-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '先算乘法，再算加法，注意运算顺序。',
+      emoji: '🧮',
+      characterLabel: '运算算盘',
+      detailLines: ['算式是 6 × 4 + 8。', '先算 6 × 4，再加 8。'],
+      choices: [30, 32, 36],
+      correctChoice: 32,
+      successFeedback: '答对了，6 × 4 = 24，24 + 8 = 32',
+      failureFeedback: '先把乘法算出来，再接着加 8'
+    }
+  },
+  'math-grade4-strategy-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '用列表思路把两种票价组合起来。',
+      emoji: '🎟️',
+      characterLabel: '游乐园门票',
+      detailLines: ['成人票 20 元，儿童票 10 元。', '1 张成人票和 3 张儿童票一共多少钱？'],
+      choices: [40, 50, 60],
+      correctChoice: 50,
+      successFeedback: '答对了，20 + 10 × 3 = 50',
+      failureFeedback: '先算 3 张儿童票，再加 1 张成人票'
+    }
+  },
+  'chinese-grade4-passage-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '按顺序读完篇章片段，抓住中心画面。',
+      sentences: [
+        { text: '傍晚，海面被夕阳染成金色。', emoji: '🌅', scene: '夕阳照在海面上' },
+        { text: '渔船慢慢靠岸，海鸥在船边盘旋。', emoji: '⛵', scene: '船回到岸边' },
+        { text: '这一刻，海边显得安静又温暖。', emoji: '🕊️', scene: '画面安静温暖' }
+      ],
+      successFeedback: '篇章片段读完，中心画面已经抓住了'
+    }
+  },
+  'chinese-grade4-writing-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '读一读写作表达句，学习把观察写具体。',
+      sentences: [
+        { text: '我先听见雨点敲在窗台上的声音。', emoji: '🌧️', scene: '先写声音' },
+        { text: '接着看见水珠沿着玻璃慢慢滑下。', emoji: '🪟', scene: '再写看到的细节' },
+        { text: '最后，我把这场雨写进了日记。', emoji: '📓', scene: '把观察写下来' }
+      ],
+      successFeedback: '写作表达读完，观察顺序更清楚了'
+    }
+  },
+  'chinese-grade4-poem-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '按顺序朗读古诗句，感受山路和枫林的画面。',
+      sentences: [
+        { text: '远上寒山石径斜。', emoji: '⛰️', scene: '山路弯弯向远处延伸' },
+        { text: '白云生处有人家。', emoji: '☁️', scene: '白云深处有人居住' },
+        { text: '停车坐爱枫林晚。', emoji: '🍁', scene: '停下车欣赏晚霞里的枫林' }
+      ],
+      successFeedback: '古诗积累完成，画面已经读出来了'
+    }
+  },
+  'chinese-grade4-grammar-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '找到标点使用更规范的句子。',
+      choices: [
+        { label: '你今天读书了吗？', hint: '问句用问号' },
+        { label: '你今天读书了吗。', hint: '问句不该用句号' },
+        { label: '你今天读书了吗！', hint: '语气过强，不是普通疑问' }
+      ],
+      correctChoice: '你今天读书了吗？',
+      successFeedback: '答对了，普通问句后面要用问号',
+      detailLines: ['语法规范先从句子意思和标点搭配开始。'],
+      failureFeedback: '再想一想，这句话是在提出问题'
+    }
+  },
+  'english-grade4-tense-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '找到表示昨天踢足球的句子。',
+      choices: [
+        { label: 'I played football yesterday.', hint: 'played 表示过去发生' },
+        { label: 'I play football today.', hint: 'today 是今天' },
+        { label: 'I will play football tomorrow.', hint: 'will 表示将来' }
+      ],
+      correctChoice: 'I played football yesterday.',
+      successFeedback: '答对了，yesterday 提醒我们动作发生在过去',
+      detailLines: ['时态先看时间词，再观察动词有没有变化。'],
+      failureFeedback: '再找一找带有 yesterday 和过去式 played 的句子'
+    }
+  },
+  'english-grade4-passage-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '按顺序读完短文，理解 Lucy 的周末计划。',
+      sentences: [
+        { text: 'Lucy visited her grandma last weekend.', emoji: '👵', scene: 'Lucy 上周末看望奶奶' },
+        { text: 'They made soup together.', emoji: '🍲', scene: '她们一起做汤' },
+        { text: 'Lucy felt warm and happy.', emoji: '😊', scene: 'Lucy 感到温暖开心' }
+      ],
+      successFeedback: '短文理解完成，Lucy 的周末已经读明白了'
+    }
+  },
+  'english-grade4-topic-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '围绕“My favorite season”读三句话，学习主题表达。',
+      sentences: [
+        { text: 'My favorite season is autumn.', emoji: '🍂', scene: '我最喜欢秋天' },
+        { text: 'The leaves are yellow and red.', emoji: '🍁', scene: '树叶变黄变红' },
+        { text: 'I can fly a kite with my friends.', emoji: '🪁', scene: '我和朋友放风筝' }
+      ],
+      successFeedback: '话题表达完成，可以试着说说自己最喜欢的季节'
+    }
+  },
+  'english-grade4-review-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '听一句综合练习，选出听到的关键词。',
+      audioPrompt: 'season',
+      audioText: 'season',
+      lang: 'en-US',
+      choices: ['season', 'student', 'story'],
+      correctChoice: 'season',
+      successFeedback: '答对了，听到的关键词是 season',
+      failureFeedback: '再听一遍，注意开头是 see 的声音'
+    }
   }
 };
 

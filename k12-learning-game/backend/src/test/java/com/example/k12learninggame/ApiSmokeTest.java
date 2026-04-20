@@ -322,6 +322,36 @@ class ApiSmokeTest {
     }
 
     @Test
+    @Transactional
+    void shouldFilterCurriculumByFourthGradeStage() throws Exception {
+        mockMvc.perform(patch("/api/parent/children/3")
+                        .header("X-Parent-Account-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nickname": "小海豚",
+                                  "title": "海湾领航员",
+                                  "stageLabel": "四年级",
+                                  "avatarColor": "#8ee1b5"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.stageLabel").value("四年级"));
+
+        mockMvc.perform(get("/api/home/overview").header("X-Child-Profile-Id", 3))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nextLevelCode").value("math-grade4-decimal-001"))
+                .andExpect(jsonPath("$.nextLevelTitle").value("小数初步"));
+
+        mockMvc.perform(get("/api/subjects/chinese/map").header("X-Child-Profile-Id", 3))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.chapters[0].code").value("chinese-grade4-reading"))
+                .andExpect(jsonPath("$.chapters[0].levels[0].code").value("chinese-grade4-passage-001"))
+                .andExpect(jsonPath("$.chapters[1].code").value("chinese-grade4-expression"))
+                .andExpect(jsonPath("$.chapters[1].levels[1].code").value("chinese-grade4-grammar-001"));
+    }
+
+    @Test
     void shouldReturnLevelDetails() throws Exception {
         mockMvc.perform(get("/api/levels/math-numbers-001"))
                 .andExpect(status().isOk())

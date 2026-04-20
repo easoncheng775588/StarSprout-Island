@@ -102,3 +102,14 @@
   - 前端测试：`npm test -- --run`，10 个测试文件、46 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`
+- 三年级阶段已本地提交：`81cb68e feat: add grade 3 mvp curriculum`
+- 已完成四年级 MVP：
+  - 数学 4 关：小数初步、角与图形、运算综合、策略应用题
+  - 语文 4 关：篇章理解、写作表达、古诗积累、语法规范
+  - 英语 4 关：时态初步、短文理解、话题表达、综合练习
+- 前端新增 `grade4-levels.test.tsx`，覆盖四年级数学、语文、英语交互
+- 后端新增四年级学段过滤测试，验证首页推荐、学科地图和家长端统计
+- 最终验证通过：
+  - 前端测试：`npm test -- --run`，11 个测试文件、49 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`

@@ -240,4 +240,33 @@ class PersistenceBackedGameContentServiceTest {
                     assertThat(insight.nextLevelTitle()).isEqualTo("段落理解");
                 });
     }
+
+    @Test
+    @Transactional
+    void shouldUseStageSpecificCurriculumForYearFourChildren() {
+        var child = childProfileRepository.findById(3L).orElseThrow();
+        child.setStageLabel("四年级");
+        childProfileRepository.save(child);
+
+        var homeOverview = gameContentService.getHomeOverview(3L);
+        var mathMap = gameContentService.getSubjectMap("math", 3L);
+        var dashboard = gameContentService.getParentDashboard(3L);
+
+        assertThat(homeOverview.nextLevelCode()).isEqualTo("math-grade4-decimal-001");
+        assertThat(homeOverview.nextLevelTitle()).isEqualTo("小数初步");
+        assertThat(mathMap.chapters())
+                .extracting(chapter -> chapter.code(), chapter -> chapter.title())
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple("math-grade4-numbers", "小数图形站"),
+                        org.assertj.core.groups.Tuple.tuple("math-grade4-strategy", "运算策略站")
+                );
+        assertThat(dashboard.subjectInsights())
+                .filteredOn(insight -> insight.subjectCode().equals("math"))
+                .singleElement()
+                .satisfies(insight -> {
+                    assertThat(insight.completedLevels()).isZero();
+                    assertThat(insight.totalLevels()).isEqualTo(4);
+                    assertThat(insight.nextLevelTitle()).isEqualTo("小数初步");
+                });
+    }
 }

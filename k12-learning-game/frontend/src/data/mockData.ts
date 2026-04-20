@@ -106,6 +106,26 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
           { code: 'math-grade3-fraction-001', title: '分数初步', status: 'available' },
           { code: 'math-grade3-wordproblem-001', title: '多步应用题', status: 'available' }
         ]
+      },
+      {
+        code: 'math-grade4-numbers',
+        stageLabel: '四年级',
+        title: '小数图形站',
+        subtitle: '从小数到角和图形，把抽象概念放进可观察的画面。',
+        levels: [
+          { code: 'math-grade4-decimal-001', title: '小数初步', status: 'recommended' },
+          { code: 'math-grade4-angle-001', title: '角与图形', status: 'available' }
+        ]
+      },
+      {
+        code: 'math-grade4-strategy',
+        stageLabel: '四年级',
+        title: '运算策略站',
+        subtitle: '把综合运算和策略应用题拆开看，练习更清晰的思考。',
+        levels: [
+          { code: 'math-grade4-operation-001', title: '运算综合', status: 'available' },
+          { code: 'math-grade4-strategy-001', title: '策略应用题', status: 'available' }
+        ]
       }
     ]
   },
@@ -204,6 +224,26 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'chinese-grade3-rhetoric-001', title: '修辞感知', status: 'available' },
           { code: 'chinese-grade3-expression-001', title: '阅读表达', status: 'available' }
+        ]
+      },
+      {
+        code: 'chinese-grade4-reading',
+        stageLabel: '四年级',
+        title: '篇章理解站',
+        subtitle: '从段落走向篇章，学会抓住中心和线索。',
+        levels: [
+          { code: 'chinese-grade4-passage-001', title: '篇章理解', status: 'recommended' },
+          { code: 'chinese-grade4-writing-001', title: '写作表达', status: 'available' }
+        ]
+      },
+      {
+        code: 'chinese-grade4-expression',
+        stageLabel: '四年级',
+        title: '古诗语法屋',
+        subtitle: '积累古诗，也开始认识句子里的表达规则。',
+        levels: [
+          { code: 'chinese-grade4-poem-001', title: '古诗积累', status: 'available' },
+          { code: 'chinese-grade4-grammar-001', title: '语法规范', status: 'available' }
         ]
       }
     ]
@@ -314,6 +354,26 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'english-grade3-reading-001', title: '阅读理解', status: 'available' },
           { code: 'english-grade3-topic-001', title: '主题表达', status: 'available' }
+        ]
+      },
+      {
+        code: 'english-grade4-language',
+        stageLabel: '四年级',
+        title: '时态语句港',
+        subtitle: '从时态线索到短文理解，学会判断句子发生的时间。',
+        levels: [
+          { code: 'english-grade4-tense-001', title: '时态初步', status: 'recommended' },
+          { code: 'english-grade4-passage-001', title: '短文理解', status: 'available' }
+        ]
+      },
+      {
+        code: 'english-grade4-expression',
+        stageLabel: '四年级',
+        title: '话题综合湾',
+        subtitle: '围绕话题组织句子，并通过综合练习巩固表达。',
+        levels: [
+          { code: 'english-grade4-topic-001', title: '话题表达', status: 'available' },
+          { code: 'english-grade4-review-001', title: '综合练习', status: 'available' }
         ]
       }
     ]
