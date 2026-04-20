@@ -744,6 +744,163 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { word: 'read', pictureLabel: '读书', emoji: '📖', phonetic: '/riːd/' }
       ]
     }
+  },
+  'math-grade2-multiply-001': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '先按组数一数，再点出正确答案。',
+      choices: [10, 12, 14],
+      correctChoice: 12,
+      optionLabelPrefix: '数字石牌',
+      successFeedback: '答对了，3 组 4 颗就是 12 颗',
+      failureFeedback: '再想一想，4 + 4 + 4 一共是多少'
+    }
+  },
+  'math-grade2-length-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '看看尺子上的刻度，选出铅笔大约有多长。',
+      emoji: '📏',
+      characterLabel: '小尺子',
+      detailLines: ['铅笔从 0 刻度量到 12 刻度，单位是厘米。'],
+      choices: [9, 12, 15],
+      correctChoice: 12,
+      successFeedback: '答对了，这支铅笔大约长 12 厘米',
+      failureFeedback: '再看看刻度线，终点停在 12 的位置'
+    }
+  },
+  'math-grade2-wordproblem-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '把两步都想清楚，再选出最后答案。',
+      emoji: '🛍️',
+      characterLabel: '文具店',
+      detailLines: ['先买了 8 本练习本，又买了 6 本。', '送给同学 5 本后，还剩多少本？'],
+      choices: [8, 9, 10],
+      correctChoice: 9,
+      successFeedback: '答对了，先算 8 + 6 = 14，再算 14 - 5 = 9',
+      failureFeedback: '先把买来的本子合起来，再减去送出去的数量'
+    }
+  },
+  'math-grade2-time-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '想想时间往后走了几小时，再选出答案。',
+      emoji: '⏰',
+      characterLabel: '小闹钟',
+      detailLines: ['小朋友 7 点开始做作业。', '再过 2 小时，就到了几点？'],
+      choices: [8, 9, 10],
+      correctChoice: 9,
+      successFeedback: '答对了，7 点再过 2 小时就是 9 点',
+      failureFeedback: '从 7 点往后数两格：8 点、9 点'
+    }
+  },
+  'chinese-grade2-phrase-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '看看哪个词能和“认真”搭配成常用词语。',
+      choices: [
+        { label: '听讲', hint: '课堂上的好习惯' },
+        { label: '飞快', hint: '表示速度很快' },
+        { label: '晴天', hint: '天气很好' }
+      ],
+      correctChoice: '听讲',
+      successFeedback: '答对了，“认真听讲”是课堂里的好习惯',
+      detailLines: ['词语搭配要看意思是不是自然，也要看是不是生活里常说的表达。'],
+      failureFeedback: '再想一想，“认真”常常用来形容学习和做事的态度'
+    }
+  },
+  'chinese-grade2-order-001': {
+    'step-1': {
+      kind: 'pattern-choice',
+      instruction: '按事情发生的顺序想一想，下一步应该是什么。',
+      sequence: [
+        { label: '起床', emoji: '🛏️' },
+        { label: '刷牙', emoji: '🪥' },
+        { label: '吃早饭', emoji: '🥣' }
+      ],
+      choices: [
+        { label: '背书包上学', emoji: '🎒' },
+        { label: '睡午觉', emoji: '😴' },
+        { label: '看星星', emoji: '⭐' }
+      ],
+      correctChoice: '背书包上学',
+      successFeedback: '答对了，早晨的事情按顺序接下来就是背书包上学',
+      failureFeedback: '再把早晨这几件事连起来想一想'
+    }
+  },
+  'chinese-grade2-picture-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '看着图画按顺序读句子，学会把画面说完整。',
+      sentences: [
+        { text: '小朋友在操场上放风筝。', emoji: '🪁', scene: '风筝飞得高高的' },
+        { text: '天空蓝蓝的，白云慢慢飘。', emoji: '☁️', scene: '天气晴朗舒服' },
+        { text: '大家玩得很开心。', emoji: '😊', scene: '画面里充满笑声' }
+      ],
+      successFeedback: '这幅图已经读完整啦'
+    }
+  },
+  'chinese-grade2-reading-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '按顺序读完短文句子，感受每一句在说什么。',
+      sentences: [
+        { text: '清晨，小河边很安静。', emoji: '🌅', scene: '早晨的河边静静的' },
+        { text: '一只白鹭站在石头上。', emoji: '🕊️', scene: '白鹭停在河边' },
+        { text: '它忽然展开翅膀飞向天空。', emoji: '🪽', scene: '白鹭一下子飞起来了' }
+      ],
+      successFeedback: '短文朗读完成，继续保持这样的节奏'
+    }
+  },
+  'english-grade2-phonics-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '先听字母组合的声音，再找出对应单词。',
+      audioPrompt: '/sh/',
+      audioText: 'shh',
+      lang: 'en-US',
+      choices: ['sheep', 'cat', 'pig'],
+      correctChoice: 'sheep',
+      successFeedback: '答对了，sheep 开头就是 /sh/ 的声音',
+      failureFeedback: '再听一遍，想想哪个单词像轻轻说 shhh'
+    }
+  },
+  'english-grade2-sentence-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '按顺序读句子，感受句型里的人和物。',
+      sentences: [
+        { text: 'I have a kite.', emoji: '🪁', scene: '我有一个风筝' },
+        { text: 'It is blue.', emoji: '🔵', scene: '它是蓝色的' },
+        { text: 'I like it very much.', emoji: '💙', scene: '我很喜欢它' }
+      ],
+      successFeedback: '三句句型都读顺啦'
+    }
+  },
+  'english-grade2-dialogue-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '跟着对话顺序读一读，把日常交流说完整。',
+      sentences: [
+        { text: 'Hi, what are you doing?', emoji: '👋', scene: '朋友在打招呼' },
+        { text: 'I am reading a book.', emoji: '📖', scene: '我正在读书' },
+        { text: 'That sounds fun!', emoji: '✨', scene: '朋友觉得很有趣' }
+      ],
+      successFeedback: '这组对话已经读完啦'
+    }
+  },
+  'english-grade2-story-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '把小绘本按顺序读下来，看看故事发生了什么。',
+      sentences: [
+        { text: 'Tom sees a little boat.', emoji: '⛵', scene: 'Tom 看见一条小船' },
+        { text: 'He waves to his friend on the shore.', emoji: '👋', scene: '他向岸边的朋友挥手' },
+        { text: 'They smile and start their trip.', emoji: '😊', scene: '他们笑着开始旅行' }
+      ],
+      successFeedback: '小绘本已经读完，做得真棒'
+    }
   }
 };
 

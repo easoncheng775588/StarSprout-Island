@@ -182,4 +182,33 @@ class PersistenceBackedGameContentServiceTest {
                     assertThat(insight.nextLevelTitle()).isEqualTo("认识 100 以内的数");
                 });
     }
+
+    @Test
+    @Transactional
+    void shouldUseStageSpecificCurriculumForYearTwoChildren() {
+        var child = childProfileRepository.findById(3L).orElseThrow();
+        child.setStageLabel("二年级");
+        childProfileRepository.save(child);
+
+        var homeOverview = gameContentService.getHomeOverview(3L);
+        var englishMap = gameContentService.getSubjectMap("english", 3L);
+        var dashboard = gameContentService.getParentDashboard(3L);
+
+        assertThat(homeOverview.nextLevelCode()).isEqualTo("math-grade2-multiply-001");
+        assertThat(homeOverview.nextLevelTitle()).isEqualTo("表内乘法起步");
+        assertThat(englishMap.chapters())
+                .extracting(chapter -> chapter.code(), chapter -> chapter.title())
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple("english-grade2-phonics", "拼读进阶港"),
+                        org.assertj.core.groups.Tuple.tuple("english-grade2-story", "表达故事湾")
+                );
+        assertThat(dashboard.subjectInsights())
+                .filteredOn(insight -> insight.subjectCode().equals("english"))
+                .singleElement()
+                .satisfies(insight -> {
+                    assertThat(insight.completedLevels()).isZero();
+                    assertThat(insight.totalLevels()).isEqualTo(4);
+                    assertThat(insight.nextLevelTitle()).isEqualTo("自然拼读进阶");
+                });
+    }
 }

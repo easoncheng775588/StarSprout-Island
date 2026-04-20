@@ -66,6 +66,26 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
           { code: 'math-grade1-subtraction-001', title: '20 以内退位减法', status: 'available' },
           { code: 'math-grade1-wordproblem-001', title: '生活应用题', status: 'available' }
         ]
+      },
+      {
+        code: 'math-grade2-skills',
+        stageLabel: '二年级',
+        title: '乘法巧思站',
+        subtitle: '把乘法和长度观察放到一起，让二年级数学更有条理。',
+        levels: [
+          { code: 'math-grade2-multiply-001', title: '表内乘法起步', status: 'recommended' },
+          { code: 'math-grade2-length-001', title: '长度单位比一比', status: 'available' }
+        ]
+      },
+      {
+        code: 'math-grade2-life',
+        stageLabel: '二年级',
+        title: '时间应用站',
+        subtitle: '把应用题和时间问题放进生活里，继续培养数学思维。',
+        levels: [
+          { code: 'math-grade2-wordproblem-001', title: '两步应用题', status: 'available' },
+          { code: 'math-grade2-time-001', title: '时间小管家', status: 'available' }
+        ]
       }
     ]
   },
@@ -124,6 +144,26 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'chinese-grade1-sentence-001', title: '看图读句', status: 'available' },
           { code: 'chinese-grade1-punctuation-001', title: '标点小卫士', status: 'available' }
+        ]
+      },
+      {
+        code: 'chinese-grade2-words',
+        stageLabel: '二年级',
+        title: '搭配排序站',
+        subtitle: '学会搭配词语、理清句子顺序，让表达更流畅。',
+        levels: [
+          { code: 'chinese-grade2-phrase-001', title: '词语搭配', status: 'recommended' },
+          { code: 'chinese-grade2-order-001', title: '句子排序', status: 'available' }
+        ]
+      },
+      {
+        code: 'chinese-grade2-reading',
+        stageLabel: '二年级',
+        title: '表达朗读屋',
+        subtitle: '从看图表达走到朗读理解，把二年级阅读基础搭起来。',
+        levels: [
+          { code: 'chinese-grade2-picture-001', title: '看图表达', status: 'available' },
+          { code: 'chinese-grade2-reading-001', title: '朗读理解', status: 'available' }
         ]
       }
     ]
@@ -194,6 +234,26 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'english-grade1-sentence-001', title: '问候句跟读', status: 'available' },
           { code: 'english-grade1-actions-001', title: '动作单词配对', status: 'available' }
+        ]
+      },
+      {
+        code: 'english-grade2-phonics',
+        stageLabel: '二年级',
+        title: '拼读进阶港',
+        subtitle: '继续认识字母组合和基础句型，把英语听懂一点、读顺一点。',
+        levels: [
+          { code: 'english-grade2-phonics-001', title: '自然拼读进阶', status: 'recommended' },
+          { code: 'english-grade2-sentence-001', title: '句型理解', status: 'available' }
+        ]
+      },
+      {
+        code: 'english-grade2-story',
+        stageLabel: '二年级',
+        title: '表达故事湾',
+        subtitle: '从日常对话走进简单绘本，让英语表达更像真实场景。',
+        levels: [
+          { code: 'english-grade2-dialogue-001', title: '日常对话', status: 'available' },
+          { code: 'english-grade2-story-001', title: '绘本理解', status: 'available' }
         ]
       }
     ]
