@@ -113,3 +113,19 @@
   - 前端测试：`npm test -- --run`，11 个测试文件、49 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`
+- GitHub 远端已配置：`https://github.com/easoncheng775588/StarSprout-Island`
+- 已完成课程产品化增强一期：
+  - 后端 `level_steps` 支持 `activityConfigJson`、知识点 code/title、题库变体数
+  - 四年级代表关卡已种入后端玩法配置，可被前端优先解析渲染
+  - `LevelPlayer` 支持后端配置优先、本地配置兜底，并展示知识点、题库变体、素材风格、音频质量提示
+  - 通关奖励层新增更明显的鼓励动效和“星光能量”反馈
+  - 家长端新增阶段报告、知识点掌握图谱、错题复习闭环
+  - 后端家长中心接口新增 `stageReport`、`knowledgeMap`、`mistakeReviewPlan`
+  - 知识点图谱新增稳定 `knowledgePointCode`，避免同名知识点卡片 key 冲突
+- 新增前端测试：`backend-config-level.test.tsx`
+- 更新前端家长端测试，覆盖阶段报告、知识点图谱、错题复习跳转和重复知识点稳定 key
+- 更新后端接口测试，覆盖后端玩法配置、阶段报告、知识点图谱、错题复习闭环
+- 本轮最终验证通过：
+  - 前端测试：`npm test -- --run`，12 个测试文件、50 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`

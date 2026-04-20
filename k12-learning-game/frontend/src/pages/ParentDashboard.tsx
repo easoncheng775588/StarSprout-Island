@@ -103,6 +103,64 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
         </article>
       </section>
 
+      {dashboard.stageReport && (
+        <section className="panel-card stage-report-card">
+          <div>
+            <p className="eyebrow">阶段报告</p>
+            <h2>{dashboard.stageReport.stageLabel} · {dashboard.stageReport.readinessLabel}</h2>
+            <p>{dashboard.stageReport.nextMilestone}</p>
+          </div>
+          <div className="stage-report-meter" aria-label={`阶段完成度 ${dashboard.stageReport.completionPercent}%`}>
+            <strong>{dashboard.stageReport.completionPercent}%</strong>
+            <span>已完成 {dashboard.stageReport.completedLevels} / {dashboard.stageReport.totalLevels} 关</span>
+            <div className="progress-bar">
+              <span style={{ width: `${dashboard.stageReport.completionPercent}%` }} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section className="dashboard-grid dashboard-grid-parent-insights">
+        <article className="panel-card knowledge-map-panel">
+          <p className="eyebrow">知识点掌握图谱</p>
+          <div className="knowledge-map-grid">
+            {dashboard.knowledgeMap.length > 0 ? dashboard.knowledgeMap.map((item) => (
+              <article className="knowledge-node" key={item.knowledgePointCode}>
+                <span>{item.subjectTitle}</span>
+                <h3>{item.knowledgePointTitle}</h3>
+                <p>掌握度 {item.masteryPercent}% · {item.statusLabel}</p>
+                <div className="knowledge-mastery-bar">
+                  <span style={{ width: `${item.masteryPercent}%` }} />
+                </div>
+                <strong>{item.nextAction}</strong>
+              </article>
+            )) : (
+              <p>还没有足够数据生成图谱，完成更多关卡后会自动补全。</p>
+            )}
+          </div>
+        </article>
+
+        <article className="panel-card mistake-loop-panel">
+          <p className="eyebrow">错题复习闭环</p>
+          <div className="mistake-review-list">
+            {dashboard.mistakeReviewPlan.length > 0 ? dashboard.mistakeReviewPlan.map((item) => (
+              <article className="mistake-review-card" key={`${item.targetLevelCode}-${item.knowledgePointTitle}`}>
+                <div>
+                  <h3>{item.levelTitle}</h3>
+                  <p>错题 {item.mistakeCount} 次 · {item.knowledgePointTitle}</p>
+                  <span>{item.reviewAction}</span>
+                </div>
+                <Link className="cta-button cta-button-secondary" to={`/levels/${item.targetLevelCode}`}>
+                  去复习{item.levelTitle}
+                </Link>
+              </article>
+            )) : (
+              <p>暂时没有错题记录，可以保持现在的轻松节奏。</p>
+            )}
+          </div>
+        </article>
+      </section>
+
       <section className="dashboard-grid">
         <article className="panel-card">
           <p className="eyebrow">学科进度</p>

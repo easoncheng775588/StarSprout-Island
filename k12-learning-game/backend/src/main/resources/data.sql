@@ -211,6 +211,27 @@ values (1, 'step-1', 'drag-match', '把 5 个苹果拖进篮子', 1, 'math-numbe
        (81, 'step-1', 'sentence-read', '按顺序读完季节话题表达', 1, 'english-grade4-topic-001'),
        (82, 'step-1', 'listen-choice', '听一句综合练习，选出听到的关键词', 1, 'english-grade4-review-001');
 
+update level_steps
+set activity_config_json = '{"kind":"number-choice","assetTheme":"小数灯塔","audioQuality":"高质量儿童 TTS","variantCount":6,"instruction":"10 格里涂了 7 格，写成小数是多少？","choices":[0.7,7,0.07],"correctChoice":0.7,"optionLabelPrefix":"小数卡","successFeedback":"太棒了，7 个十分之一就是 0.7。","failureFeedback":"先数涂色格子，再想一想十分之几怎么写成小数。"}',
+    knowledge_point_code = 'math.g4.decimal.tenths',
+    knowledge_point_title = '小数初步：十分位',
+    variant_count = 6
+where level_code = 'math-grade4-decimal-001' and step_code = 'step-1';
+
+update level_steps
+set activity_config_json = '{"kind":"sentence-read","assetTheme":"古诗竹亭","audioQuality":"高质量拟人 TTS","variantCount":5,"instruction":"一句一句跟读古诗，注意停顿和节奏。","sentences":[{"text":"小时不识月，","emoji":"🌙","scene":"小朋友抬头看月亮"},{"text":"呼作白玉盘。","emoji":"⚪","scene":"把月亮想成白玉盘"},{"text":"又疑瑶台镜，飞在青云端。","emoji":"☁️","scene":"月亮像镜子飞在云端"}],"successFeedback":"读得很有节奏，古诗画面慢慢出来了。"}',
+    knowledge_point_code = 'chinese.g4.poem.rhythm',
+    knowledge_point_title = '古诗积累：节奏朗读',
+    variant_count = 5
+where level_code = 'chinese-grade4-poem-001' and step_code = 'step-1';
+
+update level_steps
+set activity_config_json = '{"kind":"listen-choice","assetTheme":"时态罗盘","audioQuality":"高质量儿童 TTS","variantCount":6,"instruction":"听老师读句子，选出表示昨天踢足球的一句。","audioPrompt":"播放 yesterday 句子","audioText":"I played football yesterday.","lang":"en-US","playButtonLabel":"播放时态句子","choiceAriaLabelPrefix":"英语句子","choices":["I played football yesterday.","I play football today.","I will play football tomorrow."],"correctChoice":"I played football yesterday.","successFeedback":"找对了，yesterday 和 played 都提示过去发生。","failureFeedback":"先找到 yesterday，再看动作是不是过去式。"}',
+    knowledge_point_code = 'english.g4.tense.past-simple',
+    knowledge_point_title = '英语时态：一般过去时',
+    variant_count = 6
+where level_code = 'english-grade4-tense-001' and step_code = 'step-1';
+
 insert into parent_today_summaries (child_profile_id, completed_levels, study_minutes, earned_stars)
 values (1, 3, 18, 5),
        (2, 2, 14, 4),

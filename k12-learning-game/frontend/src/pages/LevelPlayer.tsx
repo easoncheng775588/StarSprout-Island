@@ -5,10 +5,16 @@ import { completeLevel, getLevel } from '../api';
 import basketImage from '../assets/basket-cartoon.svg';
 import { subjectMaps } from '../data/mockData';
 import { useSession } from '../session';
-import type { LevelDetail } from '../types';
+import type { LevelDetail, LevelStep } from '../types';
 
-type StepActivityConfig =
-  | {
+type ActivityConfigMetadata = {
+  assetTheme?: string;
+  audioQuality?: string;
+  variantCount?: number;
+};
+
+type StepActivityConfig = ActivityConfigMetadata & (
+  {
       kind: 'basket-count';
       targetCount: number;
       instruction: string;
@@ -123,7 +129,8 @@ type StepActivityConfig =
       correctChoice: number;
       successFeedback: string;
       failureFeedback: string;
-    };
+    }
+);
 
 interface StepProgressState {
   movedAppleIds?: number[];
@@ -1274,6 +1281,21 @@ const subjectTitleToCode: Record<string, string> = {
 
 const celebrationStars = ['★', '✦', '★', '✦', '★', '✦'];
 const AUDIO_MODE_STORAGE_KEY = 'k12-learning-game-audio-mode';
+const stepActivityKinds = new Set([
+  'basket-count',
+  'number-choice',
+  'take-away',
+  'pattern-choice',
+  'comparison-choice',
+  'equation-choice',
+  'character-choice',
+  'listen-choice',
+  'follow-read',
+  'word-match',
+  'stroke-order',
+  'sentence-read',
+  'story-choice'
+]);
 
 function readAudioSpeedMode(): 'normal' | 'slow' {
   if (typeof window === 'undefined') {
@@ -1298,6 +1320,121 @@ function getNextLevelCode(levelCode: string, subjectCode?: string, stageLabel = 
   }
 
   return orderedLevels[currentIndex + 1];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function hasStringFields(value: Record<string, unknown>, fields: string[]) {
+  return fields.every((field) => typeof value[field] === 'string');
+}
+
+function hasNumberFields(value: Record<string, unknown>, fields: string[]) {
+  return fields.every((field) => typeof value[field] === 'number');
+}
+
+function hasStringArrayField(value: Record<string, unknown>, field: string) {
+  return Array.isArray(value[field]) && value[field].every((item) => typeof item === 'string');
+}
+
+function hasNumberArrayField(value: Record<string, unknown>, field: string) {
+  return Array.isArray(value[field]) && value[field].every((item) => typeof item === 'number');
+}
+
+function hasObjectArrayField(value: Record<string, unknown>, field: string) {
+  return Array.isArray(value[field]) && value[field].every(isRecord);
+}
+
+function isBackendActivityConfig(value: Record<string, unknown>): value is StepActivityConfig {
+  if (typeof value.kind !== 'string' || !stepActivityKinds.has(value.kind)) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'basket-count':
+      return hasStringFields(value, ['instruction']) && hasNumberFields(value, ['targetCount']);
+    case 'number-choice':
+      return hasStringFields(value, ['instruction', 'optionLabelPrefix', 'successFeedback', 'failureFeedback'])
+        && hasNumberFields(value, ['correctChoice'])
+        && hasNumberArrayField(value, 'choices');
+    case 'take-away':
+      return hasStringFields(value, ['instruction', 'itemLabel', 'emoji', 'successFeedback'])
+        && hasNumberFields(value, ['initialCount', 'removeCount']);
+    case 'pattern-choice':
+      return hasStringFields(value, ['instruction', 'correctChoice', 'successFeedback', 'failureFeedback'])
+        && hasObjectArrayField(value, 'sequence')
+        && hasObjectArrayField(value, 'choices');
+    case 'comparison-choice':
+    case 'equation-choice':
+      return hasStringFields(value, ['instruction', 'emoji', 'leftLabel', 'rightLabel', 'correctChoice', 'successFeedback', 'failureFeedback'])
+        && hasNumberFields(value, ['leftCount', 'rightCount'])
+        && hasStringArrayField(value, 'choices');
+    case 'character-choice':
+      return hasStringFields(value, ['instruction', 'correctChoice', 'successFeedback', 'failureFeedback'])
+        && hasObjectArrayField(value, 'choices')
+        && hasStringArrayField(value, 'detailLines');
+    case 'listen-choice':
+      return hasStringFields(value, ['instruction', 'audioPrompt', 'correctChoice', 'successFeedback', 'failureFeedback'])
+        && hasStringArrayField(value, 'choices');
+    case 'follow-read':
+      return hasStringFields(value, ['instruction']) && hasObjectArrayField(value, 'letters');
+    case 'word-match':
+      return hasStringFields(value, ['instruction']) && hasObjectArrayField(value, 'pairs');
+    case 'stroke-order':
+      return hasStringFields(value, ['instruction', 'character', 'successFeedback', 'failureFeedback'])
+        && hasObjectArrayField(value, 'strokes')
+        && hasStringArrayField(value, 'detailLines');
+    case 'sentence-read':
+      return hasStringFields(value, ['instruction', 'successFeedback']) && hasObjectArrayField(value, 'sentences');
+    case 'story-choice':
+      return hasStringFields(value, ['instruction', 'emoji', 'characterLabel', 'successFeedback', 'failureFeedback'])
+        && hasStringArrayField(value, 'detailLines')
+        && hasNumberFields(value, ['correctChoice'])
+        && hasNumberArrayField(value, 'choices');
+    default:
+      return false;
+  }
+}
+
+function parseBackendActivityConfig(activityConfigJson?: string): StepActivityConfig | undefined {
+  if (!activityConfigJson) {
+    return undefined;
+  }
+
+  try {
+    const parsedValue: unknown = JSON.parse(activityConfigJson);
+    if (!isRecord(parsedValue) || !isBackendActivityConfig(parsedValue)) {
+      return undefined;
+    }
+
+    return parsedValue;
+  } catch {
+    return undefined;
+  }
+}
+
+function getActivityMetaLabels(step: LevelStep, config?: StepActivityConfig) {
+  const labels: string[] = [];
+  const variantCount = config?.variantCount ?? step.variantCount;
+
+  if (step.knowledgePointTitle) {
+    labels.push(step.knowledgePointTitle);
+  }
+
+  if (typeof variantCount === 'number' && Number.isFinite(variantCount) && variantCount > 0) {
+    labels.push(`题库变体 ${variantCount} 组`);
+  }
+
+  if (config?.assetTheme) {
+    labels.push(`素材风格：${config.assetTheme}`);
+  }
+
+  if (config?.audioQuality) {
+    labels.push(`音频质量：${config.audioQuality}`);
+  }
+
+  return labels;
 }
 
 export function LevelPlayer() {
@@ -1363,8 +1500,8 @@ export function LevelPlayer() {
   const backTarget = subjectCode ? `/subjects/${subjectCode}` : '/';
   const backLabel = subjectCode ? `返回${currentLevel.subjectTitle}` : '返回首页';
 
-  function getStepConfig(stepId: string): StepActivityConfig | undefined {
-    return levelActivityConfigs[currentLevel!.code]?.[stepId];
+  function getStepConfig(step: LevelStep): StepActivityConfig | undefined {
+    return parseBackendActivityConfig(step.activityConfigJson) ?? levelActivityConfigs[currentLevel!.code]?.[step.id];
   }
 
   function playNarration(text: string, lang: string) {
@@ -1761,13 +1898,21 @@ export function LevelPlayer() {
 
         <div className="step-list">
           {currentLevel.steps.map((step, index) => {
-            const config = getStepConfig(step.id);
+            const config = getStepConfig(step);
             const progress = stepProgress[step.id];
+            const activityMetaLabels = getActivityMetaLabels(step, config);
 
             return (
               <article className="step-card" key={step.id}>
                 <span className="node-step">第 {index + 1} / {currentLevel.steps.length} 步</span>
                 <h2>{step.prompt}</h2>
+                {activityMetaLabels.length > 0 ? (
+                  <div className="level-activity-meta" aria-label="关卡素材和题库提示">
+                    {activityMetaLabels.map((label) => (
+                      <span className="level-activity-meta-chip" key={label}>{label}</span>
+                    ))}
+                  </div>
+                ) : null}
 
                 {config?.kind === 'basket-count' ? (
                   <div className="play-surface">
@@ -2295,6 +2440,10 @@ export function LevelPlayer() {
                 {star}
               </span>
             ))}
+          </div>
+          <div className="reward-hero-badge" aria-label="通关鼓励徽章">
+            <span>闯关成功</span>
+            <strong>星光能量已充满</strong>
           </div>
           <p className="eyebrow">奖励已送达</p>
           <h2>{completionResult.isFirstCompletion ? `获得 ${reward.stars} 颗星星` : '复习完成啦'}</h2>

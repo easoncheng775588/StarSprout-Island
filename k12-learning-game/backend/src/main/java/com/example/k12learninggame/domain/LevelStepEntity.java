@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Column;
 import jakarta.persistence.Table;
 
 @Entity
@@ -25,6 +26,15 @@ public class LevelStepEntity {
 
     private int displayOrder;
 
+    @Column(length = 4000)
+    private String activityConfigJson;
+
+    private String knowledgePointCode;
+
+    private String knowledgePointTitle;
+
+    private Integer variantCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "level_code", nullable = false)
     private LevelEntity level;
@@ -42,5 +52,21 @@ public class LevelStepEntity {
 
     public String getPrompt() {
         return prompt;
+    }
+
+    public String getActivityConfigJson() {
+        return activityConfigJson;
+    }
+
+    public String getKnowledgePointCode() {
+        return knowledgePointCode;
+    }
+
+    public String getKnowledgePointTitle() {
+        return knowledgePointTitle;
+    }
+
+    public Integer getVariantCount() {
+        return variantCount;
     }
 }

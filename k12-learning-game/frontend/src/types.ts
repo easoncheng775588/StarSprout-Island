@@ -50,6 +50,10 @@ export interface LevelStep {
   id: string;
   type: string;
   prompt: string;
+  activityConfigJson?: string;
+  knowledgePointCode?: string;
+  knowledgePointTitle?: string;
+  variantCount?: number;
 }
 
 export interface LevelDetail {

@@ -228,6 +228,67 @@ class ApiSmokeTest {
     }
 
     @Test
+    void shouldReturnBackendDrivenActivityConfigForRepresentativeLevel() throws Exception {
+        mockMvc.perform(get("/api/levels/math-grade4-decimal-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("number-choice")))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("assetTheme")))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("audioQuality")))
+                .andExpect(jsonPath("$.steps[0].knowledgePointCode").value("math.g4.decimal.tenths"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("小数初步：十分位"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(6));
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnStageReportKnowledgeMapAndMistakeReviewPlan() throws Exception {
+        mockMvc.perform(patch("/api/parent/children/3")
+                        .header("X-Parent-Account-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nickname": "小海豚",
+                                  "title": "海湾领航员",
+                                  "stageLabel": "四年级",
+                                  "avatarColor": "#8ee1b5"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/levels/math-grade4-decimal-001/complete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "childProfileId": 3,
+                                  "correctCount": 0,
+                                  "wrongCount": 2,
+                                  "durationSeconds": 180
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/parent/dashboard").header("X-Child-Profile-Id", 3))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.stageReport.stageLabel").value("四年级"))
+                .andExpect(jsonPath("$.stageReport.completedLevels").value(1))
+                .andExpect(jsonPath("$.stageReport.totalLevels").value(12))
+                .andExpect(jsonPath("$.stageReport.completionPercent").value(8))
+                .andExpect(jsonPath("$.stageReport.readinessLabel").value("刚刚起步"))
+                .andExpect(jsonPath("$.stageReport.nextMilestone").value(org.hamcrest.Matchers.containsString("角与图形")))
+                .andExpect(jsonPath("$.knowledgeMap[0].subjectTitle").value("数学岛"))
+                .andExpect(jsonPath("$.knowledgeMap[0].knowledgePointCode").value("math.g4.decimal.tenths"))
+                .andExpect(jsonPath("$.knowledgeMap[0].knowledgePointTitle").value("小数初步：十分位"))
+                .andExpect(jsonPath("$.knowledgeMap[0].masteryPercent").value(0))
+                .andExpect(jsonPath("$.knowledgeMap[0].statusLabel").value("需要复习"))
+                .andExpect(jsonPath("$.knowledgeMap[0].nextAction").value(org.hamcrest.Matchers.containsString("小数初步")))
+                .andExpect(jsonPath("$.mistakeReviewPlan[0].levelTitle").value("小数点灯塔"))
+                .andExpect(jsonPath("$.mistakeReviewPlan[0].knowledgePointTitle").value("小数初步：十分位"))
+                .andExpect(jsonPath("$.mistakeReviewPlan[0].mistakeCount").value(2))
+                .andExpect(jsonPath("$.mistakeReviewPlan[0].reviewAction").value(org.hamcrest.Matchers.containsString("复习")))
+                .andExpect(jsonPath("$.mistakeReviewPlan[0].targetLevelCode").value("math-grade4-decimal-001"));
+    }
+
+    @Test
     @Transactional
     void shouldFilterCurriculumByChildStage() throws Exception {
         mockMvc.perform(patch("/api/parent/children/2")

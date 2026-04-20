@@ -197,6 +197,29 @@ export interface ParentDashboardData {
     completedAtLabel: string;
     earnedStars: number;
   }>;
+  stageReport: {
+    stageLabel: string;
+    completedLevels: number;
+    totalLevels: number;
+    completionPercent: number;
+    readinessLabel: string;
+    nextMilestone: string;
+  };
+  knowledgeMap: Array<{
+    subjectTitle: string;
+    knowledgePointCode: string;
+    knowledgePointTitle: string;
+    masteryPercent: number;
+    statusLabel: string;
+    nextAction: string;
+  }>;
+  mistakeReviewPlan: Array<{
+    levelTitle: string;
+    knowledgePointTitle: string;
+    mistakeCount: number;
+    reviewAction: string;
+    targetLevelCode: string;
+  }>;
 }
 
 export interface LeaderboardData {

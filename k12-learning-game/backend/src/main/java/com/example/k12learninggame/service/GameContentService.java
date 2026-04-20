@@ -27,6 +27,8 @@ import com.example.k12learninggame.dto.LearningVitalsDto;
 import com.example.k12learninggame.dto.LevelDetailResponse;
 import com.example.k12learninggame.dto.LevelStepDto;
 import com.example.k12learninggame.dto.LevelSummaryDto;
+import com.example.k12learninggame.dto.KnowledgeMapItemDto;
+import com.example.k12learninggame.dto.MistakeReviewItemDto;
 import com.example.k12learninggame.dto.ParentDashboardResponse;
 import com.example.k12learninggame.dto.ParentSettingsDto;
 import com.example.k12learninggame.dto.ParentActiveChildUpdateRequest;
@@ -38,6 +40,7 @@ import com.example.k12learninggame.dto.RecommendedActionDto;
 import com.example.k12learninggame.dto.RecentActivityDto;
 import com.example.k12learninggame.dto.RewardDto;
 import com.example.k12learninggame.dto.SessionChildrenResponse;
+import com.example.k12learninggame.dto.StageReportDto;
 import com.example.k12learninggame.dto.SubjectCardDto;
 import com.example.k12learninggame.dto.SubjectDto;
 import com.example.k12learninggame.dto.SubjectMapResponse;
@@ -355,7 +358,10 @@ public class GameContentService {
                 completions.stream()
                         .limit(3)
                         .map(this::toRecentActivityDto)
-                        .toList()
+                        .toList(),
+                buildStageReport(child),
+                buildKnowledgeMap(child, completions),
+                buildMistakeReviewPlan(child, completions)
         );
     }
 
@@ -515,10 +521,15 @@ public class GameContentService {
     }
 
     private Set<String> getStageLevelCodes(ChildProfileEntity child) {
-        return subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
-                .flatMap(subject -> getStageLevels(subject, child).stream())
+        return getAllStageLevels(child).stream()
                 .map(LevelEntity::getCode)
                 .collect(LinkedHashSet::new, Set::add, Set::addAll);
+    }
+
+    private List<LevelEntity> getAllStageLevels(ChildProfileEntity child) {
+        return subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
+                .flatMap(subject -> getStageLevels(subject, child).stream())
+                .toList();
     }
 
     private Set<String> getCompletedLevelCodesForCurrentStage(ChildProfileEntity child) {
@@ -621,6 +632,164 @@ public class GameContentService {
                     );
                 })
                 .toList();
+    }
+
+    private StageReportDto buildStageReport(ChildProfileEntity child) {
+        List<LevelEntity> stageLevels = getAllStageLevels(child);
+        Set<String> completedLevelCodes = getCompletedLevelCodesForCurrentStage(child);
+        int completedLevels = (int) stageLevels.stream()
+                .map(LevelEntity::getCode)
+                .filter(completedLevelCodes::contains)
+                .count();
+        int totalLevels = stageLevels.size();
+        int completionPercent = totalLevels == 0 ? 0 : (int) Math.round(completedLevels * 100.0 / totalLevels);
+        String nextMilestone = stageLevels.stream()
+                .filter(level -> !completedLevelCodes.contains(level.getCode()))
+                .map(level -> "下一阶段建议完成“" + level.getSummaryTitle() + "”。")
+                .findFirst()
+                .orElse("本阶段主线已完成，可以进入综合复习或下一学段预习。");
+
+        return new StageReportDto(
+                resolveStageLabel(child),
+                completedLevels,
+                totalLevels,
+                completionPercent,
+                readinessLabel(completionPercent),
+                nextMilestone
+        );
+    }
+
+    private List<KnowledgeMapItemDto> buildKnowledgeMap(ChildProfileEntity child, List<LevelCompletionEntity> completions) {
+        Set<String> stageLevelCodes = getStageLevelCodes(child);
+        Map<String, List<LevelCompletionEntity>> completionsByLevelCode = completions.stream()
+                .filter(item -> stageLevelCodes.contains(item.getLevel().getCode()))
+                .collect(Collectors.groupingBy(item -> item.getLevel().getCode()));
+
+        return getAllStageLevels(child).stream()
+                .flatMap(level -> knowledgePointsForLevel(level).stream()
+                        .map(knowledgePoint -> toKnowledgeMapItem(level, knowledgePoint, completionsByLevelCode.getOrDefault(level.getCode(), List.of()))))
+                .toList();
+    }
+
+    private List<MistakeReviewItemDto> buildMistakeReviewPlan(ChildProfileEntity child, List<LevelCompletionEntity> completions) {
+        Set<String> stageLevelCodes = getStageLevelCodes(child);
+
+        return completions.stream()
+                .filter(item -> stageLevelCodes.contains(item.getLevel().getCode()))
+                .filter(item -> item.getWrongCount() > 0)
+                .collect(Collectors.groupingBy(item -> item.getLevel().getCode()))
+                .values()
+                .stream()
+                .map(this::toMistakeReviewItem)
+                .sorted(Comparator
+                        .comparingInt(MistakeReviewDraft::mistakeCount)
+                        .reversed()
+                        .thenComparing(MistakeReviewDraft::latestCompletedAt, Comparator.reverseOrder()))
+                .limit(5)
+                .map(draft -> new MistakeReviewItemDto(
+                        draft.levelTitle(),
+                        draft.knowledgePointTitle(),
+                        draft.mistakeCount(),
+                        draft.reviewAction(),
+                        draft.targetLevelCode()
+                ))
+                .toList();
+    }
+
+    private List<KnowledgePointDraft> knowledgePointsForLevel(LevelEntity level) {
+        if (level.getSteps().isEmpty()) {
+            return List.of(new KnowledgePointDraft(
+                    level.getCode() + ".core",
+                    level.getSummaryTitle(),
+                    1
+            ));
+        }
+
+        return level.getSteps().stream()
+                .map(step -> new KnowledgePointDraft(
+                        Optional.ofNullable(step.getKnowledgePointCode()).filter(value -> !value.isBlank()).orElse(level.getCode() + "." + step.getStepCode()),
+                        Optional.ofNullable(step.getKnowledgePointTitle()).filter(value -> !value.isBlank()).orElse(level.getSummaryTitle()),
+                        Optional.ofNullable(step.getVariantCount()).orElse(1)
+                ))
+                .toList();
+    }
+
+    private KnowledgeMapItemDto toKnowledgeMapItem(
+            LevelEntity level,
+            KnowledgePointDraft knowledgePoint,
+            List<LevelCompletionEntity> levelCompletions
+    ) {
+        int totalAttempts = levelCompletions.stream()
+                .mapToInt(item -> item.getCorrectCount() + item.getWrongCount())
+                .sum();
+        int totalCorrect = levelCompletions.stream()
+                .mapToInt(LevelCompletionEntity::getCorrectCount)
+                .sum();
+        int masteryPercent = totalAttempts == 0 ? 0 : (int) Math.round(totalCorrect * 100.0 / totalAttempts);
+        String statusLabel = knowledgeStatusLabel(totalAttempts, masteryPercent);
+        String nextAction = switch (statusLabel) {
+            case "已掌握" -> "保持节奏，进入下一关或尝试更高星挑战。";
+            case "继续巩固" -> "再练 1 组“" + level.getSummaryTitle() + "”变式题，争取稳定到 85%。";
+            case "需要复习" -> "复习“" + level.getSummaryTitle() + "”，优先讲清错因后再做变式。";
+            default -> "开始挑战“" + level.getSummaryTitle() + "”，建立这个知识点的第一条记录。";
+        };
+
+        return new KnowledgeMapItemDto(
+                level.getChapter().getSubject().getTitle(),
+                knowledgePoint.code(),
+                knowledgePoint.title(),
+                masteryPercent,
+                statusLabel,
+                nextAction
+        );
+    }
+
+    private MistakeReviewDraft toMistakeReviewItem(List<LevelCompletionEntity> levelCompletions) {
+        LevelEntity level = levelCompletions.get(0).getLevel();
+        String knowledgePointTitle = knowledgePointsForLevel(level).stream()
+                .findFirst()
+                .map(KnowledgePointDraft::title)
+                .orElse(level.getSummaryTitle());
+        int mistakeCount = levelCompletions.stream().mapToInt(LevelCompletionEntity::getWrongCount).sum();
+        LocalDateTime latestCompletedAt = levelCompletions.stream()
+                .map(LevelCompletionEntity::getCompletedAt)
+                .max(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.MIN);
+
+        return new MistakeReviewDraft(
+                level.getDetailTitle(),
+                knowledgePointTitle,
+                mistakeCount,
+                "复习“" + knowledgePointTitle + "”，先回看错因，再完成 1 组变式练习。",
+                level.getCode(),
+                latestCompletedAt
+        );
+    }
+
+    private String readinessLabel(int completionPercent) {
+        if (completionPercent >= 90) {
+            return "阶段稳固";
+        }
+        if (completionPercent >= 60) {
+            return "接近达标";
+        }
+        if (completionPercent >= 30) {
+            return "正在建立";
+        }
+        return "刚刚起步";
+    }
+
+    private String knowledgeStatusLabel(int totalAttempts, int masteryPercent) {
+        if (totalAttempts == 0) {
+            return "待开始";
+        }
+        if (masteryPercent >= 85) {
+            return "已掌握";
+        }
+        if (masteryPercent >= 60) {
+            return "继续巩固";
+        }
+        return "需要复习";
     }
 
     private List<TrendPointDto> buildWeeklyTrend(List<LevelCompletionEntity> completions) {
@@ -955,7 +1124,15 @@ public class GameContentService {
                 level.getChapter().getSubject().getTitle(),
                 level.getDescription(),
                 level.getSteps().stream()
-                        .map(step -> new LevelStepDto(step.getStepCode(), step.getStepType(), step.getPrompt()))
+                        .map(step -> new LevelStepDto(
+                                step.getStepCode(),
+                                step.getStepType(),
+                                step.getPrompt(),
+                                step.getActivityConfigJson(),
+                                step.getKnowledgePointCode(),
+                                step.getKnowledgePointTitle(),
+                                step.getVariantCount()
+                        ))
                         .toList(),
                 new RewardDto(level.getRewardStars(), level.getRewardBadgeName())
         );
@@ -1059,5 +1236,18 @@ public class GameContentService {
     }
 
     private record SubjectScore(String subjectTitle, double accuracy, String nextLevelTitle) {
+    }
+
+    private record KnowledgePointDraft(String code, String title, int variantCount) {
+    }
+
+    private record MistakeReviewDraft(
+            String levelTitle,
+            String knowledgePointTitle,
+            int mistakeCount,
+            String reviewAction,
+            String targetLevelCode,
+            LocalDateTime latestCompletedAt
+    ) {
     }
 }

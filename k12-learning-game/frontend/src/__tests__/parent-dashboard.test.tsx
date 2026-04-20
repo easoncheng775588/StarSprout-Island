@@ -2,10 +2,13 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
+import type { ParentDashboardData } from '../api';
 import { ParentDashboard } from '../pages/ParentDashboard';
 
 describe('ParentDashboard', () => {
   test('renders learning summary, subject progress and settings', () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
     render(
       <MemoryRouter>
         <ParentDashboard
@@ -84,8 +87,43 @@ describe('ParentDashboard', () => {
             recentActivities: [
               { subjectTitle: '语文岛', levelTitle: '拼音泡泡大作战', completedAtLabel: '今天 18:35', earnedStars: 1 },
               { subjectTitle: '数学岛', levelTitle: '数字小探险', completedAtLabel: '今天 17:35', earnedStars: 3 }
+            ],
+            stageReport: {
+              stageLabel: '一年级',
+              completedLevels: 8,
+              totalLevels: 24,
+              completionPercent: 33,
+              readinessLabel: '主线起步中',
+              nextMilestone: '再完成 4 关，进入一年级巩固阶段'
+            },
+            knowledgeMap: [
+              {
+                knowledgePointCode: 'math.add-subtract.core',
+                subjectTitle: '数学岛',
+                knowledgePointTitle: '20 以内加减法',
+                masteryPercent: 72,
+                statusLabel: '巩固中',
+                nextAction: '每天完成 1 次图像列式练习'
+              },
+              {
+                knowledgePointCode: 'math.add-subtract.visual',
+                subjectTitle: '数学岛',
+                knowledgePointTitle: '20 以内加减法',
+                masteryPercent: 48,
+                statusLabel: '待强化',
+                nextAction: '用苹果图再做 1 组看图列式'
+              }
+            ],
+            mistakeReviewPlan: [
+              {
+                levelTitle: '糖果减法小店',
+                knowledgePointTitle: '20 以内退位减法',
+                mistakeCount: 3,
+                reviewAction: '先用实物图复盘，再做 3 题同类变式',
+                targetLevelCode: 'math-subtraction-002'
+              }
             ]
-          }}
+          } as ParentDashboardData}
         />
       </MemoryRouter>
     );
@@ -113,6 +151,21 @@ describe('ParentDashboard', () => {
     expect(screen.getByText('拼音泡泡大作战')).toBeInTheDocument();
     expect(screen.getByText('今天 18:35 · 1 颗星星')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '查看成就墙' })).toHaveAttribute('href', '/achievements');
+    expect(screen.getByText('阶段报告')).toBeInTheDocument();
+    expect(screen.getByText('一年级 · 主线起步中')).toBeInTheDocument();
+    expect(screen.getByText('已完成 8 / 24 关')).toBeInTheDocument();
+    expect(screen.getByText('再完成 4 关，进入一年级巩固阶段')).toBeInTheDocument();
+    expect(screen.getByText('知识点掌握图谱')).toBeInTheDocument();
+    expect(screen.getAllByText('20 以内加减法')).toHaveLength(2);
+    expect(screen.getByText('掌握度 72% · 巩固中')).toBeInTheDocument();
+    expect(screen.getByText('每天完成 1 次图像列式练习')).toBeInTheDocument();
+    expect(screen.getByText('用苹果图再做 1 组看图列式')).toBeInTheDocument();
+    expect(screen.getByText('错题复习闭环')).toBeInTheDocument();
+    expect(screen.getByText('糖果减法小店')).toBeInTheDocument();
+    expect(screen.getByText('错题 3 次 · 20 以内退位减法')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '去复习糖果减法小店' })).toHaveAttribute('href', '/levels/math-subtraction-002');
+    expect(consoleErrorSpy.mock.calls.map((call) => String(call[0])).join('\n')).not.toContain('Encountered two children with the same key');
+    consoleErrorSpy.mockRestore();
   });
 
   test('saves parent settings and updates the visible summary', async () => {
@@ -167,7 +220,17 @@ describe('ParentDashboard', () => {
               effectiveLearningDays: 3
             },
             subjectInsights: [],
-            recentActivities: []
+            recentActivities: [],
+            stageReport: {
+              stageLabel: '一年级',
+              completedLevels: 8,
+              totalLevels: 24,
+              completionPercent: 33,
+              readinessLabel: '主线起步中',
+              nextMilestone: '再完成 4 关，进入一年级巩固阶段'
+            },
+            knowledgeMap: [],
+            mistakeReviewPlan: []
           }}
         />
       </MemoryRouter>
