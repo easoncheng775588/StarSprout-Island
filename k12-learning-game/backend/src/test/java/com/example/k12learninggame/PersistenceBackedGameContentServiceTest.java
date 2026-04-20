@@ -211,4 +211,33 @@ class PersistenceBackedGameContentServiceTest {
                     assertThat(insight.nextLevelTitle()).isEqualTo("自然拼读进阶");
                 });
     }
+
+    @Test
+    @Transactional
+    void shouldUseStageSpecificCurriculumForYearThreeChildren() {
+        var child = childProfileRepository.findById(2L).orElseThrow();
+        child.setStageLabel("三年级");
+        childProfileRepository.save(child);
+
+        var homeOverview = gameContentService.getHomeOverview(2L);
+        var chineseMap = gameContentService.getSubjectMap("chinese", 2L);
+        var dashboard = gameContentService.getParentDashboard(2L);
+
+        assertThat(homeOverview.nextLevelCode()).isEqualTo("math-grade3-division-001");
+        assertThat(homeOverview.nextLevelTitle()).isEqualTo("除法平均分");
+        assertThat(chineseMap.chapters())
+                .extracting(chapter -> chapter.code(), chapter -> chapter.title())
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple("chinese-grade3-reading", "段落理解站"),
+                        org.assertj.core.groups.Tuple.tuple("chinese-grade3-expression", "表达修辞屋")
+                );
+        assertThat(dashboard.subjectInsights())
+                .filteredOn(insight -> insight.subjectCode().equals("chinese"))
+                .singleElement()
+                .satisfies(insight -> {
+                    assertThat(insight.completedLevels()).isZero();
+                    assertThat(insight.totalLevels()).isEqualTo(4);
+                    assertThat(insight.nextLevelTitle()).isEqualTo("段落理解");
+                });
+    }
 }

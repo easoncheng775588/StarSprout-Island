@@ -86,6 +86,26 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
           { code: 'math-grade2-wordproblem-001', title: '两步应用题', status: 'available' },
           { code: 'math-grade2-time-001', title: '时间小管家', status: 'available' }
         ]
+      },
+      {
+        code: 'math-grade3-operations',
+        stageLabel: '三年级',
+        title: '除法图形站',
+        subtitle: '从平均分到周长，开始看见三年级数学里的结构。',
+        levels: [
+          { code: 'math-grade3-division-001', title: '除法平均分', status: 'recommended' },
+          { code: 'math-grade3-perimeter-001', title: '周长小侦探', status: 'available' }
+        ]
+      },
+      {
+        code: 'math-grade3-thinking',
+        stageLabel: '三年级',
+        title: '分数策略站',
+        subtitle: '用分数和多步应用题继续训练推理与表达。',
+        levels: [
+          { code: 'math-grade3-fraction-001', title: '分数初步', status: 'available' },
+          { code: 'math-grade3-wordproblem-001', title: '多步应用题', status: 'available' }
+        ]
       }
     ]
   },
@@ -164,6 +184,26 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'chinese-grade2-picture-001', title: '看图表达', status: 'available' },
           { code: 'chinese-grade2-reading-001', title: '朗读理解', status: 'available' }
+        ]
+      },
+      {
+        code: 'chinese-grade3-reading',
+        stageLabel: '三年级',
+        title: '段落理解站',
+        subtitle: '读懂一小段话，也开始留意段落中的关键词。',
+        levels: [
+          { code: 'chinese-grade3-paragraph-001', title: '段落理解', status: 'recommended' },
+          { code: 'chinese-grade3-antonym-001', title: '近反义词', status: 'available' }
+        ]
+      },
+      {
+        code: 'chinese-grade3-expression',
+        stageLabel: '三年级',
+        title: '表达修辞屋',
+        subtitle: '认识简单修辞，试着把阅读感受说得更清楚。',
+        levels: [
+          { code: 'chinese-grade3-rhetoric-001', title: '修辞感知', status: 'available' },
+          { code: 'chinese-grade3-expression-001', title: '阅读表达', status: 'available' }
         ]
       }
     ]
@@ -254,6 +294,26 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'english-grade2-dialogue-001', title: '日常对话', status: 'available' },
           { code: 'english-grade2-story-001', title: '绘本理解', status: 'available' }
+        ]
+      },
+      {
+        code: 'english-grade3-sentences',
+        stageLabel: '三年级',
+        title: '句型变化港',
+        subtitle: '从句型变换到词组搭配，开始搭建更完整的英语表达。',
+        levels: [
+          { code: 'english-grade3-transform-001', title: '句型变换', status: 'recommended' },
+          { code: 'english-grade3-phrase-001', title: '词组搭配', status: 'available' }
+        ]
+      },
+      {
+        code: 'english-grade3-reading',
+        stageLabel: '三年级',
+        title: '阅读表达湾',
+        subtitle: '读短文、聊主题，把英语从句子推进到小段表达。',
+        levels: [
+          { code: 'english-grade3-reading-001', title: '阅读理解', status: 'available' },
+          { code: 'english-grade3-topic-001', title: '主题表达', status: 'available' }
         ]
       }
     ]

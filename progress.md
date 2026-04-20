@@ -91,3 +91,14 @@
   - 前端测试：`npm test -- --run`，9 个测试文件、43 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`
+- 二年级阶段已本地提交：`f2c2d50 feat: add grade 2 mvp curriculum`
+- 已完成三年级 MVP：
+  - 数学 4 关：除法平均分、周长小侦探、分数初步、多步应用题
+  - 语文 4 关：段落理解、近反义词、修辞感知、阅读表达
+  - 英语 4 关：句型变换、词组搭配、阅读理解、主题表达
+- 前端新增 `grade3-levels.test.tsx`，覆盖三年级数学、语文、英语交互
+- 后端新增三年级学段过滤测试，验证首页推荐、学科地图和家长端统计
+- 验证通过：
+  - 前端测试：`npm test -- --run`，10 个测试文件、46 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`

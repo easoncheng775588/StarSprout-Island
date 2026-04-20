@@ -901,6 +901,162 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       ],
       successFeedback: '小绘本已经读完，做得真棒'
     }
+  },
+  'math-grade3-division-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '把贝壳平均分给 3 个小朋友，想想每个人拿到几个。',
+      emoji: '🐚',
+      characterLabel: '贝壳小队',
+      detailLines: ['12 个贝壳平均分给 3 个小朋友', '平均分就是每个人拿到一样多。'],
+      choices: [3, 4, 5],
+      correctChoice: 4,
+      successFeedback: '答对了，12 平均分成 3 份，每份是 4',
+      failureFeedback: '再把 12 个贝壳分成 3 组试试看'
+    }
+  },
+  'math-grade3-perimeter-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '绕着长方形走一圈，把四条边都加起来。',
+      emoji: '🧱',
+      characterLabel: '操场围栏',
+      detailLines: ['长方形操场长 6 米，宽 4 米。', '周长要把四条边都算进去。'],
+      choices: [18, 20, 24],
+      correctChoice: 20,
+      successFeedback: '答对了，6 + 4 + 6 + 4 = 20 米',
+      failureFeedback: '别忘了长方形有两条长边和两条宽边'
+    }
+  },
+  'math-grade3-fraction-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '把披萨平均分，再想想涂色部分有几份。',
+      emoji: '🍕',
+      characterLabel: '披萨分数',
+      detailLines: ['一张披萨平均分成 8 份。', '其中 3 份涂上了颜色。'],
+      choices: [2, 3, 5],
+      correctChoice: 3,
+      successFeedback: '答对了，涂色部分是 8 份里的 3 份',
+      failureFeedback: '先看一共分成几份，再数涂色的几份'
+    }
+  },
+  'math-grade3-wordproblem-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '把题目拆成两步，先算每盒，再算一共。',
+      emoji: '📦',
+      characterLabel: '图书角',
+      detailLines: ['每个书架放 3 层，每层 8 本书。', '2 个书架一共有多少本书？'],
+      choices: [24, 36, 48],
+      correctChoice: 48,
+      successFeedback: '答对了，先算 3 × 8 = 24，再算 24 × 2 = 48',
+      failureFeedback: '先算一个书架有多少本，再算两个书架'
+    }
+  },
+  'chinese-grade3-paragraph-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '按顺序读完一小段话，把春天的画面连起来。',
+      sentences: [
+        { text: '春天来了，小草从泥土里探出头。', emoji: '🌱', scene: '小草从土里长出来' },
+        { text: '河边的柳树长出了嫩绿的叶子。', emoji: '🌿', scene: '柳树叶子变绿' },
+        { text: '小朋友们在风里放起了风筝。', emoji: '🪁', scene: '孩子们在春风里玩耍' }
+      ],
+      successFeedback: '段落读完啦，春天的画面已经连起来了'
+    }
+  },
+  'chinese-grade3-antonym-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '找到和“热闹”意思相反的词语。',
+      choices: [
+        { label: '安静', hint: '没有声音，很平静' },
+        { label: '高兴', hint: '心情很好' },
+        { label: '整齐', hint: '排得很有顺序' }
+      ],
+      correctChoice: '安静',
+      successFeedback: '答对了，“热闹”的反义词可以是“安静”',
+      detailLines: ['近义词和反义词能帮助我们更准确地理解词语。'],
+      failureFeedback: '再想一想，热闹是声音多，人也多'
+    }
+  },
+  'chinese-grade3-rhetoric-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '哪一句用了“像”来打比方？',
+      choices: [
+        { label: '月亮像小船。', hint: '把月亮比作小船' },
+        { label: '我看见月亮。', hint: '只是说明看见了什么' },
+        { label: '月亮升起来了。', hint: '说明月亮的位置变化' }
+      ],
+      correctChoice: '月亮像小船。',
+      successFeedback: '答对了，“像”把月亮和小船联系起来了',
+      detailLines: ['三年级可以先感受比喻，让句子变得更有画面。'],
+      failureFeedback: '找一找哪一句把一个东西说成像另一个东西'
+    }
+  },
+  'chinese-grade3-expression-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '读完后试着感受：这一段主要写了什么。',
+      sentences: [
+        { text: '雨停了，空气里有青草的味道。', emoji: '🌧️', scene: '雨后空气清新' },
+        { text: '小蜗牛慢慢爬过湿湿的石板路。', emoji: '🐌', scene: '蜗牛在路上移动' },
+        { text: '我蹲下来，轻轻和它说了一声你好。', emoji: '👋', scene: '我温柔地观察小动物' }
+      ],
+      successFeedback: '阅读表达完成，已经能抓住雨后观察的画面了'
+    }
+  },
+  'english-grade3-transform-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '找到 I like apples. 的否定句。',
+      choices: [
+        { label: 'I do not like apples.', hint: '加上 do not，表示不喜欢' },
+        { label: 'I likes apples.', hint: '主谓不一致' },
+        { label: 'Do I like apples?', hint: '这是疑问句' }
+      ],
+      correctChoice: 'I do not like apples.',
+      successFeedback: '答对了，do not 可以把 like 变成“不喜欢”',
+      detailLines: ['句型变换先从肯定句、否定句和疑问句开始观察。'],
+      failureFeedback: '再想一想，否定句里常会出现 not'
+    }
+  },
+  'english-grade3-phrase-001': {
+    'step-1': {
+      kind: 'word-match',
+      instruction: '把常见词组和中文意思配起来。',
+      pairs: [
+        { word: 'look at', pictureLabel: '看一看', emoji: '👀', phonetic: '/lʊk æt/' },
+        { word: 'get up', pictureLabel: '起床', emoji: '🛏️', phonetic: '/ɡet ʌp/' },
+        { word: 'go home', pictureLabel: '回家', emoji: '🏠', phonetic: '/ɡoʊ hoʊm/' }
+      ]
+    }
+  },
+  'english-grade3-reading-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '按顺序读完短文，看看 Ben 周末做了什么。',
+      sentences: [
+        { text: 'Ben goes to the park on Sunday.', emoji: '🌳', scene: 'Ben 周日去公园' },
+        { text: 'He plays with his dog.', emoji: '🐶', scene: '他和小狗玩' },
+        { text: 'They run under the big trees.', emoji: '🏃', scene: '他们在树下跑步' }
+      ],
+      successFeedback: '短文读完啦，Ben 的周末活动已经清楚了'
+    }
+  },
+  'english-grade3-topic-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '围绕“My day”主题读三句话，再试着自己说一说。',
+      sentences: [
+        { text: 'I get up at seven.', emoji: '⏰', scene: '我七点起床' },
+        { text: 'I go to school with my bag.', emoji: '🎒', scene: '我背着书包上学' },
+        { text: 'I read books after class.', emoji: '📚', scene: '课后我读书' }
+      ],
+      successFeedback: '主题表达完成，可以试着说说自己的一天'
+    }
   }
 };
 
