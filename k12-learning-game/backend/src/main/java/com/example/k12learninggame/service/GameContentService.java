@@ -5,6 +5,7 @@ import com.example.k12learninggame.domain.ChildProfileEntity;
 import com.example.k12learninggame.domain.LeaderboardBoardEntity;
 import com.example.k12learninggame.domain.LevelCompletionEntity;
 import com.example.k12learninggame.domain.LevelEntity;
+import com.example.k12learninggame.domain.LevelStepEntity;
 import com.example.k12learninggame.domain.ParentAccountEntity;
 import com.example.k12learninggame.domain.SubjectEntity;
 import com.example.k12learninggame.dto.AchievementBadgeDto;
@@ -14,20 +15,29 @@ import com.example.k12learninggame.dto.AchievementsResponse;
 import com.example.k12learninggame.dto.AuthLoginRequest;
 import com.example.k12learninggame.dto.AuthRegisterRequest;
 import com.example.k12learninggame.dto.AuthSessionResponse;
+import com.example.k12learninggame.dto.ContentConfigCatalogResponse;
+import com.example.k12learninggame.dto.ContentConfigItemDto;
 import com.example.k12learninggame.dto.ChapterDto;
 import com.example.k12learninggame.dto.ChildProfileDto;
 import com.example.k12learninggame.dto.ChildProfileUpsertRequest;
+import com.example.k12learninggame.dto.DailyTaskBoardResponse;
+import com.example.k12learninggame.dto.DailyTaskDto;
 import com.example.k12learninggame.dto.CompleteLevelRequest;
 import com.example.k12learninggame.dto.CompleteLevelResponse;
 import com.example.k12learninggame.dto.GoalProgressDto;
 import com.example.k12learninggame.dto.HomeOverviewResponse;
 import com.example.k12learninggame.dto.LeaderboardRankDto;
+import com.example.k12learninggame.dto.LearningPathChapterDto;
+import com.example.k12learninggame.dto.LearningPathLevelDto;
+import com.example.k12learninggame.dto.LearningPathResponse;
 import com.example.k12learninggame.dto.LeaderboardResponse;
 import com.example.k12learninggame.dto.LearningVitalsDto;
 import com.example.k12learninggame.dto.LevelDetailResponse;
 import com.example.k12learninggame.dto.LevelStepDto;
 import com.example.k12learninggame.dto.LevelSummaryDto;
 import com.example.k12learninggame.dto.KnowledgeMapItemDto;
+import com.example.k12learninggame.dto.MistakeReviewCardDto;
+import com.example.k12learninggame.dto.MistakeReviewCenterResponse;
 import com.example.k12learninggame.dto.MistakeReviewItemDto;
 import com.example.k12learninggame.dto.ParentDashboardResponse;
 import com.example.k12learninggame.dto.ParentSettingsDto;
@@ -254,6 +264,169 @@ public class GameContentService {
                                         .toList()
                         ))
                         .toList()
+        );
+    }
+
+    public DailyTaskBoardResponse getDailyTasks(Long childProfileId) {
+        ChildProfileEntity child = getChild(childProfileId);
+        List<LevelCompletionEntity> completions = getChildCompletions(child);
+        List<LevelCompletionEntity> todayCompletions = completions.stream()
+                .filter(item -> item.getCompletedAt().toLocalDate().isEqual(LocalDate.now()))
+                .toList();
+        Set<String> completedLevelCodes = getCompletedLevelCodesForCurrentStage(child);
+        LevelEntity nextLevel = findNextIncompleteLevel(child);
+        String nextLevelCode = nextLevel != null ? nextLevel.getCode() : null;
+        boolean mainLineCompleted = nextLevel == null;
+        boolean mainLineTaskCompleted = mainLineCompleted
+                || (nextLevelCode != null && todayCompletions.stream().anyMatch(item -> item.getLevel().getCode().equals(nextLevelCode)));
+
+        int todayMistakes = todayCompletions.stream().mapToInt(LevelCompletionEntity::getWrongCount).sum();
+        int todayStars = todayCompletions.stream().mapToInt(item -> item.getLevel().getRewardStars()).sum();
+
+        DailyTaskDto mainLineTask = new DailyTaskDto(
+                "mainline-next-level",
+                "主线下一关",
+                nextLevel != null
+                        ? "继续挑战“" + nextLevel.getSummaryTitle() + "”，把学习路线往前推进一站。"
+                        : "当前学段主线已完成，可以回头巩固一下最喜欢的关卡。",
+                "mainline",
+                mainLineTaskCompleted,
+                mainLineTaskCompleted ? "已推进" : "待推进",
+                nextLevelCode,
+                nextLevel != null ? "完成后可再得 " + nextLevel.getRewardStars() + " 颗星" : "巩固也有小奖励"
+        );
+
+        LevelEntity mostRelevantMistakeLevel = completions.stream()
+                .filter(item -> completedLevelCodes.contains(item.getLevel().getCode()))
+                .filter(item -> item.getWrongCount() > 0)
+                .map(LevelCompletionEntity::getLevel)
+                .findFirst()
+                .orElse(nextLevel);
+        boolean mistakeTaskCompleted = todayMistakes == 0;
+        DailyTaskDto mistakeReviewTask = new DailyTaskDto(
+                "mistake-review",
+                "错题复习",
+                todayMistakes > 0
+                        ? "今天有 " + todayMistakes + " 道错题，先把它们再过一遍。"
+                        : "今天暂时没有新的错题，保持这个状态也很棒。",
+                "review",
+                mistakeTaskCompleted,
+                mistakeTaskCompleted ? "错题已清空" : "建议回顾",
+                mostRelevantMistakeLevel != null ? mostRelevantMistakeLevel.getCode() : null,
+                mistakeTaskCompleted ? "保持清零，继续前进" : "复习后可再加 1 颗星"
+        );
+
+        boolean starGoalCompleted = todayStars >= 3;
+        DailyTaskDto starGoalTask = new DailyTaskDto(
+                "star-goal",
+                "成就/星星目标",
+                "今天累计拿到 " + todayStars + " 颗星，离今日目标越来越近。",
+                "goal",
+                starGoalCompleted,
+                starGoalCompleted ? "达成目标" : "继续收集",
+                nextLevelCode,
+                "今日目标星数 " + (starGoalCompleted ? "已达成" : "还差 " + Math.max(0, 3 - todayStars) + " 颗")
+        );
+
+        List<DailyTaskDto> tasks = List.of(mainLineTask, mistakeReviewTask, starGoalTask);
+        int completedCount = (int) tasks.stream().filter(DailyTaskDto::completed).count();
+        int bonusStars = tasks.stream()
+                .filter(DailyTaskDto::completed)
+                .mapToInt(task -> switch (task.code()) {
+                    case "mainline-next-level" -> nextLevel != null ? nextLevel.getRewardStars() : 1;
+                    case "mistake-review" -> 1;
+                    case "star-goal" -> 2;
+                    default -> 0;
+                })
+                .sum();
+
+        return new DailyTaskBoardResponse(child.getNickname(), completedCount, tasks.size(), bonusStars, tasks);
+    }
+
+    public MistakeReviewCenterResponse getMistakeReviewCenter(Long childProfileId) {
+        ChildProfileEntity child = getChild(childProfileId);
+        List<LevelCompletionEntity> completions = getChildCompletions(child);
+        Set<String> stageLevelCodes = getStageLevelCodes(child);
+        Map<String, List<LevelCompletionEntity>> completionsByLevelCode = completions.stream()
+                .filter(item -> stageLevelCodes.contains(item.getLevel().getCode()))
+                .filter(item -> item.getWrongCount() > 0)
+                .collect(Collectors.groupingBy(item -> item.getLevel().getCode()));
+
+        List<MistakeReviewCardDto> items = completionsByLevelCode.values().stream()
+                .map(this::toMistakeReviewCard)
+                .sorted(Comparator
+                        .comparingInt(MistakeReviewCardDraft::mistakeCount)
+                        .reversed()
+                        .thenComparing(MistakeReviewCardDraft::latestCompletedAt, Comparator.reverseOrder()))
+                .limit(6)
+                .map(draft -> new MistakeReviewCardDto(
+                        draft.levelCode(),
+                        draft.levelTitle(),
+                        draft.subjectTitle(),
+                        draft.knowledgePointTitle(),
+                        draft.mistakeCount(),
+                        draft.masteryStatus(),
+                        draft.reviewPrompt(),
+                        draft.reviewSteps()
+                ))
+                .toList();
+
+        int totalMistakes = completionsByLevelCode.values().stream()
+                .mapToInt(levelCompletions -> levelCompletions.stream().mapToInt(LevelCompletionEntity::getWrongCount).sum())
+                .sum();
+        int readyToMasterCount = (int) completionsByLevelCode.values().stream()
+                .map(this::toMistakeReviewCard)
+                .filter(item -> "接近掌握".equals(item.masteryStatus()))
+                .count();
+
+        return new MistakeReviewCenterResponse(child.getNickname(), totalMistakes, readyToMasterCount, items);
+    }
+
+    public LearningPathResponse getLearningPath(Long childProfileId) {
+        ChildProfileEntity child = getChild(childProfileId);
+        Set<String> completedLevelCodes = getCompletedLevelCodesForCurrentStage(child);
+        List<LevelEntity> stageLevels = getAllStageLevels(child);
+        String firstIncompleteCode = stageLevels.stream()
+                .filter(level -> !completedLevelCodes.contains(level.getCode()))
+                .map(LevelEntity::getCode)
+                .findFirst()
+                .orElse(null);
+
+        List<LearningPathChapterDto> chapters = subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
+                .flatMap(subject -> getStageChapters(subject, child).stream()
+                        .map(chapter -> new LearningPathChapterDto(
+                                subject.getCode(),
+                                subject.getTitle(),
+                                chapter.getTitle(),
+                                chapter.getSubtitle(),
+                                chapter.getLevels().stream()
+                                        .map(level -> toLearningPathLevel(level, completedLevelCodes, firstIncompleteCode))
+                                        .toList()
+                        )))
+                .toList();
+
+        return new LearningPathResponse(
+                resolveStageLabel(child),
+                (int) completedLevelCodes.size(),
+                stageLevels.size(),
+                chapters
+        );
+    }
+
+    public ContentConfigCatalogResponse getContentConfigCatalog() {
+        List<ContentConfigItemDto> items = levelRepository.findAll().stream()
+                .sorted(Comparator
+                        .comparingInt((LevelEntity level) -> level.getChapter().getSubject().getDisplayOrder())
+                        .thenComparingInt(level -> level.getChapter().getDisplayOrder())
+                        .thenComparing(LevelEntity::getCode))
+                .map(this::toContentConfigItem)
+                .filter(java.util.Objects::nonNull)
+                .toList();
+
+        return new ContentConfigCatalogResponse(
+                items.size(),
+                items.stream().mapToInt(ContentConfigItemDto::variantCount).sum(),
+                items
         );
     }
 
@@ -568,7 +741,7 @@ public class GameContentService {
             return "recommended";
         }
 
-        return "available";
+        return "locked";
     }
 
     private List<ParentSubjectProgressDto> buildSubjectProgress(ChildProfileEntity child) {
@@ -742,6 +915,130 @@ public class GameContentService {
                 statusLabel,
                 nextAction
         );
+    }
+
+    private MistakeReviewCardDraft toMistakeReviewCard(List<LevelCompletionEntity> levelCompletions) {
+        LevelEntity level = levelCompletions.get(0).getLevel();
+        String subjectTitle = level.getChapter().getSubject().getTitle();
+        String knowledgePointTitle = knowledgePointsForLevel(level).stream()
+                .findFirst()
+                .map(KnowledgePointDraft::title)
+                .orElse(level.getSummaryTitle());
+        int mistakeCount = levelCompletions.stream().mapToInt(LevelCompletionEntity::getWrongCount).sum();
+        LocalDateTime latestCompletedAt = levelCompletions.stream()
+                .map(LevelCompletionEntity::getCompletedAt)
+                .max(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.MIN);
+        String masteryStatus = mistakeCount <= 2 ? "接近掌握" : "需要复习";
+
+        return new MistakeReviewCardDraft(
+                level.getCode(),
+                level.getDetailTitle(),
+                subjectTitle,
+                knowledgePointTitle,
+                mistakeCount,
+                masteryStatus,
+                "先回看“" + knowledgePointTitle + "”的关键点，再把同类题完整做一遍。",
+                List.of(
+                        "先圈出错因，确认是读题、计算还是概念问题。",
+                        "重看“" + knowledgePointTitle + "”并做一次口头复述。",
+                        "完成 1 组同类变式，检验是否真正掌握。"
+                ),
+                latestCompletedAt
+        );
+    }
+
+    private LearningPathLevelDto toLearningPathLevel(LevelEntity level, Set<String> completedLevelCodes, String firstIncompleteCode) {
+        String status = resolveLevelStatus(level.getCode(), completedLevelCodes, firstIncompleteCode);
+        boolean locked = "locked".equals(status);
+        return new LearningPathLevelDto(
+                level.getCode(),
+                level.getSummaryTitle(),
+                status,
+                locked,
+                locked ? "先完成前一站，再解锁这里" : null
+        );
+    }
+
+    private ContentConfigItemDto toContentConfigItem(LevelEntity level) {
+        LevelStepEntity configStep = level.getSteps().stream()
+                .filter(step -> hasConfigSignal(step))
+                .findFirst()
+                .orElse(null);
+        if (configStep == null) {
+            return null;
+        }
+
+        String activityConfigJson = configStep.getActivityConfigJson();
+        String assetTheme = Optional.ofNullable(extractJsonStringValue(activityConfigJson, "assetTheme"))
+                .filter(value -> !value.isBlank())
+                .orElse("待补素材主题");
+        String audioQuality = Optional.ofNullable(extractJsonStringValue(activityConfigJson, "audioQuality"))
+                .filter(value -> !value.isBlank())
+                .orElse("待补音频质量");
+        String configSource = buildConfigSource(configStep, assetTheme, audioQuality);
+        int variantCount = Optional.ofNullable(configStep.getVariantCount()).orElse(0);
+
+        return new ContentConfigItemDto(
+                level.getCode(),
+                level.getSummaryTitle(),
+                level.getChapter().getSubject().getTitle(),
+                configStep.getKnowledgePointCode(),
+                configStep.getKnowledgePointTitle(),
+                variantCount,
+                assetTheme,
+                audioQuality,
+                configSource
+        );
+    }
+
+    private boolean hasConfigSignal(LevelStepEntity step) {
+        return (step.getActivityConfigJson() != null && !step.getActivityConfigJson().isBlank())
+                || (step.getKnowledgePointCode() != null && !step.getKnowledgePointCode().isBlank())
+                || (step.getKnowledgePointTitle() != null && !step.getKnowledgePointTitle().isBlank())
+                || step.getVariantCount() != null;
+    }
+
+    private String buildConfigSource(LevelStepEntity step, String assetTheme, String audioQuality) {
+        boolean hasJson = step.getActivityConfigJson() != null && !step.getActivityConfigJson().isBlank();
+        boolean hasKnowledge = (step.getKnowledgePointCode() != null && !step.getKnowledgePointCode().isBlank())
+                || (step.getKnowledgePointTitle() != null && !step.getKnowledgePointTitle().isBlank())
+                || step.getVariantCount() != null;
+
+        if (hasJson && hasKnowledge) {
+            return "activityConfigJson+knowledge";
+        }
+        if (hasJson) {
+            return "activityConfigJson";
+        }
+        if (hasKnowledge) {
+            return "knowledge";
+        }
+        if (assetTheme != null || audioQuality != null) {
+            return "activityConfigJson";
+        }
+
+        return "unknown";
+    }
+
+    private String extractJsonStringValue(String json, String key) {
+        if (json == null || json.isBlank()) {
+            return null;
+        }
+
+        String needle = "\"" + key + "\":\"";
+        int start = json.indexOf(needle);
+        if (start < 0) {
+            return null;
+        }
+
+        int valueStart = start + needle.length();
+        int valueEnd = json.indexOf('"', valueStart);
+        if (valueEnd < 0) {
+            return null;
+        }
+
+        return json.substring(valueStart, valueEnd);
     }
 
     private MistakeReviewDraft toMistakeReviewItem(List<LevelCompletionEntity> levelCompletions) {
@@ -1247,6 +1544,19 @@ public class GameContentService {
             int mistakeCount,
             String reviewAction,
             String targetLevelCode,
+            LocalDateTime latestCompletedAt
+    ) {
+    }
+
+    private record MistakeReviewCardDraft(
+            String levelCode,
+            String levelTitle,
+            String subjectTitle,
+            String knowledgePointTitle,
+            int mistakeCount,
+            String masteryStatus,
+            String reviewPrompt,
+            List<String> reviewSteps,
             LocalDateTime latestCompletedAt
     ) {
     }

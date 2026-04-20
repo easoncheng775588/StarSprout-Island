@@ -271,6 +271,84 @@ export interface AchievementsData {
   inProgressBadges: AchievementBadgeData[];
 }
 
+export interface DailyTaskData {
+  code: string;
+  title: string;
+  description: string;
+  taskType: string;
+  completed: boolean;
+  statusLabel: string;
+  targetLevelCode: string | null;
+  rewardText: string;
+}
+
+export interface DailyTaskBoardData {
+  childNickname: string;
+  completedCount: number;
+  totalCount: number;
+  bonusStars: number;
+  tasks: DailyTaskData[];
+}
+
+export interface MistakeReviewCardData {
+  levelCode: string;
+  levelTitle: string;
+  subjectTitle: string;
+  knowledgePointTitle: string;
+  mistakeCount: number;
+  masteryStatus: string;
+  reviewPrompt: string;
+  reviewSteps: string[];
+}
+
+export interface MistakeReviewCenterData {
+  childNickname: string;
+  totalMistakes: number;
+  readyToMasterCount: number;
+  items: MistakeReviewCardData[];
+}
+
+export interface LearningPathLevelData {
+  levelCode: string;
+  levelTitle: string;
+  status: 'completed' | 'recommended' | 'available' | 'locked';
+  locked: boolean;
+  lockReason: string;
+}
+
+export interface LearningPathChapterData {
+  subjectCode: SubjectCode;
+  subjectTitle: string;
+  chapterTitle: string;
+  chapterSubtitle: string;
+  levels: LearningPathLevelData[];
+}
+
+export interface LearningPathData {
+  stageLabel: string;
+  completedLevels: number;
+  totalLevels: number;
+  chapters: LearningPathChapterData[];
+}
+
+export interface ContentConfigItemData {
+  levelCode: string;
+  levelTitle: string;
+  subjectTitle: string;
+  knowledgePointCode: string;
+  knowledgePointTitle: string;
+  variantCount: number;
+  assetTheme: string;
+  audioQuality: string;
+  configSource: string;
+}
+
+export interface ContentConfigCatalogData {
+  configuredLevelCount: number;
+  totalVariantCount: number;
+  items: ContentConfigItemData[];
+}
+
 export interface SessionChildProfile {
   id: number;
   nickname: string;
@@ -408,6 +486,22 @@ export function getWeeklyLeaderboard(): Promise<LeaderboardData> {
 
 export function getAchievements(): Promise<AchievementsData> {
   return fetchJson<AchievementsData>('/api/achievements');
+}
+
+export function getDailyTasks(): Promise<DailyTaskBoardData> {
+  return fetchJson<DailyTaskBoardData>('/api/daily-tasks');
+}
+
+export function getMistakeReviewCenter(): Promise<MistakeReviewCenterData> {
+  return fetchJson<MistakeReviewCenterData>('/api/mistakes/review');
+}
+
+export function getLearningPath(): Promise<LearningPathData> {
+  return fetchJson<LearningPathData>('/api/learning-path');
+}
+
+export function getContentConfigCatalog(): Promise<ContentConfigCatalogData> {
+  return fetchJson<ContentConfigCatalogData>('/api/content/configs');
 }
 
 export function getSessionChildren(): Promise<SessionChildrenApiResponse> {

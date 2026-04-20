@@ -508,6 +508,19 @@ body::before {
   background: linear-gradient(135deg, rgba(103, 205, 180, 0.2), rgba(255, 255, 255, 0.96));
 }
 
+.path-node-locked {
+  border-color: rgba(33, 48, 77, 0.08);
+  background: rgba(255, 255, 255, 0.58);
+  color: rgba(33, 48, 77, 0.56);
+  cursor: not-allowed;
+}
+
+.path-node-locked p {
+  margin: 8px 0 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
 .level-card {
   background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,248,239,0.98));
 }
@@ -1547,6 +1560,169 @@ body::before {
   min-width: 0;
 }
 
+.screen-engagement .map-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.engagement-hero {
+  background:
+    radial-gradient(circle at 84% 18%, rgba(255, 212, 107, 0.32), transparent 28%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(228, 250, 244, 0.9));
+  border: 1px solid rgba(89, 190, 168, 0.16);
+}
+
+.mistake-hero {
+  background:
+    radial-gradient(circle at 84% 18%, rgba(255, 143, 107, 0.26), transparent 28%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 244, 232, 0.94));
+}
+
+.path-hero {
+  background:
+    radial-gradient(circle at 84% 18%, rgba(191, 231, 255, 0.52), transparent 28%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(235, 248, 255, 0.94));
+}
+
+.config-hero {
+  background:
+    radial-gradient(circle at 84% 18%, rgba(89, 190, 168, 0.22), transparent 28%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(245, 255, 249, 0.92));
+}
+
+.engagement-stat-row,
+.config-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.engagement-stat-row span,
+.engagement-pill,
+.config-meta-row span {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 900;
+  box-shadow: inset 0 0 0 1px rgba(33, 48, 77, 0.07);
+}
+
+.daily-task-grid,
+.mistake-pack-list,
+.learning-path-board,
+.config-catalog-grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.daily-task-grid,
+.config-catalog-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.daily-task-card,
+.mistake-pack-card,
+.learning-path-chapter,
+.config-catalog-card {
+  padding: 22px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 20px 48px var(--shadow);
+}
+
+.daily-task-card {
+  display: grid;
+  gap: 18px;
+  align-content: space-between;
+}
+
+.daily-task-card-done {
+  background: linear-gradient(135deg, rgba(89, 190, 168, 0.22), rgba(255, 255, 255, 0.92));
+}
+
+.daily-task-card h2,
+.mistake-pack-card h2,
+.learning-path-chapter h2,
+.config-catalog-card h2 {
+  margin: 10px 0;
+}
+
+.daily-task-card p,
+.mistake-pack-card p,
+.learning-path-chapter p,
+.config-catalog-card p {
+  line-height: 1.7;
+}
+
+.daily-task-footer {
+  display: grid;
+  gap: 10px;
+}
+
+.mistake-pack-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(220px, 0.75fr) auto;
+  gap: 18px;
+  align-items: center;
+}
+
+.review-step-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.review-step-list li {
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+.learning-path-chapter {
+  display: grid;
+  gap: 18px;
+}
+
+.learning-path-levels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.learning-path-node {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 2px solid rgba(33, 48, 77, 0.06);
+}
+
+.learning-path-node-completed {
+  border-color: var(--mint);
+}
+
+.learning-path-node-recommended {
+  border-color: var(--peach);
+  background: linear-gradient(135deg, rgba(255, 143, 107, 0.16), rgba(255, 255, 255, 0.92));
+}
+
+.learning-path-node-locked {
+  color: rgba(33, 48, 77, 0.56);
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.lock-reason {
+  color: rgba(33, 48, 77, 0.64);
+  font-weight: 800;
+}
+
 .trend-strip {
   display: flex;
   align-items: end;
@@ -1715,7 +1891,14 @@ body::before {
   }
 
   .dashboard-grid-parent-insights,
-  .knowledge-map-grid {
+  .knowledge-map-grid,
+  .mistake-pack-card {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-path-levels,
+  .daily-task-grid,
+  .config-catalog-grid {
     grid-template-columns: 1fr;
   }
 

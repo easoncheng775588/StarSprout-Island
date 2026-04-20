@@ -47,10 +47,18 @@ export function SubjectMap() {
             </div>
 
             {chapter.levels.map((level, index) => (
-              <Link className={`path-node path-node-${level.status}`} key={level.code} to={`/levels/${level.code}`}>
-                <span className="node-step">第 {index + 1} 站</span>
-                <strong>{level.title}</strong>
-              </Link>
+              level.status === 'locked' ? (
+                <div className="path-node path-node-locked" key={level.code}>
+                  <span className="node-step">第 {index + 1} 站</span>
+                  <strong>{level.title}</strong>
+                  <p>先完成前一站，再解锁这里</p>
+                </div>
+              ) : (
+                <Link className={`path-node path-node-${level.status}`} key={level.code} to={`/levels/${level.code}`}>
+                  <span className="node-step">第 {index + 1} 站</span>
+                  <strong>{level.title}</strong>
+                </Link>
+              )
             ))}
           </section>
         ))}

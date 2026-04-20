@@ -129,3 +129,16 @@
   - 前端测试：`npm test -- --run`，12 个测试文件、50 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`
+- 已完成留存与复习闭环增强一期：
+  - 新增每日任务 API 与页面，覆盖主线下一关、错题复习、星星/成就目标
+  - 新增错题本 API 与页面，按当前学段聚合错题点，提供复习步骤和回到关卡入口
+  - 新增学习路径 API 与页面，关卡状态升级为 `completed/recommended/locked`，后续关卡需前置完成后解锁
+  - 新增题库配置中心 API 与页面，展示已下沉后端的玩法配置、题库变体、素材主题和音频质量
+  - 首页新增每日任务、错题本、学习路径、题库配置入口
+  - 学科地图对 locked 关卡改为不可点击状态
+- 新增前端测试：`product-engagement.test.tsx`
+- 更新后端接口测试，覆盖每日任务、错题本、学习路径和题库配置中心
+- 本轮验证通过：
+  - 前端测试：`npm test -- --run`，13 个测试文件、55 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`

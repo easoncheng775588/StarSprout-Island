@@ -7,10 +7,14 @@ import com.example.k12learninggame.dto.AchievementsResponse;
 import com.example.k12learninggame.dto.AuthLoginRequest;
 import com.example.k12learninggame.dto.AuthRegisterRequest;
 import com.example.k12learninggame.dto.AuthSessionResponse;
+import com.example.k12learninggame.dto.ContentConfigCatalogResponse;
 import com.example.k12learninggame.dto.ChildProfileDto;
 import com.example.k12learninggame.dto.ChildProfileUpsertRequest;
+import com.example.k12learninggame.dto.DailyTaskBoardResponse;
 import com.example.k12learninggame.dto.LeaderboardResponse;
+import com.example.k12learninggame.dto.LearningPathResponse;
 import com.example.k12learninggame.dto.LevelDetailResponse;
+import com.example.k12learninggame.dto.MistakeReviewCenterResponse;
 import com.example.k12learninggame.dto.ParentActiveChildUpdateRequest;
 import com.example.k12learninggame.dto.ParentDashboardResponse;
 import com.example.k12learninggame.dto.ParentSettingsDto;
@@ -90,6 +94,32 @@ public class GameController {
             @RequestHeader(value = "X-Child-Profile-Id", required = false) Long childProfileId
     ) {
         return gameContentService.getHomeOverview(childProfileId);
+    }
+
+    @GetMapping("/daily-tasks")
+    public DailyTaskBoardResponse dailyTasks(
+            @RequestHeader(value = "X-Child-Profile-Id", required = false) Long childProfileId
+    ) {
+        return gameContentService.getDailyTasks(childProfileId);
+    }
+
+    @GetMapping("/mistakes/review")
+    public MistakeReviewCenterResponse mistakesReview(
+            @RequestHeader(value = "X-Child-Profile-Id", required = false) Long childProfileId
+    ) {
+        return gameContentService.getMistakeReviewCenter(childProfileId);
+    }
+
+    @GetMapping("/learning-path")
+    public LearningPathResponse learningPath(
+            @RequestHeader(value = "X-Child-Profile-Id", required = false) Long childProfileId
+    ) {
+        return gameContentService.getLearningPath(childProfileId);
+    }
+
+    @GetMapping("/content/configs")
+    public ContentConfigCatalogResponse contentConfigs() {
+        return gameContentService.getContentConfigCatalog();
     }
 
     @GetMapping("/parent/dashboard")

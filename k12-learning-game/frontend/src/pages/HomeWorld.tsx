@@ -62,8 +62,12 @@ export function HomeWorld() {
         </div>
         <div className="family-panel-actions">
           <Link className="cta-button cta-button-secondary" to="/parent">家长中心</Link>
+          <Link className="cta-button cta-button-secondary" to="/daily-tasks">每日任务</Link>
+          <Link className="cta-button cta-button-secondary" to="/mistakes">错题本</Link>
+          <Link className="cta-button cta-button-secondary" to="/learning-path">学习路径</Link>
           <Link className="cta-button cta-button-secondary" to="/leaderboard">排行榜</Link>
           <Link className="cta-button cta-button-secondary" to="/achievements">成就墙</Link>
+          <Link className="cta-button cta-button-secondary" to="/content-configs">题库配置</Link>
         </div>
       </section>
 

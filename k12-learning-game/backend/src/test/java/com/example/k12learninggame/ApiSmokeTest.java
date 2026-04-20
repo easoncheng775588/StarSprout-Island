@@ -240,6 +240,113 @@ class ApiSmokeTest {
     }
 
     @Test
+    void shouldReturnDailyTasks() throws Exception {
+        mockMvc.perform(get("/api/daily-tasks").header("X-Child-Profile-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.childNickname").value("小星星"))
+                .andExpect(jsonPath("$.totalCount").value(3))
+                .andExpect(jsonPath("$.tasks.length()").value(3))
+                .andExpect(jsonPath("$.tasks[0].code").value(org.hamcrest.Matchers.not(org.hamcrest.Matchers.isEmptyOrNullString())))
+                .andExpect(jsonPath("$.tasks[0].taskType").exists())
+                .andExpect(jsonPath("$.tasks[0].statusLabel").exists())
+                .andExpect(jsonPath("$.completedCount").value(org.hamcrest.Matchers.greaterThanOrEqualTo(1)));
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnMistakeReviewCenterWithTargetLevelOrExistingMistake() throws Exception {
+        mockMvc.perform(patch("/api/parent/children/3")
+                        .header("X-Parent-Account-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nickname": "小海豚",
+                                  "title": "海湾领航员",
+                                  "stageLabel": "四年级",
+                                  "avatarColor": "#8ee1b5"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/levels/math-grade4-decimal-001/complete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "childProfileId": 3,
+                                  "correctCount": 0,
+                                  "wrongCount": 2,
+                                  "durationSeconds": 180
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/mistakes/review").header("X-Child-Profile-Id", 3))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.childNickname").value("小海豚"))
+                .andExpect(jsonPath("$.totalMistakes").value(org.hamcrest.Matchers.greaterThan(0)))
+                .andExpect(jsonPath("$.readyToMasterCount").value(org.hamcrest.Matchers.greaterThanOrEqualTo(1)))
+                .andExpect(jsonPath("$.items[0].levelCode").value(org.hamcrest.Matchers.anyOf(
+                        org.hamcrest.Matchers.is("math-grade4-decimal-001"),
+                        org.hamcrest.Matchers.is("math-numbers-002")
+                )))
+                .andExpect(jsonPath("$.items[0].masteryStatus").value("接近掌握"))
+                .andExpect(jsonPath("$.items[0].reviewSteps.length()").value(org.hamcrest.Matchers.greaterThan(0)));
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnLearningPathWithLockedLevels() throws Exception {
+        mockMvc.perform(patch("/api/parent/children/3")
+                        .header("X-Parent-Account-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nickname": "小海豚",
+                                  "title": "海湾领航员",
+                                  "stageLabel": "四年级",
+                                  "avatarColor": "#8ee1b5"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/levels/math-grade4-decimal-001/complete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "childProfileId": 3,
+                                  "correctCount": 2,
+                                  "wrongCount": 0,
+                                  "durationSeconds": 180
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/learning-path").header("X-Child-Profile-Id", 3))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.stageLabel").value("四年级"))
+                .andExpect(jsonPath("$.chapters[0].levels[0].status").value("completed"))
+                .andExpect(jsonPath("$.chapters[0].levels[1].status").value("recommended"))
+                .andExpect(jsonPath("$.chapters[1].levels[0].status").value("locked"))
+                .andExpect(jsonPath("$.chapters[1].levels[0].locked").value(true))
+                .andExpect(jsonPath("$.chapters[1].levels[0].lockReason").value("先完成前一站，再解锁这里"));
+    }
+
+    @Test
+    void shouldReturnContentConfigCatalog() throws Exception {
+        mockMvc.perform(get("/api/content/configs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.configuredLevelCount").value(org.hamcrest.Matchers.greaterThan(0)))
+                .andExpect(jsonPath("$.totalVariantCount").value(org.hamcrest.Matchers.greaterThan(0)))
+                .andExpect(jsonPath("$.items[0].levelCode").value(org.hamcrest.Matchers.anyOf(
+                        org.hamcrest.Matchers.is("math-grade4-decimal-001"),
+                        org.hamcrest.Matchers.is("math-numbers-001")
+                )))
+                .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade4-decimal-001')].assetTheme").value(org.hamcrest.Matchers.hasItem("小数灯塔")))
+                .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade4-decimal-001')].audioQuality").value(org.hamcrest.Matchers.hasItem(org.hamcrest.Matchers.containsString("TTS"))))
+                .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade4-decimal-001')].variantCount").value(org.hamcrest.Matchers.hasItem(6)));
+    }
+
+    @Test
     @Transactional
     void shouldReturnStageReportKnowledgeMapAndMistakeReviewPlan() throws Exception {
         mockMvc.perform(patch("/api/parent/children/3")
