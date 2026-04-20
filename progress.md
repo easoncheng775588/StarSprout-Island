@@ -142,3 +142,14 @@
   - 前端测试：`npm test -- --run`，13 个测试文件、55 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`
+- 已完成 P0 真实结算与复习掌握闭环：
+  - 新增每日任务领取接口，领取记录按孩子、任务、日期持久化，避免刷新或重复点击后重复加星星
+  - 每日任务页面新增“领取奖励/已领取”状态，领取成功后直接刷新任务面板和奖励提示
+  - 新增错题复习提交接口，复习结果按孩子和关卡持久化，最近一次复习达到规则后从错题本移出
+  - 错题本页面新增“我已复习，会做了”操作，提交后展示掌握反馈并刷新错题列表
+  - 新增后端实体与 Repository：`DailyTaskClaimEntity`、`MistakeReviewAttemptEntity`
+  - 更新前后端自动化测试，覆盖奖励防重复领取、错题掌握清除、页面状态刷新
+- 本轮 P0 验证通过：
+  - 前端测试：`npm test -- --run`，13 个测试文件、57 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`

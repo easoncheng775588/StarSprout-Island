@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getDailyTasks, type DailyTaskBoardData } from '../api';
+import { claimDailyTask, getDailyTasks, type DailyTaskBoardData } from '../api';
 import { PageTopBar } from '../components/PageTopBar';
 import { useSession } from '../session';
 
@@ -10,6 +10,8 @@ interface DailyTasksPageProps {
 
 export function DailyTasksPage({ data }: DailyTasksPageProps) {
   const [taskBoard, setTaskBoard] = useState<DailyTaskBoardData | null>(data ?? null);
+  const [claimingTaskCode, setClaimingTaskCode] = useState<string | null>(null);
+  const [claimMessage, setClaimMessage] = useState('');
   const { session } = useSession();
 
   useEffect(() => {
@@ -19,6 +21,21 @@ export function DailyTasksPage({ data }: DailyTasksPageProps) {
 
     getDailyTasks().then(setTaskBoard);
   }, [data, session?.childProfileId]);
+
+  const handleClaimTask = async (taskCode: string) => {
+    setClaimingTaskCode(taskCode);
+    setClaimMessage('');
+
+    try {
+      const response = await claimDailyTask(taskCode);
+      setTaskBoard(response.taskBoard);
+      setClaimMessage(response.message);
+    } catch {
+      setClaimMessage('奖励领取暂时迷路了，请稍后再试一次。');
+    } finally {
+      setClaimingTaskCode(null);
+    }
+  };
 
   if (!taskBoard) {
     return <main className="screen"><p>正在整理今天的小任务...</p></main>;
@@ -36,6 +53,7 @@ export function DailyTasksPage({ data }: DailyTasksPageProps) {
           <span>今日已完成 {taskBoard.completedCount} / {taskBoard.totalCount} 个任务</span>
           <span>全部完成可获得 {taskBoard.bonusStars} 颗奖励星星</span>
         </div>
+        {claimMessage ? <p className="settlement-message" role="status">{claimMessage}</p> : null}
       </section>
 
       <section className="daily-task-grid">
@@ -49,6 +67,17 @@ export function DailyTasksPage({ data }: DailyTasksPageProps) {
             <div className="daily-task-footer">
               <strong>{task.statusLabel}</strong>
               <span>{task.rewardText}</span>
+              {task.rewardClaimed ? <span className="reward-claimed-pill">已领取</span> : null}
+              {task.claimable ? (
+                <button
+                  className="cta-button reward-claim-button"
+                  disabled={claimingTaskCode === task.code}
+                  type="button"
+                  onClick={() => void handleClaimTask(task.code)}
+                >
+                  {claimingTaskCode === task.code ? '领取中...' : `领取${task.title}奖励`}
+                </button>
+              ) : null}
               {task.targetLevelCode ? (
                 <Link className="cta-button cta-button-secondary" to={`/levels/${task.targetLevelCode}`}>
                   去完成{task.title}

@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import { ContentConfigCatalog } from '../pages/ContentConfigCatalog';
@@ -80,7 +81,9 @@ describe('Product engagement surfaces', () => {
                 completed: false,
                 statusLabel: '待完成',
                 targetLevelCode: 'math-addition-001',
-                rewardText: '+2 星光'
+                rewardText: '+2 星光',
+                rewardClaimed: false,
+                claimable: false
               },
               {
                 code: 'mistake-review',
@@ -90,7 +93,9 @@ describe('Product engagement surfaces', () => {
                 completed: true,
                 statusLabel: '已完成',
                 targetLevelCode: 'math-subtraction-002',
-                rewardText: '+1 稳定度'
+                rewardText: '+1 稳定度',
+                rewardClaimed: false,
+                claimable: true
               }
             ]
           }}
@@ -104,6 +109,86 @@ describe('Product engagement surfaces', () => {
     expect(screen.getByText('完成主线下一关')).toBeInTheDocument();
     expect(screen.getByText('已完成')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '去完成完成主线下一关' })).toHaveAttribute('href', '/levels/math-addition-001');
+  });
+
+  test('daily tasks page claims a completed reward and refreshes board state', async () => {
+    const user = userEvent.setup();
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+
+      if (url.endsWith('/api/daily-tasks/mistake-review/claim')) {
+        return {
+          ok: true,
+          json: async () => ({
+            taskCode: 'mistake-review',
+            claimed: true,
+            alreadyClaimed: false,
+            rewardStars: 1,
+            totalStars: 127,
+            message: '奖励已领取，小岛又亮了一点。',
+            taskBoard: {
+              childNickname: '小星星',
+              completedCount: 1,
+              totalCount: 3,
+              bonusStars: 5,
+              tasks: [
+                {
+                  code: 'mistake-review',
+                  title: '复习 1 个错题点',
+                  description: '回到糖果减法小店，把昨天错过的地方讲清楚。',
+                  taskType: '复习',
+                  completed: true,
+                  statusLabel: '已完成',
+                  targetLevelCode: 'math-subtraction-002',
+                  rewardText: '+1 稳定度',
+                  rewardClaimed: true,
+                  claimable: false
+                }
+              ]
+            }
+          })
+        } as Response;
+      }
+
+      throw new Error(`Unhandled fetch: ${url} ${init?.method ?? 'GET'}`);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(
+      <MemoryRouter>
+        <DailyTasksPage
+          data={{
+            childNickname: '小星星',
+            completedCount: 1,
+            totalCount: 3,
+            bonusStars: 5,
+            tasks: [
+              {
+                code: 'mistake-review',
+                title: '复习 1 个错题点',
+                description: '回到糖果减法小店，把昨天错过的地方讲清楚。',
+                taskType: '复习',
+                completed: true,
+                statusLabel: '已完成',
+                targetLevelCode: 'math-subtraction-002',
+                rewardText: '+1 稳定度',
+                rewardClaimed: false,
+                claimable: true
+              }
+            ]
+          }}
+        />
+      </MemoryRouter>
+    );
+
+    await user.click(screen.getByRole('button', { name: '领取复习 1 个错题点奖励' }));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/api/daily-tasks/mistake-review/claim'),
+      expect.objectContaining({ method: 'POST' })
+    );
+    expect(await screen.findByText('奖励已领取，小岛又亮了一点。')).toBeInTheDocument();
+    expect(screen.getByText('已领取')).toBeInTheDocument();
   });
 
   test('mistake review page shows review pack and mastery status', () => {
@@ -137,6 +222,72 @@ describe('Product engagement surfaces', () => {
     expect(screen.getByText('20 以内退位减法 · 错 3 次')).toBeInTheDocument();
     expect(screen.getByText('看错题原因')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '开始复习糖果减法小店' })).toHaveAttribute('href', '/levels/math-subtraction-002');
+  });
+
+  test('mistake review page submits a review result and clears mastered item', async () => {
+    const user = userEvent.setup();
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+
+      if (url.endsWith('/api/mistakes/review/math-subtraction-002/submit')) {
+        return {
+          ok: true,
+          json: async () => ({
+            levelCode: 'math-subtraction-002',
+            mastered: true,
+            masteryStatus: '已掌握',
+            remainingMistakes: 0,
+            nextAction: '太稳了，错题小屋已经把这个知识点收进掌握徽章。',
+            reviewCenter: {
+              childNickname: '小星星',
+              totalMistakes: 0,
+              readyToMasterCount: 0,
+              items: []
+            }
+          })
+        } as Response;
+      }
+
+      throw new Error(`Unhandled fetch: ${url} ${init?.method ?? 'GET'}`);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(
+      <MemoryRouter>
+        <MistakeReviewPage
+          data={{
+            childNickname: '小星星',
+            totalMistakes: 3,
+            readyToMasterCount: 1,
+            items: [
+              {
+                levelCode: 'math-subtraction-002',
+                levelTitle: '糖果减法小店',
+                subjectTitle: '数学岛',
+                knowledgePointTitle: '20 以内退位减法',
+                mistakeCount: 3,
+                masteryStatus: '需要复习',
+                reviewPrompt: '先用糖果图复盘错因，再完成 1 组变式。',
+                reviewSteps: ['看错题原因', '再做同类题', '答对后回到主线']
+              }
+            ]
+          }}
+        />
+      </MemoryRouter>
+    );
+
+    await user.click(screen.getByRole('button', { name: '我已复习，会做了糖果减法小店' }));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/api/mistakes/review/math-subtraction-002/submit'),
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ correctCount: 3, wrongCount: 0, durationSeconds: 120 })
+      })
+    );
+    expect(await screen.findByText('已掌握')).toBeInTheDocument();
+    expect(screen.getByText('太稳了，错题小屋已经把这个知识点收进掌握徽章。')).toBeInTheDocument();
+    expect(screen.getByText('今天的小岛很平静')).toBeInTheDocument();
   });
 
   test('learning path page shows locked and recommended levels', () => {

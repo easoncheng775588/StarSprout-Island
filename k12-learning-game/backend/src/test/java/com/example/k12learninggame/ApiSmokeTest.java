@@ -254,6 +254,30 @@ class ApiSmokeTest {
 
     @Test
     @Transactional
+    void shouldClaimDailyTaskRewardOnlyOnce() throws Exception {
+        mockMvc.perform(post("/api/daily-tasks/mistake-review/claim")
+                        .header("X-Child-Profile-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.taskCode").value("mistake-review"))
+                .andExpect(jsonPath("$.claimed").value(true))
+                .andExpect(jsonPath("$.alreadyClaimed").value(false))
+                .andExpect(jsonPath("$.rewardStars").value(1))
+                .andExpect(jsonPath("$.totalStars").value(127))
+                .andExpect(jsonPath("$.taskBoard.tasks[?(@.code=='mistake-review')].rewardClaimed").value(org.hamcrest.Matchers.hasItem(true)));
+
+        mockMvc.perform(post("/api/daily-tasks/mistake-review/claim")
+                        .header("X-Child-Profile-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.taskCode").value("mistake-review"))
+                .andExpect(jsonPath("$.claimed").value(false))
+                .andExpect(jsonPath("$.alreadyClaimed").value(true))
+                .andExpect(jsonPath("$.rewardStars").value(0))
+                .andExpect(jsonPath("$.totalStars").value(127))
+                .andExpect(jsonPath("$.taskBoard.tasks[?(@.code=='mistake-review')].rewardClaimed").value(org.hamcrest.Matchers.hasItem(true)));
+    }
+
+    @Test
+    @Transactional
     void shouldReturnMistakeReviewCenterWithTargetLevelOrExistingMistake() throws Exception {
         mockMvc.perform(patch("/api/parent/children/3")
                         .header("X-Parent-Account-Id", 1)
@@ -291,6 +315,52 @@ class ApiSmokeTest {
                 )))
                 .andExpect(jsonPath("$.items[0].masteryStatus").value("接近掌握"))
                 .andExpect(jsonPath("$.items[0].reviewSteps.length()").value(org.hamcrest.Matchers.greaterThan(0)));
+    }
+
+    @Test
+    @Transactional
+    void shouldSubmitMistakeReviewAndMarkKnowledgePointMastered() throws Exception {
+        mockMvc.perform(patch("/api/parent/children/3")
+                        .header("X-Parent-Account-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nickname": "小海豚",
+                                  "title": "海湾领航员",
+                                  "stageLabel": "四年级",
+                                  "avatarColor": "#8ee1b5"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/levels/math-grade4-decimal-001/complete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "childProfileId": 3,
+                                  "correctCount": 0,
+                                  "wrongCount": 2,
+                                  "durationSeconds": 180
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/mistakes/review/math-grade4-decimal-001/submit")
+                        .header("X-Child-Profile-Id", 3)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "correctCount": 3,
+                                  "wrongCount": 0,
+                                  "durationSeconds": 120
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.levelCode").value("math-grade4-decimal-001"))
+                .andExpect(jsonPath("$.mastered").value(true))
+                .andExpect(jsonPath("$.masteryStatus").value("已掌握"))
+                .andExpect(jsonPath("$.remainingMistakes").value(0))
+                .andExpect(jsonPath("$.reviewCenter.items.length()").value(0));
     }
 
     @Test

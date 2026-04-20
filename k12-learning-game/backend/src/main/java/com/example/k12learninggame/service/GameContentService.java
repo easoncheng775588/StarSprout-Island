@@ -2,10 +2,12 @@ package com.example.k12learninggame.service;
 
 import com.example.k12learninggame.domain.ChapterEntity;
 import com.example.k12learninggame.domain.ChildProfileEntity;
+import com.example.k12learninggame.domain.DailyTaskClaimEntity;
 import com.example.k12learninggame.domain.LeaderboardBoardEntity;
 import com.example.k12learninggame.domain.LevelCompletionEntity;
 import com.example.k12learninggame.domain.LevelEntity;
 import com.example.k12learninggame.domain.LevelStepEntity;
+import com.example.k12learninggame.domain.MistakeReviewAttemptEntity;
 import com.example.k12learninggame.domain.ParentAccountEntity;
 import com.example.k12learninggame.domain.SubjectEntity;
 import com.example.k12learninggame.dto.AchievementBadgeDto;
@@ -21,6 +23,7 @@ import com.example.k12learninggame.dto.ChapterDto;
 import com.example.k12learninggame.dto.ChildProfileDto;
 import com.example.k12learninggame.dto.ChildProfileUpsertRequest;
 import com.example.k12learninggame.dto.DailyTaskBoardResponse;
+import com.example.k12learninggame.dto.DailyTaskClaimResponse;
 import com.example.k12learninggame.dto.DailyTaskDto;
 import com.example.k12learninggame.dto.CompleteLevelRequest;
 import com.example.k12learninggame.dto.CompleteLevelResponse;
@@ -39,6 +42,8 @@ import com.example.k12learninggame.dto.KnowledgeMapItemDto;
 import com.example.k12learninggame.dto.MistakeReviewCardDto;
 import com.example.k12learninggame.dto.MistakeReviewCenterResponse;
 import com.example.k12learninggame.dto.MistakeReviewItemDto;
+import com.example.k12learninggame.dto.MistakeReviewSubmitRequest;
+import com.example.k12learninggame.dto.MistakeReviewSubmitResponse;
 import com.example.k12learninggame.dto.ParentDashboardResponse;
 import com.example.k12learninggame.dto.ParentSettingsDto;
 import com.example.k12learninggame.dto.ParentActiveChildUpdateRequest;
@@ -57,9 +62,11 @@ import com.example.k12learninggame.dto.SubjectMapResponse;
 import com.example.k12learninggame.dto.TrendPointDto;
 import com.example.k12learninggame.dto.WeakPointDto;
 import com.example.k12learninggame.repository.ChildProfileRepository;
+import com.example.k12learninggame.repository.DailyTaskClaimRepository;
 import com.example.k12learninggame.repository.LeaderboardBoardRepository;
 import com.example.k12learninggame.repository.LevelCompletionRepository;
 import com.example.k12learninggame.repository.LevelRepository;
+import com.example.k12learninggame.repository.MistakeReviewAttemptRepository;
 import com.example.k12learninggame.repository.ParentAccountRepository;
 import com.example.k12learninggame.repository.ParentSettingsRepository;
 import com.example.k12learninggame.repository.SubjectRepository;
@@ -98,6 +105,8 @@ public class GameContentService {
     private final LevelCompletionRepository levelCompletionRepository;
     private final ParentAccountRepository parentAccountRepository;
     private final ParentSettingsRepository parentSettingsRepository;
+    private final DailyTaskClaimRepository dailyTaskClaimRepository;
+    private final MistakeReviewAttemptRepository mistakeReviewAttemptRepository;
 
     public GameContentService(
             ChildProfileRepository childProfileRepository,
@@ -106,7 +115,9 @@ public class GameContentService {
             LeaderboardBoardRepository leaderboardBoardRepository,
             LevelCompletionRepository levelCompletionRepository,
             ParentAccountRepository parentAccountRepository,
-            ParentSettingsRepository parentSettingsRepository
+            ParentSettingsRepository parentSettingsRepository,
+            DailyTaskClaimRepository dailyTaskClaimRepository,
+            MistakeReviewAttemptRepository mistakeReviewAttemptRepository
     ) {
         this.childProfileRepository = childProfileRepository;
         this.subjectRepository = subjectRepository;
@@ -115,6 +126,8 @@ public class GameContentService {
         this.levelCompletionRepository = levelCompletionRepository;
         this.parentAccountRepository = parentAccountRepository;
         this.parentSettingsRepository = parentSettingsRepository;
+        this.dailyTaskClaimRepository = dailyTaskClaimRepository;
+        this.mistakeReviewAttemptRepository = mistakeReviewAttemptRepository;
     }
 
     public AuthSessionResponse login(AuthLoginRequest request) {
@@ -269,6 +282,7 @@ public class GameContentService {
 
     public DailyTaskBoardResponse getDailyTasks(Long childProfileId) {
         ChildProfileEntity child = getChild(childProfileId);
+        Set<String> claimedTaskCodes = getClaimedTaskCodes(child, LocalDate.now());
         List<LevelCompletionEntity> completions = getChildCompletions(child);
         List<LevelCompletionEntity> todayCompletions = completions.stream()
                 .filter(item -> item.getCompletedAt().toLocalDate().isEqual(LocalDate.now()))
@@ -293,7 +307,9 @@ public class GameContentService {
                 mainLineTaskCompleted,
                 mainLineTaskCompleted ? "已推进" : "待推进",
                 nextLevelCode,
-                nextLevel != null ? "完成后可再得 " + nextLevel.getRewardStars() + " 颗星" : "巩固也有小奖励"
+                nextLevel != null ? "完成后可再得 " + nextLevel.getRewardStars() + " 颗星" : "巩固也有小奖励",
+                claimedTaskCodes.contains("mainline-next-level"),
+                mainLineTaskCompleted && !claimedTaskCodes.contains("mainline-next-level")
         );
 
         LevelEntity mostRelevantMistakeLevel = completions.stream()
@@ -313,7 +329,9 @@ public class GameContentService {
                 mistakeTaskCompleted,
                 mistakeTaskCompleted ? "错题已清空" : "建议回顾",
                 mostRelevantMistakeLevel != null ? mostRelevantMistakeLevel.getCode() : null,
-                mistakeTaskCompleted ? "保持清零，继续前进" : "复习后可再加 1 颗星"
+                mistakeTaskCompleted ? "保持清零，继续前进" : "复习后可再加 1 颗星",
+                claimedTaskCodes.contains("mistake-review"),
+                mistakeTaskCompleted && !claimedTaskCodes.contains("mistake-review")
         );
 
         boolean starGoalCompleted = todayStars >= 3;
@@ -325,7 +343,9 @@ public class GameContentService {
                 starGoalCompleted,
                 starGoalCompleted ? "达成目标" : "继续收集",
                 nextLevelCode,
-                "今日目标星数 " + (starGoalCompleted ? "已达成" : "还差 " + Math.max(0, 3 - todayStars) + " 颗")
+                "今日目标星数 " + (starGoalCompleted ? "已达成" : "还差 " + Math.max(0, 3 - todayStars) + " 颗"),
+                claimedTaskCodes.contains("star-goal"),
+                starGoalCompleted && !claimedTaskCodes.contains("star-goal")
         );
 
         List<DailyTaskDto> tasks = List.of(mainLineTask, mistakeReviewTask, starGoalTask);
@@ -343,13 +363,64 @@ public class GameContentService {
         return new DailyTaskBoardResponse(child.getNickname(), completedCount, tasks.size(), bonusStars, tasks);
     }
 
+    @Transactional
+    public DailyTaskClaimResponse claimDailyTask(String taskCode, Long childProfileId) {
+        ChildProfileEntity child = getChild(childProfileId);
+        LocalDate today = LocalDate.now();
+        Optional<DailyTaskClaimEntity> existingClaim = findDailyTaskClaim(child, taskCode, today);
+        if (existingClaim.isPresent()) {
+            return new DailyTaskClaimResponse(
+                    taskCode,
+                    false,
+                    true,
+                    0,
+                    child.getTotalStars(),
+                    "今天已经领取过这个任务奖励了。",
+                    getDailyTasks(child.getId())
+            );
+        }
+
+        DailyTaskDto task = getDailyTasks(child.getId()).tasks().stream()
+                .filter(item -> item.code().equals(taskCode))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Daily task not found"));
+        if (!task.completed()) {
+            return new DailyTaskClaimResponse(
+                    taskCode,
+                    false,
+                    false,
+                    0,
+                    child.getTotalStars(),
+                    "先完成任务，再回来领取奖励。",
+                    getDailyTasks(child.getId())
+            );
+        }
+
+        int rewardStars = rewardStarsForTask(taskCode);
+        child.addStars(rewardStars);
+        childProfileRepository.save(child);
+        dailyTaskClaimRepository.save(new DailyTaskClaimEntity(child, taskCode, today, rewardStars, LocalDateTime.now()));
+
+        return new DailyTaskClaimResponse(
+                taskCode,
+                true,
+                false,
+                rewardStars,
+                child.getTotalStars(),
+                "奖励已领取，小岛又亮了一点。",
+                getDailyTasks(child.getId())
+        );
+    }
+
     public MistakeReviewCenterResponse getMistakeReviewCenter(Long childProfileId) {
         ChildProfileEntity child = getChild(childProfileId);
         List<LevelCompletionEntity> completions = getChildCompletions(child);
+        Map<String, MistakeReviewAttemptEntity> latestReviewsByLevelCode = getLatestMistakeReviewsByLevelCode(child);
         Set<String> stageLevelCodes = getStageLevelCodes(child);
         Map<String, List<LevelCompletionEntity>> completionsByLevelCode = completions.stream()
                 .filter(item -> stageLevelCodes.contains(item.getLevel().getCode()))
                 .filter(item -> item.getWrongCount() > 0)
+                .filter(item -> !isMasteredByLatestReview(item.getLevel().getCode(), latestReviewsByLevelCode))
                 .collect(Collectors.groupingBy(item -> item.getLevel().getCode()));
 
         List<MistakeReviewCardDto> items = completionsByLevelCode.values().stream()
@@ -380,6 +451,39 @@ public class GameContentService {
                 .count();
 
         return new MistakeReviewCenterResponse(child.getNickname(), totalMistakes, readyToMasterCount, items);
+    }
+
+    @Transactional
+    public MistakeReviewSubmitResponse submitMistakeReview(String levelCode, Long childProfileId, MistakeReviewSubmitRequest request) {
+        ChildProfileEntity child = getChild(childProfileId);
+        LevelEntity level = levelRepository.findById(levelCode)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Level not found"));
+        boolean mastered = request.correctCount() >= 3 && request.wrongCount() == 0;
+        String masteryStatus = mastered ? "已掌握" : "继续巩固";
+        mistakeReviewAttemptRepository.save(new MistakeReviewAttemptEntity(
+                child,
+                level,
+                request.correctCount(),
+                request.wrongCount(),
+                request.durationSeconds(),
+                mastered,
+                masteryStatus,
+                LocalDateTime.now()
+        ));
+
+        int remainingMistakes = mastered ? 0 : getChildCompletions(child).stream()
+                .filter(item -> item.getLevel().getCode().equals(levelCode))
+                .mapToInt(LevelCompletionEntity::getWrongCount)
+                .sum();
+
+        return new MistakeReviewSubmitResponse(
+                levelCode,
+                mastered,
+                masteryStatus,
+                remainingMistakes,
+                mastered ? "这个知识点已放入已掌握清单，可以回到主线继续前进。" : "再复习一组同类题，稳定后就能标记掌握。",
+                getMistakeReviewCenter(child.getId())
+        );
     }
 
     public LearningPathResponse getLearningPath(Long childProfileId) {
@@ -665,6 +769,47 @@ public class GameContentService {
                 .filter(item -> item.getChildProfile().getId().equals(child.getId()))
                 .sorted(Comparator.comparing(LevelCompletionEntity::getCompletedAt).reversed())
                 .toList();
+    }
+
+    private Optional<DailyTaskClaimEntity> findDailyTaskClaim(ChildProfileEntity child, String taskCode, LocalDate taskDate) {
+        return dailyTaskClaimRepository.findAll().stream()
+                .filter(item -> item.getChildProfile().getId().equals(child.getId()))
+                .filter(item -> item.getTaskCode().equals(taskCode))
+                .filter(item -> item.getTaskDate().isEqual(taskDate))
+                .findFirst();
+    }
+
+    private Set<String> getClaimedTaskCodes(ChildProfileEntity child, LocalDate taskDate) {
+        return dailyTaskClaimRepository.findAll().stream()
+                .filter(item -> item.getChildProfile().getId().equals(child.getId()))
+                .filter(item -> item.getTaskDate().isEqual(taskDate))
+                .map(DailyTaskClaimEntity::getTaskCode)
+                .collect(LinkedHashSet::new, Set::add, Set::addAll);
+    }
+
+    private int rewardStarsForTask(String taskCode) {
+        return switch (taskCode) {
+            case "mainline-next-level" -> 2;
+            case "mistake-review" -> 1;
+            case "star-goal" -> 2;
+            default -> 0;
+        };
+    }
+
+    private Map<String, MistakeReviewAttemptEntity> getLatestMistakeReviewsByLevelCode(ChildProfileEntity child) {
+        return mistakeReviewAttemptRepository.findAll().stream()
+                .filter(item -> item.getChildProfile().getId().equals(child.getId()))
+                .collect(Collectors.toMap(
+                        item -> item.getLevel().getCode(),
+                        Function.identity(),
+                        (left, right) -> left.getReviewedAt().isAfter(right.getReviewedAt()) ? left : right
+                ));
+    }
+
+    private boolean isMasteredByLatestReview(String levelCode, Map<String, MistakeReviewAttemptEntity> latestReviewsByLevelCode) {
+        return Optional.ofNullable(latestReviewsByLevelCode.get(levelCode))
+                .map(MistakeReviewAttemptEntity::isMastered)
+                .orElse(false);
     }
 
     private Set<String> getCompletedLevelCodes(ChildProfileEntity child) {

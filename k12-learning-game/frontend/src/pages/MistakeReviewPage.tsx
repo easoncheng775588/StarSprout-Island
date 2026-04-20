@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getMistakeReviewCenter, type MistakeReviewCenterData } from '../api';
+import { getMistakeReviewCenter, submitMistakeReview, type MistakeReviewCenterData } from '../api';
 import { PageTopBar } from '../components/PageTopBar';
 import { useSession } from '../session';
 
@@ -10,6 +10,9 @@ interface MistakeReviewPageProps {
 
 export function MistakeReviewPage({ data }: MistakeReviewPageProps) {
   const [reviewCenter, setReviewCenter] = useState<MistakeReviewCenterData | null>(data ?? null);
+  const [submittingLevelCode, setSubmittingLevelCode] = useState<string | null>(null);
+  const [reviewMessage, setReviewMessage] = useState('');
+  const [latestMasteryStatus, setLatestMasteryStatus] = useState('');
   const { session } = useSession();
 
   useEffect(() => {
@@ -19,6 +22,27 @@ export function MistakeReviewPage({ data }: MistakeReviewPageProps) {
 
     getMistakeReviewCenter().then(setReviewCenter);
   }, [data, session?.childProfileId]);
+
+  const handleSubmitReview = async (levelCode: string) => {
+    setSubmittingLevelCode(levelCode);
+    setReviewMessage('');
+    setLatestMasteryStatus('');
+
+    try {
+      const response = await submitMistakeReview(levelCode, {
+        correctCount: 3,
+        wrongCount: 0,
+        durationSeconds: 120
+      });
+      setReviewCenter(response.reviewCenter);
+      setLatestMasteryStatus(response.masteryStatus);
+      setReviewMessage(response.nextAction);
+    } catch {
+      setReviewMessage('复习结果提交暂时迷路了，请稍后再试一次。');
+    } finally {
+      setSubmittingLevelCode(null);
+    }
+  };
 
   if (!reviewCenter) {
     return <main className="screen"><p>正在翻开错题本...</p></main>;
@@ -36,6 +60,8 @@ export function MistakeReviewPage({ data }: MistakeReviewPageProps) {
           <span>共 {reviewCenter.totalMistakes} 个错题点</span>
           <span>{reviewCenter.readyToMasterCount} 个知识点接近掌握</span>
         </div>
+        {latestMasteryStatus ? <strong className="mastery-status-flare">{latestMasteryStatus}</strong> : null}
+        {reviewMessage ? <p className="settlement-message" role="status">{reviewMessage}</p> : null}
       </section>
 
       <section className="mistake-pack-list">
@@ -53,9 +79,19 @@ export function MistakeReviewPage({ data }: MistakeReviewPageProps) {
                 <li key={step}>{step}</li>
               ))}
             </ol>
-            <Link className="cta-button" to={`/levels/${item.levelCode}`}>
-              开始复习{item.levelTitle}
-            </Link>
+            <div className="mistake-action-row">
+              <Link className="cta-button" to={`/levels/${item.levelCode}`}>
+                开始复习{item.levelTitle}
+              </Link>
+              <button
+                className="cta-button cta-button-secondary review-submit-button"
+                disabled={submittingLevelCode === item.levelCode}
+                type="button"
+                onClick={() => void handleSubmitReview(item.levelCode)}
+              >
+                {submittingLevelCode === item.levelCode ? '提交中...' : `我已复习，会做了${item.levelTitle}`}
+              </button>
+            </div>
           </article>
         )) : (
           <article className="panel-card">

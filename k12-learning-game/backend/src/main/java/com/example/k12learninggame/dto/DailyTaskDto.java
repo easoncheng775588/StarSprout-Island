@@ -8,6 +8,8 @@ public record DailyTaskDto(
         boolean completed,
         String statusLabel,
         String targetLevelCode,
-        String rewardText
+        String rewardText,
+        boolean rewardClaimed,
+        boolean claimable
 ) {
 }

@@ -280,6 +280,8 @@ export interface DailyTaskData {
   statusLabel: string;
   targetLevelCode: string | null;
   rewardText: string;
+  rewardClaimed: boolean;
+  claimable: boolean;
 }
 
 export interface DailyTaskBoardData {
@@ -288,6 +290,16 @@ export interface DailyTaskBoardData {
   totalCount: number;
   bonusStars: number;
   tasks: DailyTaskData[];
+}
+
+export interface DailyTaskClaimData {
+  taskCode: string;
+  claimed: boolean;
+  alreadyClaimed: boolean;
+  rewardStars: number;
+  totalStars: number;
+  message: string;
+  taskBoard: DailyTaskBoardData;
 }
 
 export interface MistakeReviewCardData {
@@ -306,6 +318,15 @@ export interface MistakeReviewCenterData {
   totalMistakes: number;
   readyToMasterCount: number;
   items: MistakeReviewCardData[];
+}
+
+export interface MistakeReviewSubmitData {
+  levelCode: string;
+  mastered: boolean;
+  masteryStatus: string;
+  remainingMistakes: number;
+  nextAction: string;
+  reviewCenter: MistakeReviewCenterData;
 }
 
 export interface LearningPathLevelData {
@@ -492,8 +513,24 @@ export function getDailyTasks(): Promise<DailyTaskBoardData> {
   return fetchJson<DailyTaskBoardData>('/api/daily-tasks');
 }
 
+export function claimDailyTask(taskCode: string): Promise<DailyTaskClaimData> {
+  return fetchJson<DailyTaskClaimData>(`/api/daily-tasks/${taskCode}/claim`, {
+    method: 'POST'
+  });
+}
+
 export function getMistakeReviewCenter(): Promise<MistakeReviewCenterData> {
   return fetchJson<MistakeReviewCenterData>('/api/mistakes/review');
+}
+
+export function submitMistakeReview(
+  levelCode: string,
+  payload: { correctCount: number; wrongCount: number; durationSeconds: number }
+): Promise<MistakeReviewSubmitData> {
+  return fetchJson<MistakeReviewSubmitData>(`/api/mistakes/review/${levelCode}/submit`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
 }
 
 export function getLearningPath(): Promise<LearningPathData> {

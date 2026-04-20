@@ -11,10 +11,13 @@ import com.example.k12learninggame.dto.ContentConfigCatalogResponse;
 import com.example.k12learninggame.dto.ChildProfileDto;
 import com.example.k12learninggame.dto.ChildProfileUpsertRequest;
 import com.example.k12learninggame.dto.DailyTaskBoardResponse;
+import com.example.k12learninggame.dto.DailyTaskClaimResponse;
 import com.example.k12learninggame.dto.LeaderboardResponse;
 import com.example.k12learninggame.dto.LearningPathResponse;
 import com.example.k12learninggame.dto.LevelDetailResponse;
 import com.example.k12learninggame.dto.MistakeReviewCenterResponse;
+import com.example.k12learninggame.dto.MistakeReviewSubmitRequest;
+import com.example.k12learninggame.dto.MistakeReviewSubmitResponse;
 import com.example.k12learninggame.dto.ParentActiveChildUpdateRequest;
 import com.example.k12learninggame.dto.ParentDashboardResponse;
 import com.example.k12learninggame.dto.ParentSettingsDto;
@@ -103,11 +106,28 @@ public class GameController {
         return gameContentService.getDailyTasks(childProfileId);
     }
 
+    @PostMapping("/daily-tasks/{taskCode}/claim")
+    public DailyTaskClaimResponse claimDailyTask(
+            @PathVariable String taskCode,
+            @RequestHeader(value = "X-Child-Profile-Id", required = false) Long childProfileId
+    ) {
+        return gameContentService.claimDailyTask(taskCode, childProfileId);
+    }
+
     @GetMapping("/mistakes/review")
     public MistakeReviewCenterResponse mistakesReview(
             @RequestHeader(value = "X-Child-Profile-Id", required = false) Long childProfileId
     ) {
         return gameContentService.getMistakeReviewCenter(childProfileId);
+    }
+
+    @PostMapping("/mistakes/review/{levelCode}/submit")
+    public MistakeReviewSubmitResponse submitMistakeReview(
+            @PathVariable String levelCode,
+            @RequestHeader(value = "X-Child-Profile-Id", required = false) Long childProfileId,
+            @Valid @RequestBody MistakeReviewSubmitRequest request
+    ) {
+        return gameContentService.submitMistakeReview(levelCode, childProfileId, request);
     }
 
     @GetMapping("/learning-path")
