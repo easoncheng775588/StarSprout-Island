@@ -17,6 +17,15 @@ export function HomeWorld() {
     return <main className="screen"><p>正在唤醒今天的学习小岛...</p></main>;
   }
 
+  const hasNextLevel = Boolean(homeOverview.nextLevelCode);
+  const taskStatusLabel = hasNextLevel ? '今日待推进' : '主线已完成';
+  const taskStatusClassName = hasNextLevel ? 'task-status-pill' : 'task-status-pill task-status-pill-complete';
+  const streakMessage = `连续 ${homeOverview.child.streakDays} 天，小岛火苗正在发光`;
+  const taskActionTo = hasNextLevel && homeOverview.nextLevelCode ? `/levels/${homeOverview.nextLevelCode}` : '/learning-path';
+  const taskActionLabel = hasNextLevel && homeOverview.nextLevelTitle
+    ? `继续挑战 ${homeOverview.nextLevelTitle}`
+    : '去学习路径看看';
+
   return (
     <main className="screen screen-home">
       <PageTopBar />
@@ -40,13 +49,17 @@ export function HomeWorld() {
       </section>
 
       <section className="task-panel" aria-label="今日任务">
-        <div>
-          <p className="eyebrow">今日任务</p>
+        <div className="task-panel-copy">
+          <div className="task-status-row">
+            <p className="eyebrow">今日任务</p>
+            <span className={taskStatusClassName}>{taskStatusLabel}</span>
+          </div>
           <h2>点亮今天的学习星轨</h2>
           <p>{homeOverview.child.title}</p>
+          <p className="task-streak-note">{streakMessage}</p>
         </div>
-        <Link className="cta-button" to={homeOverview.nextLevelCode ? `/levels/${homeOverview.nextLevelCode}` : '/levels/math-numbers-001'}>
-          {homeOverview.nextLevelTitle ? `继续挑战 ${homeOverview.nextLevelTitle}` : '开始任务'}
+        <Link className="cta-button" to={taskActionTo}>
+          {taskActionLabel}
         </Link>
       </section>
 

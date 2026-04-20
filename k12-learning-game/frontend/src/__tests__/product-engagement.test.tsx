@@ -61,6 +61,56 @@ describe('Product engagement surfaces', () => {
     expect(await screen.findByRole('link', { name: '每日任务' })).toHaveAttribute('href', '/daily-tasks');
     expect(screen.getByRole('link', { name: '错题本' })).toHaveAttribute('href', '/mistakes');
     expect(screen.getByRole('link', { name: '学习路径' })).toHaveAttribute('href', '/learning-path');
+    expect(screen.getByText('今日待推进')).toBeInTheDocument();
+    expect(screen.getByText('连续 7 天，小岛火苗正在发光')).toBeInTheDocument();
+  });
+
+  test('home world turns today task into a completion state when mainline is done', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input);
+
+        if (url.endsWith('/api/home/overview')) {
+          return {
+            ok: true,
+            json: async () => ({
+              child: {
+                id: 1,
+                nickname: '小星星',
+                streakDays: 8,
+                totalStars: 160,
+                title: '星光收藏家'
+              },
+              subjects: [
+                { code: 'math', title: '数学岛', subtitle: '数字火花开始跳舞', accentColor: '#ff8a5b' }
+              ],
+              achievementPreview: {
+                unlockedCount: 8,
+                totalCount: 12,
+                nextBadgeName: '复习小队长'
+              },
+              featuredWorld: '启航岛',
+              todayTask: '今天已经完成主线任务，回顾一下最喜欢的关卡吧。',
+              nextLevelCode: null,
+              nextLevelTitle: null
+            })
+          } as Response;
+        }
+
+        throw new Error(`Unhandled fetch: ${url}`);
+      })
+    );
+
+    render(
+      <MemoryRouter>
+        <HomeWorld />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('主线已完成')).toBeInTheDocument();
+    expect(screen.getByText('连续 8 天，小岛火苗正在发光')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '去学习路径看看' })).toHaveAttribute('href', '/learning-path');
   });
 
   test('daily tasks page shows task completion and target level actions', () => {

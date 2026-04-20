@@ -379,6 +379,54 @@ body::before {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 143, 107, 0.12);
+  background:
+    radial-gradient(circle at 86% 18%, rgba(255, 212, 107, 0.26), transparent 28%),
+    rgba(255, 248, 239, 0.94);
+}
+
+.task-panel-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.task-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-status-row .eyebrow {
+  margin: 0;
+}
+
+.task-status-pill {
+  display: inline-flex;
+  width: fit-content;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--sun), var(--peach));
+  color: #fffdf8;
+  font-size: 0.82rem;
+  font-weight: 900;
+  box-shadow: 0 12px 22px rgba(255, 143, 107, 0.18);
+}
+
+.task-status-pill-complete {
+  background: linear-gradient(135deg, var(--mint), #7dd9ff);
+}
+
+.task-streak-note {
+  width: fit-content;
+  margin: 4px 0 0;
+  padding: 9px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.62);
+  color: rgba(33, 48, 77, 0.74);
+  font-weight: 900;
 }
 
 .family-panel {

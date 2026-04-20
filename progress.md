@@ -162,3 +162,11 @@
 - P1 定向验证通过：
   - 前端测试：`npm test -- --run src/__tests__/progress-flow.test.tsx`
   - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 -Dtest=ApiSmokeTest#shouldCompleteLevelAndReturnReward test`
+- P1 通关庆祝阶段已提交并推送：`4d348d2 feat: show leaderboard feedback after level completion`
+- 已完成 P1 首页今日任务状态化：
+  - 首页任务卡新增“今日待推进 / 主线已完成”状态标签
+  - 首页新增连续学习鼓励文案：`连续 N 天，小岛火苗正在发光`
+  - 有下一关时继续引导到关卡；主线完成时改为引导到学习路径
+  - 新增前端测试覆盖“有下一关”和“主线完成”两种首页状态
+- P1 首页定向验证通过：
+  - 前端测试：`npm test -- --run src/__tests__/product-engagement.test.tsx`
