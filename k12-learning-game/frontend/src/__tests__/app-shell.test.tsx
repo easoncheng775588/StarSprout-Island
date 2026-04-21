@@ -259,6 +259,7 @@ describe('App shell', () => {
 
           if (childProfileId === '2') {
             const activeChild = scopedChildren.find((child) => child.id === 2)!;
+            const isYearOne = activeChild.stageLabel === '一年级';
 
             return {
               ok: true,
@@ -280,10 +281,10 @@ describe('App shell', () => {
                   totalCount: 8,
                   nextBadgeName: '小小坚持家'
                 },
-                featuredWorld: '启航岛',
-                todayTask: '继续挑战 10 以内加法，把今天的学习星轨再点亮一格。',
-                nextLevelCode: 'math-addition-001',
-                nextLevelTitle: '10 以内加法'
+                featuredWorld: isYearOne ? '一年级星球' : '启航岛',
+                todayTask: isYearOne ? '继续挑战一年级应用题，把新年级任务点亮。' : '继续挑战 10 以内加法，把今天的学习星轨再点亮一格。',
+                nextLevelCode: isYearOne ? 'math-grade1-wordproblem-001' : 'math-addition-001',
+                nextLevelTitle: isYearOne ? '一年级应用题' : '10 以内加法'
               })
             } as Response;
           }
@@ -663,6 +664,33 @@ describe('App shell', () => {
     const headers = homeOverviewCall?.[1]?.headers as Headers;
     expect(headers.get('Content-Type')).toBe('application/json');
     expect(headers.get('X-Child-Profile-Id')).toBe('2');
+  });
+
+  test('lets parents switch the active child grade from the top bar and refreshes the home task', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole('heading', { name: '小火箭，准备再次出发吧' })).toBeInTheDocument();
+    expect(screen.getByLabelText('年级选择')).toHaveValue('幼小衔接');
+
+    await user.selectOptions(screen.getByLabelText('年级选择'), '一年级');
+
+    expect(await screen.findByRole('link', { name: '继续挑战 一年级应用题' })).toHaveAttribute('href', '/levels/math-grade1-wordproblem-001');
+    expect(screen.getByText('当前阶段：一年级')).toBeInTheDocument();
+
+    const gradeUpdateCall = vi.mocked(global.fetch).mock.calls.find((call) => String(call[0]).endsWith('/api/parent/children/2') && call[1]?.method === 'PATCH');
+    expect(gradeUpdateCall).toBeTruthy();
+    expect(JSON.parse(String(gradeUpdateCall?.[1]?.body))).toEqual({
+      nickname: '小火箭',
+      title: '银河探险家',
+      stageLabel: '一年级',
+      avatarColor: '#8ecae6'
+    });
   });
 
   test('shows home shortcuts for parent dashboard and leaderboard', async () => {

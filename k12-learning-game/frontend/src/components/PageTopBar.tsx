@@ -15,6 +15,8 @@ const defaultChildForm = {
   avatarColor: '#8ecae6'
 };
 
+const stageOptions = ['幼小衔接', '一年级', '二年级', '三年级', '四年级'];
+
 export function PageTopBar({ backTo, backLabel }: PageTopBarProps) {
   const { session, login, logout } = useSession();
   const [showSwitcher, setShowSwitcher] = useState(false);
@@ -26,8 +28,10 @@ export function PageTopBar({ backTo, backLabel }: PageTopBarProps) {
   const [childAvatarColor, setChildAvatarColor] = useState(defaultChildForm.avatarColor);
   const [childFormError, setChildFormError] = useState('');
   const [switchError, setSwitchError] = useState('');
+  const [isSavingStage, setIsSavingStage] = useState(false);
   const children = session?.children ?? [];
   const activeChild = children.find((child) => child.id === session?.childProfileId) ?? null;
+  const activeChildStageLabel = activeChild?.stageLabel ?? defaultChildForm.stageLabel;
 
   function resetChildForm() {
     setEditingChildId(null);
@@ -145,13 +149,65 @@ export function PageTopBar({ backTo, backLabel }: PageTopBarProps) {
     setShowSwitcher(false);
   }
 
+  async function handleSwitchStage(nextStageLabel: string) {
+    if (!session || !activeChild || nextStageLabel === activeChildStageLabel) {
+      return;
+    }
+
+    setSwitchError('');
+    setChildFormError('');
+    setIsSavingStage(true);
+
+    try {
+      const updatedChild = await updateChildProfile(session.parentAccountId, activeChild.id, {
+        nickname: activeChild.nickname,
+        title: activeChild.title,
+        stageLabel: nextStageLabel,
+        avatarColor: activeChild.avatarColor ?? defaultChildForm.avatarColor
+      });
+      const nextChildren = children.map((child) => (child.id === updatedChild.id ? updatedChild : child));
+
+      login({
+        parentAccountId: session.parentAccountId,
+        parentDisplayName: session.parentDisplayName,
+        childProfileId: updatedChild.id,
+        childNickname: updatedChild.nickname,
+        children: nextChildren
+      });
+    } catch {
+      setSwitchError('年级没有切换成功，再试一次吧。');
+    } finally {
+      setIsSavingStage(false);
+    }
+  }
+
   return (
     <div className="page-top-bar">
       <div>
         {backTo && backLabel ? <PageBackLink label={backLabel} to={backTo} /> : null}
       </div>
       <div className="page-top-bar-actions">
-        {session ? <span className="session-pill">当前小朋友：{session.childNickname}</span> : null}
+        {session ? (
+          <span className="session-pill">
+            <span>当前小朋友：{session.childNickname}</span>
+            {activeChild ? <span className="session-stage-text">当前阶段：{activeChildStageLabel}</span> : null}
+          </span>
+        ) : null}
+        {activeChild ? (
+          <label className="stage-switcher">
+            <span>年级选择</span>
+            <select
+              aria-label="年级选择"
+              disabled={isSavingStage}
+              onChange={(event) => void handleSwitchStage(event.target.value)}
+              value={activeChildStageLabel}
+            >
+              {stageOptions.map((stageLabel) => (
+                <option key={stageLabel} value={stageLabel}>{stageLabel}</option>
+              ))}
+            </select>
+          </label>
+        ) : null}
         <button
           aria-expanded={showSwitcher}
           className="session-button session-button-secondary"
@@ -164,6 +220,7 @@ export function PageTopBar({ backTo, backLabel }: PageTopBarProps) {
           退出登录
         </button>
       </div>
+      {switchError && !showSwitcher ? <p className="login-error stage-switcher-error">{switchError}</p> : null}
       {showSwitcher ? (
         <section className="child-switcher-panel">
           <p className="eyebrow">切换档案</p>
@@ -179,6 +236,7 @@ export function PageTopBar({ backTo, backLabel }: PageTopBarProps) {
               >
                 <strong>{child.nickname}</strong>
                 <span>{child.title}</span>
+                <span>{child.stageLabel ?? defaultChildForm.stageLabel}</span>
                 <span>连续学习 {child.streakDays} 天</span>
               </button>
             ))}
@@ -233,11 +291,9 @@ export function PageTopBar({ backTo, backLabel }: PageTopBarProps) {
                     onChange={(event) => setChildStageLabel(event.target.value)}
                     value={childStageLabel}
                   >
-                    <option value="幼小衔接">幼小衔接</option>
-                    <option value="一年级">一年级</option>
-                    <option value="二年级">二年级</option>
-                    <option value="三年级">三年级</option>
-                    <option value="四年级">四年级</option>
+                    {stageOptions.map((stageLabel) => (
+                      <option key={stageLabel} value={stageLabel}>{stageLabel}</option>
+                    ))}
                   </select>
                 </label>
                 <label className="login-field">
