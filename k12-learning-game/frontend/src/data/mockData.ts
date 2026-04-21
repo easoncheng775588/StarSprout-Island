@@ -44,7 +44,10 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
           { code: 'math-subtraction-002', title: '20 以内减法', status: 'available' },
           { code: 'math-compare-001', title: '谁更多挑战', status: 'available' },
           { code: 'math-equation-001', title: '图像列式屋', status: 'available' },
-          { code: 'math-wordproblem-001', title: '故事应用题', status: 'available' }
+          { code: 'math-wordproblem-001', title: '故事应用题', status: 'available' },
+          { code: 'math-shapes-001', title: '图形分类屋', status: 'available' },
+          { code: 'math-position-001', title: '上下左右小地图', status: 'available' },
+          { code: 'math-ordinal-001', title: '排队第几个', status: 'available' }
         ]
       },
       {
@@ -141,7 +144,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'chinese-characters-001', title: '太阳和月亮', status: 'recommended' },
           { code: 'chinese-characters-002', title: '生活常见字', status: 'available' },
-          { code: 'chinese-characters-003', title: '身体小伙伴', status: 'available' }
+          { code: 'chinese-characters-003', title: '身体小伙伴', status: 'available' },
+          { code: 'chinese-radicals-001', title: '偏旁小树', status: 'available' }
         ]
       },
       {
@@ -152,7 +156,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'chinese-pinyin-001', title: '拼音泡泡', status: 'available' },
           { code: 'chinese-pinyin-002', title: '拼读小火车', status: 'available' },
-          { code: 'chinese-pinyin-003', title: '声母找朋友', status: 'available' }
+          { code: 'chinese-pinyin-003', title: '声母找朋友', status: 'available' },
+          { code: 'chinese-pinyin-tone-001', title: '声调小山坡', status: 'available' }
         ]
       },
       {
@@ -163,7 +168,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'chinese-strokes-001', title: '笔顺小画家', status: 'available' },
           { code: 'chinese-strokes-002', title: '日字描描乐', status: 'available' },
-          { code: 'chinese-strokes-003', title: '人字起步', status: 'available' }
+          { code: 'chinese-strokes-003', title: '人字起步', status: 'available' },
+          { code: 'chinese-strokes-004', title: '横竖撇捺练习', status: 'available' }
         ]
       },
       {
@@ -261,7 +267,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
           { code: 'english-letters-001', title: '字母 A 到 F', status: 'recommended' },
           { code: 'english-letters-002', title: '字母 G 到 L', status: 'available' },
           { code: 'english-letters-003', title: '字母 M 到 R', status: 'available' },
-          { code: 'english-letters-004', title: '字母 S 到 Z', status: 'available' }
+          { code: 'english-letters-004', title: '字母 S 到 Z', status: 'available' },
+          { code: 'english-case-001', title: '大小写找朋友', status: 'available' }
         ]
       },
       {
@@ -282,7 +289,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'english-words-001', title: '日常单词配对', status: 'available' },
           { code: 'english-words-002', title: '生活单词跟读', status: 'available' },
-          { code: 'english-words-003', title: '颜色单词沙堡', status: 'available' }
+          { code: 'english-words-003', title: '颜色单词沙堡', status: 'available' },
+          { code: 'english-family-001', title: '家庭单词屋', status: 'available' }
         ]
       },
       {
@@ -293,7 +301,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'english-story-001', title: '海湾小绘本', status: 'available' },
           { code: 'english-story-002', title: '晨光小绘本', status: 'available' },
-          { code: 'english-story-003', title: '晚安小绘本', status: 'available' }
+          { code: 'english-story-003', title: '晚安小绘本', status: 'available' },
+          { code: 'english-story-004', title: '公园小绘本', status: 'available' }
         ]
       },
       {
@@ -526,6 +535,45 @@ export const levelDetails: Record<string, LevelDetail> = {
       badgeName: '应用题小勇士'
     }
   },
+  'math-shapes-001': {
+    code: 'math-shapes-001',
+    title: '图形分类屋',
+    subjectTitle: '数学岛',
+    description: '看一看圆形、三角形和正方形，把图形朋友认出来。',
+    steps: [
+      { id: 'step-1', type: 'tap-choice', prompt: '找到像太阳一样圆圆的图形' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '图形小侦探'
+    }
+  },
+  'math-position-001': {
+    code: 'math-position-001',
+    title: '上下左右小地图',
+    subjectTitle: '数学岛',
+    description: '帮小动物找到上下左右的位置，建立空间方向感。',
+    steps: [
+      { id: 'step-1', type: 'story-choice', prompt: '小猫在桌子上面，小狗在哪里？' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '方位小导航'
+    }
+  },
+  'math-ordinal-001': {
+    code: 'math-ordinal-001',
+    title: '排队第几个',
+    subjectTitle: '数学岛',
+    description: '数一数队伍里的位置，认识第几个。',
+    steps: [
+      { id: 'step-1', type: 'tap-choice', prompt: '从左往右数，小兔排第几？' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '序数小队长'
+    }
+  },
   'chinese-characters-001': {
     code: 'chinese-characters-001',
     title: '汉字日月冒险',
@@ -563,6 +611,19 @@ export const levelDetails: Record<string, LevelDetail> = {
     reward: {
       stars: 2,
       badgeName: '身体识字员'
+    }
+  },
+  'chinese-radicals-001': {
+    code: 'chinese-radicals-001',
+    title: '偏旁小树',
+    subjectTitle: '语文岛',
+    description: '观察带木字旁的汉字，发现汉字里的小线索。',
+    steps: [
+      { id: 'step-1', type: 'tap-choice', prompt: '找到带木字旁的字' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '偏旁观察员'
     }
   },
   'chinese-pinyin-001': {
@@ -604,6 +665,19 @@ export const levelDetails: Record<string, LevelDetail> = {
       badgeName: '声母小侦探'
     }
   },
+  'chinese-pinyin-tone-001': {
+    code: 'chinese-pinyin-tone-001',
+    title: '声调小山坡',
+    subjectTitle: '语文岛',
+    description: '听一听四个声调的高低变化，把音调认出来。',
+    steps: [
+      { id: 'step-1', type: 'listen-choice', prompt: '听一听，选出第三声的小山坡' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '声调小耳朵'
+    }
+  },
   'chinese-strokes-001': {
     code: 'chinese-strokes-001',
     title: '笔顺小画家',
@@ -641,6 +715,19 @@ export const levelDetails: Record<string, LevelDetail> = {
     reward: {
       stars: 2,
       badgeName: '起步写字星'
+    }
+  },
+  'chinese-strokes-004': {
+    code: 'chinese-strokes-004',
+    title: '横竖撇捺练习',
+    subjectTitle: '语文岛',
+    description: '认识横、竖、撇、捺四种基础笔画。',
+    steps: [
+      { id: 'step-1', type: 'stroke-order', prompt: '按顺序点出横、竖、撇、捺' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '基础笔画星'
     }
   },
   'english-letters-001': {
@@ -693,6 +780,19 @@ export const levelDetails: Record<string, LevelDetail> = {
     reward: {
       stars: 2,
       badgeName: '全字母船长'
+    }
+  },
+  'english-case-001': {
+    code: 'english-case-001',
+    title: '大小写找朋友',
+    subjectTitle: '英语岛',
+    description: '把大写字母和小写字母配成一对。',
+    steps: [
+      { id: 'step-1', type: 'drag-match', prompt: '把 A、B、C 和小写字母连起来' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '大小写配对星'
     }
   },
   'english-phonics-001': {
@@ -760,6 +860,19 @@ export const levelDetails: Record<string, LevelDetail> = {
       badgeName: '颜色小沙堡师'
     }
   },
+  'english-family-001': {
+    code: 'english-family-001',
+    title: '家庭单词屋',
+    subjectTitle: '英语岛',
+    description: '把 family、mom、dad 和图标配成一对。',
+    steps: [
+      { id: 'step-1', type: 'drag-match', prompt: '把 family、mom、dad 和图片连起来' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '家庭单词星'
+    }
+  },
   'english-story-001': {
     code: 'english-story-001',
     title: '海湾小绘本',
@@ -797,6 +910,19 @@ export const levelDetails: Record<string, LevelDetail> = {
     reward: {
       stars: 2,
       badgeName: '晚安朗读星'
+    }
+  },
+  'english-story-004': {
+    code: 'english-story-004',
+    title: '公园小绘本',
+    subjectTitle: '英语岛',
+    description: '跟着公园场景读简单句子，把新绘本读完整。',
+    steps: [
+      { id: 'step-1', type: 'sentence-read', prompt: '按顺序读完公园小绘本' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '公园朗读星'
     }
   }
 };

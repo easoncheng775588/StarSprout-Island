@@ -321,6 +321,45 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再把故事里的数字连起来想一想'
     }
   },
+  'math-shapes-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '观察图形朋友的样子，找出圆圆的图形。',
+      choices: [
+        { label: '圆形', hint: '像太阳、皮球' },
+        { label: '三角形', hint: '有 3 条直直的边' },
+        { label: '正方形', hint: '4 条边一样长' }
+      ],
+      correctChoice: '圆形',
+      successFeedback: '答对了，圆形像太阳和皮球，边边是弯弯的',
+      detailLines: ['图形提示：圆形没有尖角，三角形有 3 个角，正方形有 4 个角。'],
+      failureFeedback: '再找一找，太阳和皮球更像哪一个图形'
+    }
+  },
+  'math-position-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '看小动物的位置，选出小狗在哪里。',
+      emoji: '🐶',
+      characterLabel: '小动物位置图',
+      detailLines: ['小猫在桌子上面。', '小狗趴在桌子下面。'],
+      choices: [1, 2, 3],
+      correctChoice: 2,
+      successFeedback: '答对了，小狗在桌子下面',
+      failureFeedback: '再看看桌子和小狗的位置，上面还是下面？'
+    }
+  },
+  'math-ordinal-001': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '从左往右数一数，小兔排在第几个？',
+      choices: [2, 3, 4],
+      correctChoice: 3,
+      optionLabelPrefix: '位置卡',
+      successFeedback: '答对了，小兔排在第 3 个',
+      failureFeedback: '从左边第一个开始，一个一个数到小兔'
+    }
+  },
   'chinese-characters-001': {
     'step-1': {
       kind: 'character-choice',
@@ -379,6 +418,21 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再想一想，哪个字最像我们听声音的小耳朵'
     }
   },
+  'chinese-radicals-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '看一看哪个字里藏着“木”的样子。',
+      choices: [
+        { label: '林', hint: '两个木靠在一起' },
+        { label: '明', hint: '日和月在一起' },
+        { label: '口', hint: '像小嘴巴' }
+      ],
+      correctChoice: '林',
+      successFeedback: '答对了，“林”里有两个木，和树木有关系',
+      detailLines: ['偏旁提示：木字旁常常和树木、植物有关系'],
+      failureFeedback: '再找一找，哪个字里藏着“木”'
+    }
+  },
   'chinese-pinyin-002': {
     'step-1': {
       kind: 'listen-choice',
@@ -405,6 +459,21 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       correctChoice: 'sh',
       successFeedback: '答对了，声母 sh 读起来像小狮子轻轻呼气',
       failureFeedback: '再听一遍，注意这是卷舌一点点的 sh 音'
+    }
+  },
+  'chinese-pinyin-tone-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '先听老师读，再选出第三声的小山坡。',
+      audioPrompt: 'mǎ',
+      audioText: '马',
+      lang: 'zh-CN',
+      playButtonLabel: '播放声调读音',
+      choiceAriaLabelPrefix: '声调卡',
+      choices: ['mā', 'má', 'mǎ'],
+      correctChoice: 'mǎ',
+      successFeedback: '听对了，mǎ 是第三声，声音先低再抬起来',
+      failureFeedback: '再听一遍，第三声像小山坡，先下再上'
     }
   },
   'chinese-strokes-001': {
@@ -450,6 +519,22 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       successFeedback: '真棒，“人”字也会写啦',
       detailLines: ['笔顺口诀：先撇后捺，左右舒展开'],
       failureFeedback: '再想一想，“人”字要先写左边的撇'
+    }
+  },
+  'chinese-strokes-004': {
+    'step-1': {
+      kind: 'stroke-order',
+      instruction: '按顺序点一点，认识横、竖、撇、捺。',
+      character: '木',
+      strokes: [
+        { label: '横', hint: '先写平平的一横' },
+        { label: '竖', hint: '再写中间直直的一竖' },
+        { label: '撇', hint: '第三笔向左下撇' },
+        { label: '捺', hint: '最后向右下舒展开' }
+      ],
+      successFeedback: '真棒，横、竖、撇、捺都点对了',
+      detailLines: ['基础笔画是写字积木，先认清笔画，写字会更稳。'],
+      failureFeedback: '慢慢来，先横后竖，再撇再捺'
     }
   },
   'english-letters-001': {
@@ -507,6 +592,17 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { label: 'X', phonetic: '/eks/', exampleWord: 'x-ray', emoji: '🩻' },
         { label: 'Y', phonetic: '/waɪ/', exampleWord: 'yoyo', emoji: '🪀' },
         { label: 'Z', phonetic: '/ziː/', exampleWord: 'zebra', emoji: '🦓' }
+      ]
+    }
+  },
+  'english-case-001': {
+    'step-1': {
+      kind: 'word-match',
+      instruction: '先点大写字母，再点对应的小写字母，把大小写配成朋友。',
+      pairs: [
+        { word: 'A', pictureLabel: 'a', emoji: '🍎', phonetic: 'apple' },
+        { word: 'B', pictureLabel: 'b', emoji: '📘', phonetic: 'book' },
+        { word: 'C', pictureLabel: 'c', emoji: '🐱', phonetic: 'cat' }
       ]
     }
   },
@@ -573,6 +669,17 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       ]
     }
   },
+  'english-family-001': {
+    'step-1': {
+      kind: 'word-match',
+      instruction: '把家庭单词和图标配成一对，边点边跟读。',
+      pairs: [
+        { word: 'mom', pictureLabel: '妈妈', emoji: '👩', phonetic: '/mɑːm/' },
+        { word: 'dad', pictureLabel: '爸爸', emoji: '👨', phonetic: '/dæd/' },
+        { word: 'family', pictureLabel: '家人', emoji: '🏠', phonetic: '/ˈfæməli/' }
+      ]
+    }
+  },
   'english-story-001': {
     'step-1': {
       kind: 'sentence-read',
@@ -607,6 +714,18 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { text: 'I say good night.', emoji: '💤', scene: '我说晚安啦' }
       ],
       successFeedback: '晚安小绘本读完啦'
+    }
+  },
+  'english-story-004': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '点一点公园绘本，把三句话按顺序读完。',
+      sentences: [
+        { text: 'I go to the park.', emoji: '🌳', scene: '我去公园玩' },
+        { text: 'I see a bird.', emoji: '🐦', scene: '我看见一只小鸟' },
+        { text: 'I like the park.', emoji: '💚', scene: '我喜欢公园' }
+      ],
+      successFeedback: '公园小绘本读完啦'
     }
   },
   'math-grade1-numbers-001': {

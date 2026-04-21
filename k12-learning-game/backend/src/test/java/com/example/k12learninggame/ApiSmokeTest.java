@@ -197,7 +197,10 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.chapters[0].levels[3].code").value("math-addition-002"))
                 .andExpect(jsonPath("$.chapters[0].levels[5].code").value("math-thinking-002"))
                 .andExpect(jsonPath("$.chapters[0].levels[7].code").value("math-subtraction-002"))
-                .andExpect(jsonPath("$.chapters[0].levels[10].code").value("math-wordproblem-001"));
+                .andExpect(jsonPath("$.chapters[0].levels[10].code").value("math-wordproblem-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[11].code").value("math-shapes-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[12].code").value("math-position-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[13].code").value("math-ordinal-001"));
     }
 
     @Test
@@ -207,10 +210,13 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.subject.code").value("chinese"))
                 .andExpect(jsonPath("$.chapters[0].title").value("汉字花园"))
                 .andExpect(jsonPath("$.chapters[0].levels[2].code").value("chinese-characters-003"))
+                .andExpect(jsonPath("$.chapters[0].levels[3].code").value("chinese-radicals-001"))
                 .andExpect(jsonPath("$.chapters[1].title").value("拼音乐园"))
                 .andExpect(jsonPath("$.chapters[1].levels[2].code").value("chinese-pinyin-003"))
+                .andExpect(jsonPath("$.chapters[1].levels[3].code").value("chinese-pinyin-tone-001"))
                 .andExpect(jsonPath("$.chapters[2].title").value("笔画写字屋"))
-                .andExpect(jsonPath("$.chapters[2].levels[2].code").value("chinese-strokes-003"));
+                .andExpect(jsonPath("$.chapters[2].levels[2].code").value("chinese-strokes-003"))
+                .andExpect(jsonPath("$.chapters[2].levels[3].code").value("chinese-strokes-004"));
     }
 
     @Test
@@ -219,12 +225,15 @@ class ApiSmokeTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.subject.code").value("english"))
                 .andExpect(jsonPath("$.chapters[0].title").value("字母海湾"))
+                .andExpect(jsonPath("$.chapters[0].levels[4].code").value("english-case-001"))
                 .andExpect(jsonPath("$.chapters[1].title").value("拼读码头"))
                 .andExpect(jsonPath("$.chapters[1].levels[1].code").value("english-phonics-002"))
                 .andExpect(jsonPath("$.chapters[2].title").value("单词沙滩"))
                 .andExpect(jsonPath("$.chapters[2].levels[2].code").value("english-words-003"))
+                .andExpect(jsonPath("$.chapters[2].levels[3].code").value("english-family-001"))
                 .andExpect(jsonPath("$.chapters[3].title").value("绘本港湾"))
-                .andExpect(jsonPath("$.chapters[3].levels[2].code").value("english-story-003"));
+                .andExpect(jsonPath("$.chapters[3].levels[2].code").value("english-story-003"))
+                .andExpect(jsonPath("$.chapters[3].levels[3].code").value("english-story-004"));
     }
 
     @Test
@@ -690,7 +699,7 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.learningVitals.effectiveLearningDays").value(3))
                 .andExpect(jsonPath("$.subjectInsights[0].subjectCode").value("math"))
                 .andExpect(jsonPath("$.subjectInsights[0].completedLevels").value(2))
-                .andExpect(jsonPath("$.subjectInsights[0].totalLevels").value(11))
+                .andExpect(jsonPath("$.subjectInsights[0].totalLevels").value(14))
                 .andExpect(jsonPath("$.subjectInsights[0].accuracyPercent").value(75))
                 .andExpect(jsonPath("$.subjectInsights[0].nextLevelReason").isNotEmpty())
                 .andExpect(jsonPath("$.recentActivities[0].subjectTitle").value("语文岛"))
