@@ -715,6 +715,180 @@ body::before {
   font-weight: 800;
 }
 
+.olympiad-command-panel {
+  display: grid;
+  grid-template-columns: minmax(28rem, 1.1fr) minmax(28rem, 1fr);
+  gap: 1.8rem;
+  margin: 2.4rem 0;
+}
+
+.olympiad-recommend-card,
+.olympiad-ability-card,
+.olympiad-method-card,
+.olympiad-filter-panel {
+  position: relative;
+  overflow: hidden;
+  padding: 2.4rem;
+  border-radius: 2.8rem;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 1.8rem 4.2rem rgba(33, 48, 77, 0.12);
+}
+
+.olympiad-recommend-card {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 82% 16%, rgba(255, 212, 107, 0.42), transparent 26%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(223, 246, 240, 0.88));
+}
+
+.olympiad-recommend-card h2,
+.olympiad-ability-card h2,
+.olympiad-method-card h2 {
+  margin: 0.4rem 0 0;
+  font-size: clamp(2.4rem, 2.6vw, 3.6rem);
+  line-height: 1.1;
+}
+
+.olympiad-recommend-card p:not(.eyebrow),
+.olympiad-method-step p {
+  color: rgba(33, 48, 77, 0.68);
+  line-height: 1.7;
+}
+
+.olympiad-recommend-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 1.6rem 0 2rem;
+}
+
+.olympiad-recommend-meta span,
+.olympiad-topic-tags i {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.7rem 1rem;
+  border-radius: 99.9rem;
+  background: rgba(79, 124, 255, 0.1);
+  color: #2f5ea8;
+  font-size: 1.28rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.olympiad-ability-card {
+  background:
+    radial-gradient(circle at 12% 20%, rgba(79, 124, 255, 0.15), transparent 26%),
+    rgba(255, 255, 255, 0.82);
+}
+
+.olympiad-method-card {
+  grid-column: 1 / -1;
+  background:
+    linear-gradient(135deg, rgba(47, 72, 88, 0.94), rgba(79, 124, 255, 0.76)),
+    #2f4858;
+  color: #fffdf8;
+}
+
+.olympiad-method-card .eyebrow,
+.olympiad-method-card p {
+  color: rgba(255, 253, 248, 0.78);
+}
+
+.olympiad-ability-list {
+  display: grid;
+  gap: 1.2rem;
+  margin-top: 1.8rem;
+}
+
+.olympiad-ability-row {
+  display: grid;
+  grid-template-columns: 8.8rem minmax(0, 1fr) 4.8rem;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 900;
+}
+
+.olympiad-ability-row b {
+  color: rgba(33, 48, 77, 0.62);
+  font-size: 1.28rem;
+}
+
+.olympiad-ability-track {
+  height: 1.1rem;
+  overflow: hidden;
+  border-radius: 99.9rem;
+  background: rgba(33, 48, 77, 0.08);
+}
+
+.olympiad-ability-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #67cdb4, #4f7cff);
+}
+
+.olympiad-method-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.8rem;
+}
+
+.olympiad-method-step {
+  padding: 1.5rem;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 0.1rem rgba(255, 255, 255, 0.12);
+}
+
+.olympiad-method-step span {
+  display: block;
+  font-size: 2.8rem;
+}
+
+.olympiad-method-step strong {
+  display: block;
+  margin-top: 0.8rem;
+  font-size: 1.8rem;
+}
+
+.olympiad-method-step p {
+  margin-bottom: 0;
+  font-size: 1.4rem;
+}
+
+.olympiad-filter-panel {
+  margin: 2.4rem 0;
+}
+
+.olympiad-grade-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.olympiad-grade-tab {
+  border: 0;
+  border-radius: 99.9rem;
+  background: rgba(255, 255, 255, 0.8);
+  color: rgba(33, 48, 77, 0.72);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+  padding: 1rem 1.4rem;
+  box-shadow: inset 0 0 0 0.1rem rgba(33, 48, 77, 0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+.olympiad-grade-tab:hover,
+.olympiad-grade-tab-active {
+  transform: translateY(-0.2rem);
+  background: linear-gradient(135deg, #4f7cff, #67cdb4);
+  color: #fffdf8;
+  box-shadow: 0 1rem 2rem rgba(79, 124, 255, 0.2);
+}
+
 .olympiad-grade-map {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -815,6 +989,13 @@ body::before {
   color: rgba(33, 48, 77, 0.58);
   font-size: 1.32rem;
   font-style: normal;
+}
+
+.olympiad-topic-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
 }
 
 .olympiad-topic-card b {
@@ -1932,25 +2113,52 @@ body::before {
     0 1rem 2.2rem rgba(33, 48, 77, 0.07);
 }
 
+.reward-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.6rem, 4vw, 4.8rem);
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255, 212, 107, 0.24), transparent 28%),
+    radial-gradient(circle at 78% 82%, rgba(103, 205, 180, 0.22), transparent 30%),
+    rgba(33, 48, 77, 0.36);
+  backdrop-filter: blur(1rem);
+  animation: reward-backdrop-fade 240ms ease-out both;
+}
+
 .reward-card {
-  margin-top: 2.2rem;
-  background: linear-gradient(135deg, rgba(255, 212, 107, 0.85), rgba(255, 143, 107, 0.85));
+  width: min(64rem, 100%);
+  max-height: min(86vh, 76rem);
+  overflow: auto;
+  margin: 0;
+  padding: clamp(2.4rem, 4vw, 3.8rem);
+  border: 0.1rem solid rgba(255, 255, 255, 0.36);
+  border-radius: clamp(2.8rem, 5vw, 4.2rem);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.34), transparent 22%),
+    radial-gradient(circle at 86% 18%, rgba(255, 248, 204, 0.34), transparent 24%),
+    linear-gradient(135deg, rgba(255, 212, 107, 0.95), rgba(255, 143, 107, 0.94));
   color: #fff;
+  box-shadow:
+    0 3rem 9rem rgba(33, 48, 77, 0.32),
+    inset 0 0 0 0.1rem rgba(255, 255, 255, 0.16);
 }
 
 .reward-card-celebration {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  animation: reward-pop 480ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
+  animation: reward-pop 520ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
 }
 
 .reward-card-celebration::after {
   content: '';
   position: absolute;
-  inset: 18% -10% auto;
-  height: 14rem;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.34), transparent 68%);
+  inset: 22% -18% auto;
+  height: 18rem;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent 68%);
   opacity: 0.85;
   z-index: -1;
 }
@@ -1968,7 +2176,7 @@ body::before {
   flex-direction: column;
   gap: 0.2rem;
   width: fit-content;
-  margin: 0 0 1.2rem;
+  margin: 0 0 1.6rem;
   padding: 1.2rem 1.8rem;
   border-radius: 2.2rem;
   background:
@@ -2009,42 +2217,54 @@ body::before {
 
 .celebration-star-1 {
   top: 2rem;
-  left: 1.8rem;
+  left: 2rem;
   animation-delay: 0s;
 }
 
 .celebration-star-2 {
-  top: 1.8rem;
-  left: 9.6rem;
+  top: 2.4rem;
+  left: 13.8rem;
   animation-delay: 180ms;
 }
 
 .celebration-star-3 {
-  top: 2.8rem;
-  right: 11rem;
+  top: 2.2rem;
+  right: 10rem;
   animation-delay: 320ms;
 }
 
 .celebration-star-4 {
-  top: 2.6rem;
+  top: 8.2rem;
   right: 2.4rem;
   animation-delay: 480ms;
 }
 
 .celebration-star-5 {
-  bottom: 2.6rem;
-  left: 4.2rem;
+  bottom: 11rem;
+  left: 3.4rem;
   animation-delay: 220ms;
 }
 
 .celebration-star-6 {
-  bottom: 2.2rem;
+  bottom: 3.8rem;
   right: 5.4rem;
   animation-delay: 560ms;
 }
 
+.reward-modal-main {
+  position: relative;
+  z-index: 1;
+}
+
+.reward-modal-main h2 {
+  margin: 0.6rem 0 0;
+  font-size: clamp(3.2rem, 6vw, 5.6rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
 .reward-card-copy {
-  max-width: 44rem;
+  max-width: 48rem;
   margin: 1rem 0 0;
   color: rgba(255, 255, 255, 0.96);
   font-size: 1.728rem;
@@ -2091,7 +2311,7 @@ body::before {
   align-items: center;
   justify-content: space-between;
   gap: 1.4rem;
-  max-width: 56rem;
+  width: 100%;
   margin-top: 1.6rem;
   padding: 1.6rem 1.8rem;
   border-radius: 2.4rem;
@@ -2130,13 +2350,19 @@ body::before {
 }
 
 .reward-card-actions {
-  margin-top: 2rem;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  margin-top: 2.2rem;
 }
 
 .reward-next-button {
   background: linear-gradient(135deg, #fff8cc, #fff2b6);
   color: #c85c2b;
   box-shadow: 0 1.4rem 2.8rem rgba(191, 90, 45, 0.18);
+  min-width: min(24rem, 100%);
+  justify-content: center;
 }
 
 .reward-next-arrow {
@@ -2150,15 +2376,25 @@ body::before {
   box-shadow: 0 1.8rem 3.4rem rgba(191, 90, 45, 0.24);
 }
 
+@keyframes reward-backdrop-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes reward-pop {
   0% {
     opacity: 0;
-    transform: translateY(1.2rem) scale(0.95);
+    transform: translateY(2rem) scale(0.9);
   }
 
   60% {
     opacity: 1;
-    transform: translateY(-0.4rem) scale(1.02);
+    transform: translateY(-0.6rem) scale(1.025);
   }
 
   100% {
@@ -2910,6 +3146,8 @@ body::before {
   .olympiad-home-card,
   .olympiad-hero,
   .olympiad-stats,
+  .olympiad-command-panel,
+  .olympiad-method-list,
   .olympiad-grade-map {
     grid-template-columns: 1fr;
   }
@@ -2918,8 +3156,18 @@ body::before {
     grid-template-columns: auto minmax(0, 1fr);
   }
 
+  .olympiad-topic-tags,
   .olympiad-topic-card b {
     grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+
+  .olympiad-method-card {
+    grid-column: auto;
+  }
+
+  .olympiad-ability-row {
+    grid-template-columns: 1fr;
   }
 
   .panel-heading-row {

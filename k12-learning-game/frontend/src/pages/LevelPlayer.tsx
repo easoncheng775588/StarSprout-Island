@@ -3100,62 +3100,71 @@ export function LevelPlayer() {
       </section>
 
       {completionResult && reward ? (
-        <section className="reward-card reward-card-celebration" aria-live="polite">
-          <div aria-label="通关庆祝动画" className="celebration-burst">
-            {celebrationStars.map((star, index) => (
-              <span
-                aria-label="庆祝星星"
-                className={`celebration-star celebration-star-${index + 1}`}
-                key={`${star}-${index}`}
-              >
-                {star}
-              </span>
-            ))}
-          </div>
-          <div className="reward-hero-badge" aria-label="通关鼓励徽章">
-            <span>闯关成功</span>
-            <strong>星光能量已充满</strong>
-          </div>
-          <p className="eyebrow">奖励已送达</p>
-          <h2>{completionResult.isFirstCompletion ? `获得 ${reward.stars} 颗星星` : '复习完成啦'}</h2>
-          {nextLevelCode ? <p className="reward-unlock-pill">下一关已解锁</p> : null}
-          <p className="reward-card-copy">
-            {completionResult.isFirstCompletion ? '太棒啦，继续去点亮下一关' : '这次是复习练习，星星奖励已在首通时发放'}
-          </p>
-          {!completionResult.isFirstCompletion ? (
-            <p className="reward-total-stars">累计星星 {completionResult.totalStars} 颗</p>
-          ) : null}
-          <p className="reward-badge-pill">{reward.badgeName}</p>
-          {completionResult.newlyUnlockedBadges.length > 0 ? (
-            <div className="reward-achievement-stack">
-              <p className="eyebrow">新成就解锁</p>
-              {completionResult.newlyUnlockedBadges.map((badge) => (
-                <article className="reward-achievement-card" key={badge.code}>
-                  <strong>{badge.title}</strong>
-                  <p>{badge.description}</p>
-                </article>
+        <section className="reward-modal-backdrop" aria-live="polite">
+          <div
+            aria-labelledby="reward-modal-title"
+            aria-modal="true"
+            className="reward-card reward-card-celebration"
+            role="dialog"
+          >
+            <div aria-label="通关庆祝动画" className="celebration-burst">
+              {celebrationStars.map((star, index) => (
+                <span
+                  aria-label="庆祝星星"
+                  className={`celebration-star celebration-star-${index + 1}`}
+                  key={`${star}-${index}`}
+                >
+                  {star}
+                </span>
               ))}
             </div>
-          ) : null}
-          <div className="reward-leaderboard-card" aria-label="通关后的星光榜反馈">
-            <div>
-              <p className="eyebrow">{completionResult.leaderboardFeedback.boardTitle}</p>
-              <strong>{completionResult.leaderboardFeedback.trendLabel}</strong>
-              <p>{completionResult.leaderboardFeedback.message}</p>
+            <div className="reward-hero-badge" aria-label="通关鼓励徽章">
+              <span>闯关成功</span>
+              <strong>星光能量已充满</strong>
             </div>
-            <span>累计 {completionResult.leaderboardFeedback.totalStars} 星</span>
-          </div>
-          <div className="reward-card-actions">
-            {nextLevelCode ? (
-              <Link className="cta-button reward-next-button" to={`/levels/${nextLevelCode}`}>
-                前往下一关
-                {showNextLevelNudge ? <span aria-label="下一关提示箭头" className="reward-next-arrow">→</span> : null}
-              </Link>
-            ) : (
-              <Link className="cta-button reward-next-button" to={backTarget}>
-                返回{currentLevel.subjectTitle}
-              </Link>
-            )}
+            <div className="reward-modal-main">
+              <p className="eyebrow">奖励已送达</p>
+              <h2 id="reward-modal-title">{completionResult.isFirstCompletion ? `获得 ${reward.stars} 颗星星` : '复习完成啦'}</h2>
+              {nextLevelCode ? <p className="reward-unlock-pill">下一关已解锁</p> : null}
+              <p className="reward-card-copy">
+                {completionResult.isFirstCompletion ? '太棒啦，继续去点亮下一关' : '这次是复习练习，星星奖励已在首通时发放'}
+              </p>
+              {!completionResult.isFirstCompletion ? (
+                <p className="reward-total-stars">累计星星 {completionResult.totalStars} 颗</p>
+              ) : null}
+              <p className="reward-badge-pill">{reward.badgeName}</p>
+            </div>
+            {completionResult.newlyUnlockedBadges.length > 0 ? (
+              <div className="reward-achievement-stack">
+                <p className="eyebrow">新成就解锁</p>
+                {completionResult.newlyUnlockedBadges.map((badge) => (
+                  <article className="reward-achievement-card" key={badge.code}>
+                    <strong>{badge.title}</strong>
+                    <p>{badge.description}</p>
+                  </article>
+                ))}
+              </div>
+            ) : null}
+            <div className="reward-leaderboard-card" aria-label="通关后的星光榜反馈">
+              <div>
+                <p className="eyebrow">{completionResult.leaderboardFeedback.boardTitle}</p>
+                <strong>{completionResult.leaderboardFeedback.trendLabel}</strong>
+                <p>{completionResult.leaderboardFeedback.message}</p>
+              </div>
+              <span>累计 {completionResult.leaderboardFeedback.totalStars} 星</span>
+            </div>
+            <div className="reward-card-actions">
+              {nextLevelCode ? (
+                <Link className="cta-button reward-next-button" to={`/levels/${nextLevelCode}`}>
+                  前往下一关
+                  {showNextLevelNudge ? <span aria-label="下一关提示箭头" className="reward-next-arrow">→</span> : null}
+                </Link>
+              ) : (
+                <Link className="cta-button reward-next-button" to={backTarget}>
+                  返回{currentLevel.subjectTitle}
+                </Link>
+              )}
+            </div>
           </div>
         </section>
       ) : null}
