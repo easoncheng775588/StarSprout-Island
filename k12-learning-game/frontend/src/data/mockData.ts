@@ -123,7 +123,9 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '从小数到角和图形，把抽象概念放进可观察的画面。',
         levels: [
           { code: 'math-grade4-decimal-001', title: '小数初步', status: 'recommended' },
-          { code: 'math-grade4-angle-001', title: '角与图形', status: 'available' }
+          { code: 'math-grade4-hundredths-001', title: '小数百格图', status: 'available' },
+          { code: 'math-grade4-angle-001', title: '角与图形', status: 'available' },
+          { code: 'math-grade4-angle-classify-001', title: '角度分类挑战', status: 'available' }
         ]
       },
       {
@@ -133,7 +135,9 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '把综合运算和策略应用题拆开看，练习更清晰的思考。',
         levels: [
           { code: 'math-grade4-operation-001', title: '运算综合', status: 'available' },
-          { code: 'math-grade4-strategy-001', title: '策略应用题', status: 'available' }
+          { code: 'math-grade4-distributive-001', title: '面积模型巧算', status: 'available' },
+          { code: 'math-grade4-strategy-001', title: '策略应用题', status: 'available' },
+          { code: 'math-grade4-distance-001', title: '路程线段图', status: 'available' }
         ]
       }
     ]

@@ -308,12 +308,28 @@ class PersistenceBackedGameContentServiceTest {
                         org.assertj.core.groups.Tuple.tuple("math-grade4-numbers", "小数图形站"),
                         org.assertj.core.groups.Tuple.tuple("math-grade4-strategy", "运算策略站")
                 );
+        assertThat(mathMap.chapters().get(0).levels())
+                .extracting(level -> level.code())
+                .containsExactly(
+                        "math-grade4-decimal-001",
+                        "math-grade4-hundredths-001",
+                        "math-grade4-angle-001",
+                        "math-grade4-angle-classify-001"
+                );
+        assertThat(mathMap.chapters().get(1).levels())
+                .extracting(level -> level.code())
+                .containsExactly(
+                        "math-grade4-operation-001",
+                        "math-grade4-distributive-001",
+                        "math-grade4-strategy-001",
+                        "math-grade4-distance-001"
+                );
         assertThat(dashboard.subjectInsights())
                 .filteredOn(insight -> insight.subjectCode().equals("math"))
                 .singleElement()
                 .satisfies(insight -> {
                     assertThat(insight.completedLevels()).isZero();
-                    assertThat(insight.totalLevels()).isEqualTo(4);
+                    assertThat(insight.totalLevels()).isEqualTo(8);
                     assertThat(insight.nextLevelTitle()).isEqualTo("小数初步");
                 });
     }

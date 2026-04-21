@@ -1530,6 +1530,25 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再想想 10 份中的 7 份可以写成 0.7'
     }
   },
+  'math-grade4-hundredths-001': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '把 100 格看成 1 个整体，数一数涂色部分对应多少个百分之一。',
+      choices: [0.23, 0.32, 3.2],
+      correctChoice: 0.32,
+      optionLabelPrefix: '小数卡',
+      successFeedback: '答对了，32 个百分之一就是 0.32',
+      failureFeedback: '再看一看，是 100 格里的 32 格，所以是 0.32',
+      mathModel: {
+        kind: 'grid',
+        title: '小数百格图',
+        caption: '涂色 32 格，就是 32 个百分之一',
+        rows: 10,
+        columns: 10,
+        filledCount: 32
+      }
+    }
+  },
   'math-grade4-angle-001': {
     'step-1': {
       kind: 'character-choice',
@@ -1545,6 +1564,21 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再想一想，锐角的张口比直角更小'
     }
   },
+  'math-grade4-angle-classify-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '观察 135° 的张口，它比直角大、比平角小，选出角的类别。',
+      choices: [
+        { label: '锐角', hint: '小于 90°' },
+        { label: '直角', hint: '等于 90°' },
+        { label: '钝角', hint: '大于 90° 且小于 180°' }
+      ],
+      correctChoice: '钝角',
+      successFeedback: '答对了，135° 大于 90° 小于 180°，是钝角',
+      detailLines: ['锐角 < 90°，直角 = 90°，钝角在 90° 和 180° 之间。'],
+      failureFeedback: '再比较一下 135° 和 90°，它的张口更大'
+    }
+  },
   'math-grade4-operation-001': {
     'step-1': {
       kind: 'story-choice',
@@ -1558,6 +1592,27 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '先把乘法算出来，再接着加 8'
     }
   },
+  'math-grade4-distributive-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '把 12×6 拆成 10×6 和 2×6，用面积模型看见乘法分配律。',
+      emoji: '🧱',
+      characterLabel: '巧算模型',
+      detailLines: ['10×6 + 2×6', '先算 60，再算 12，最后合起来。'],
+      choices: [68, 72, 78],
+      correctChoice: 72,
+      successFeedback: '答对了，10×6 是 60，2×6 是 12，一共 72',
+      failureFeedback: '先把 12 拆成 10 和 2，再分别乘 6',
+      mathModel: {
+        kind: 'grid',
+        title: '面积模型巧算',
+        caption: '12 列 × 6 行，可以拆成 10 列和 2 列',
+        rows: 6,
+        columns: 12,
+        filledCount: 72
+      }
+    }
+  },
   'math-grade4-strategy-001': {
     'step-1': {
       kind: 'story-choice',
@@ -1569,6 +1624,28 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       correctChoice: 50,
       successFeedback: '答对了，20 + 10 × 3 = 50',
       failureFeedback: '先算 3 张儿童票，再加 1 张成人票'
+    }
+  },
+  'math-grade4-distance-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '把“每小时 8 千米”连续走 3 小时放到线段图里，再算总路程。',
+      emoji: '⛵',
+      characterLabel: '小船路程',
+      detailLines: ['速度是每小时 8 千米。', '行驶 3 小时，路程 = 速度 × 时间。'],
+      choices: [18, 24, 32],
+      correctChoice: 24,
+      successFeedback: '答对了，8 × 3 = 24，小船一共行 24 千米',
+      failureFeedback: '把每小时 8 千米看成一段，连续 3 段再合起来',
+      mathModel: {
+        kind: 'bar-model',
+        title: '路程线段图',
+        caption: '每小时 8 千米，走 3 小时，一共 24 千米',
+        segments: [
+          { label: '每小时', value: 8, tone: 'known' },
+          { label: '3 小时', value: 24, tone: 'result' }
+        ]
+      }
     }
   },
   'chinese-grade4-passage-001': {
