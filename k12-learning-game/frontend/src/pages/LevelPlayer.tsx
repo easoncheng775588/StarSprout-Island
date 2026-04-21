@@ -143,6 +143,17 @@ interface StepProgressState {
   detailLines?: string[];
 }
 
+interface AnimatedExplainer {
+  title: string;
+  subtitle: string;
+  accentEmoji: string;
+  scenes: Array<{
+    title: string;
+    narration: string;
+    tokens: string[];
+  }>;
+}
+
 const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> = {
   'math-numbers-001': {
     'step-1': {
@@ -1437,6 +1448,89 @@ function getActivityMetaLabels(step: LevelStep, config?: StepActivityConfig) {
   return labels;
 }
 
+function getAnimatedExplainer(level: LevelDetail): AnimatedExplainer | null {
+  if (level.code.includes('-grade')) {
+    return null;
+  }
+
+  if (level.subjectTitle === '数学岛') {
+    return {
+      title: '先看动画解读：数量怎么变成数字',
+      subtitle: '用 20 秒先看懂规则，再开始动手玩。',
+      accentEmoji: '🍎',
+      scenes: [
+        {
+          title: '第一幕：先看见数量',
+          narration: '苹果一个一个出现，孩子先用眼睛感受“有几个”。',
+          tokens: ['🍎', '🍎', '🍎', '🍎', '🍎']
+        },
+        {
+          title: '第二幕：把数量放进篮子',
+          narration: '把苹果收进篮子，数量不会消失，只是换了一个地方。',
+          tokens: ['🧺', '🍎', '🍎', '🍎', '🍎', '🍎']
+        },
+        {
+          title: '第三幕：找到对应数字',
+          narration: '最后把看到的数量和数字符号连起来。',
+          tokens: ['5', '=', '🍎🍎🍎🍎🍎']
+        }
+      ]
+    };
+  }
+
+  if (level.subjectTitle === '语文岛') {
+    return {
+      title: '先看动画解读：字音字形怎么连起来',
+      subtitle: '用图像、声音和笔画，把抽象文字变得可观察。',
+      accentEmoji: '☀️',
+      scenes: [
+        {
+          title: '第一幕：从图像开始',
+          narration: '先看太阳、月亮这些熟悉图像，降低识字难度。',
+          tokens: ['☀️', '🌙', '⛰️']
+        },
+        {
+          title: '第二幕：听见正确读音',
+          narration: '再听拼音或汉字读音，让眼睛和耳朵一起记住。',
+          tokens: ['ma', 'ba', 'pa']
+        },
+        {
+          title: '第三幕：看笔画顺序',
+          narration: '最后按顺序观察笔画，知道字是一步一步写出来的。',
+          tokens: ['一', '丨', '𠃍', '日']
+        }
+      ]
+    };
+  }
+
+  if (level.subjectTitle === '英语岛') {
+    return {
+      title: '先看动画解读：字母怎么藏进单词',
+      subtitle: '先听字母音，再把字母、图片和单词连起来。',
+      accentEmoji: 'A',
+      scenes: [
+        {
+          title: '第一幕：认识字母朋友',
+          narration: '字母先单独出现，孩子跟着形状和声音熟悉它。',
+          tokens: ['A', 'B', 'C']
+        },
+        {
+          title: '第二幕：听开头声音',
+          narration: '把字母音放进单词开头，听见 apple 里的 A。',
+          tokens: ['A', 'a-a', 'apple']
+        },
+        {
+          title: '第三幕：和图片配成一对',
+          narration: '最后把声音、单词和图片连起来，形成真实理解。',
+          tokens: ['🍎', 'apple', '✓']
+        }
+      ]
+    };
+  }
+
+  return null;
+}
+
 export function LevelPlayer() {
   const { levelCode } = useParams<{ levelCode: string }>();
   const { session } = useSession();
@@ -1445,6 +1539,7 @@ export function LevelPlayer() {
   const [stepProgress, setStepProgress] = useState<Record<string, StepProgressState>>({});
   const [draggingApple, setDraggingApple] = useState<{ stepId: string; appleId: number } | null>(null);
   const [showNextLevelNudge, setShowNextLevelNudge] = useState(false);
+  const [showAnimatedExplainer, setShowAnimatedExplainer] = useState(false);
   const [audioSpeedMode, setAudioSpeedMode] = useState<'normal' | 'slow'>(readAudioSpeedMode);
   const [audioTeacherLabel, setAudioTeacherLabel] = useState('系统默认老师');
   const [levelStartedAt, setLevelStartedAt] = useState(() => Date.now());
@@ -1452,6 +1547,7 @@ export function LevelPlayer() {
   const activeChildStageLabel = session?.children.find((child) => child.id === session.childProfileId)?.stageLabel ?? '幼小衔接';
   const subjectCode = currentLevel ? subjectTitleToCode[currentLevel.subjectTitle] : undefined;
   const nextLevelCode = currentLevel ? getNextLevelCode(currentLevel.code, subjectCode, activeChildStageLabel) : null;
+  const animatedExplainer = currentLevel && activeChildStageLabel === '幼小衔接' ? getAnimatedExplainer(currentLevel) : null;
   const reward = completionResult?.reward ?? null;
 
   useEffect(() => {
@@ -1463,6 +1559,7 @@ export function LevelPlayer() {
     setCompletionResult(null);
     setStepProgress({});
     setShowNextLevelNudge(false);
+    setShowAnimatedExplainer(false);
     setLevelStartedAt(Date.now());
     getLevel(levelCode).then(setLevel);
   }, [levelCode]);
@@ -1895,6 +1992,55 @@ export function LevelPlayer() {
           <h1>{currentLevel.title}</h1>
           <p>{currentLevel.description}</p>
         </div>
+
+        {animatedExplainer ? (
+          <section className="animated-explainer-panel">
+            <div className="animated-explainer-intro">
+              <div>
+                <p className="eyebrow">动画解读</p>
+                <h2>{animatedExplainer.title}</h2>
+                <p>{animatedExplainer.subtitle}</p>
+              </div>
+              <button
+                className="cta-button cta-button-secondary"
+                type="button"
+                onClick={() => setShowAnimatedExplainer((current) => !current)}
+              >
+                {showAnimatedExplainer ? '收起动画解读' : '播放动画解读'}
+              </button>
+            </div>
+
+            {showAnimatedExplainer ? (
+              <div aria-label="动画解读视频" className="animated-explainer-video">
+                <div className="animated-explainer-stage" aria-hidden="true">
+                  <span className="animated-explainer-orbit animated-explainer-orbit-one">{animatedExplainer.accentEmoji}</span>
+                  <span className="animated-explainer-orbit animated-explainer-orbit-two">✨</span>
+                  <span className="animated-explainer-orbit animated-explainer-orbit-three">▶</span>
+                </div>
+                <div className="animated-explainer-scenes">
+                  {animatedExplainer.scenes.map((scene, sceneIndex) => (
+                    <article className="animated-explainer-scene" key={scene.title}>
+                      <span className="node-step">镜头 {sceneIndex + 1}</span>
+                      <h3>{scene.title}</h3>
+                      <p>{scene.narration}</p>
+                      <div className="animated-explainer-token-row" aria-label={`${scene.title} 动画元素`}>
+                        {scene.tokens.map((token, tokenIndex) => (
+                          <span
+                            className="animated-explainer-token"
+                            key={`${scene.title}-${token}-${tokenIndex}`}
+                            style={{ animationDelay: `${tokenIndex * 0.18}s` }}
+                          >
+                            {token}
+                          </span>
+                        ))}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </section>
+        ) : null}
 
         <div className="step-list">
           {currentLevel.steps.map((step, index) => {

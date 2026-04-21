@@ -182,3 +182,10 @@
   - 前端测试：`npm test -- --run`，14 个测试文件、62 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`
+- 已完成幼小衔接动画解读 MVP：
+  - 幼小衔接关卡页新增“播放动画解读”入口
+  - 数学岛、语文岛、英语岛分别提供 3 段式视频化分镜，帮助孩子先看懂玩法和知识点
+  - 当前采用 CSS 动画和分镜卡模拟动画视频，后续可替换为真实视频素材
+- 本轮前端验证通过：
+  - 前端测试：`npm test -- --run`，14 个测试文件、62 项测试通过
+  - 前端构建：`npm run build`

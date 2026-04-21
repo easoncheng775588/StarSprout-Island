@@ -109,9 +109,14 @@ describe('Level completion flow', () => {
       </MemoryRouter>
     );
 
+    expect(await screen.findByRole('button', { name: '播放动画解读' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '播放动画解读' }));
+    expect(screen.getByLabelText('动画解读视频')).toBeInTheDocument();
+    expect(screen.getByText('第一幕：先看见数量')).toBeInTheDocument();
+    expect(screen.getByText('第二幕：把数量放进篮子')).toBeInTheDocument();
+    expect(screen.getByText('第三幕：找到对应数字')).toBeInTheDocument();
     expect(await screen.findByRole('button', { name: '苹果 1' })).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: /苹果 \d/ })).toHaveLength(5);
-    expect(screen.getAllByText('🍎')).toHaveLength(5);
     expect(screen.getByLabelText('苹果篮子')).toBeInTheDocument();
     expect(screen.getByAltText('篮子图片')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '数字石牌 5' })).toBeInTheDocument();

@@ -594,6 +594,152 @@ body::before {
   background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,248,239,0.98));
 }
 
+.animated-explainer-panel {
+  display: grid;
+  gap: 1.6rem;
+  margin-top: 2.4rem;
+  padding: 2rem;
+  border-radius: 2.8rem;
+  background:
+    radial-gradient(circle at 10% 12%, rgba(255, 212, 107, 0.34), transparent 32%),
+    linear-gradient(135deg, rgba(255, 246, 222, 0.94), rgba(227, 249, 255, 0.88));
+  box-shadow:
+    0 1.8rem 3.8rem rgba(33, 48, 77, 0.1),
+    inset 0 0 0 0.1rem rgba(255, 255, 255, 0.5);
+}
+
+.animated-explainer-intro {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.8rem;
+  align-items: center;
+}
+
+.animated-explainer-intro h2,
+.animated-explainer-intro p {
+  margin: 0;
+}
+
+.animated-explainer-intro h2 {
+  font-size: clamp(2.4rem, 2vw, 3.2rem);
+}
+
+.animated-explainer-intro p:last-child {
+  margin-top: 0.8rem;
+  color: rgba(33, 48, 77, 0.72);
+  line-height: 1.7;
+}
+
+.animated-explainer-video {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.4fr);
+  gap: 1.8rem;
+  align-items: stretch;
+}
+
+.animated-explainer-stage {
+  position: relative;
+  min-height: 24rem;
+  overflow: hidden;
+  border-radius: 2.6rem;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.76), transparent 32%),
+    linear-gradient(160deg, rgba(255, 143, 107, 0.78), rgba(103, 205, 180, 0.72));
+  box-shadow: inset 0 0 0 0.1rem rgba(255, 255, 255, 0.42);
+}
+
+.animated-explainer-stage::before {
+  content: '';
+  position: absolute;
+  inset: 3.2rem;
+  border: 0.3rem dashed rgba(255, 255, 255, 0.56);
+  border-radius: 50%;
+  animation: explainer-spin 9s linear infinite;
+}
+
+.animated-explainer-orbit {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 6.8rem;
+  height: 6.8rem;
+  border-radius: 2.2rem;
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--ink);
+  box-shadow: 0 1.6rem 3.2rem rgba(33, 48, 77, 0.16);
+  animation: explainer-float 2.8s ease-in-out infinite;
+}
+
+.animated-explainer-orbit-one {
+  left: 3rem;
+  top: 3.4rem;
+}
+
+.animated-explainer-orbit-two {
+  right: 3.2rem;
+  top: 7.2rem;
+  animation-delay: 180ms;
+}
+
+.animated-explainer-orbit-three {
+  left: 50%;
+  bottom: 3rem;
+  transform: translateX(-50%);
+  animation-delay: 360ms;
+}
+
+.animated-explainer-scenes {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.animated-explainer-scene {
+  padding: 1.6rem;
+  border-radius: 2.2rem;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: inset 0 0 0 0.1rem rgba(33, 48, 77, 0.06);
+}
+
+.animated-explainer-scene h3,
+.animated-explainer-scene p {
+  margin: 0;
+}
+
+.animated-explainer-scene h3 {
+  margin-bottom: 0.8rem;
+}
+
+.animated-explainer-scene p {
+  color: rgba(33, 48, 77, 0.72);
+  line-height: 1.7;
+}
+
+.animated-explainer-token-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.animated-explainer-token {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.2rem;
+  min-height: 4.2rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 1.6rem;
+  background: linear-gradient(180deg, #fff8ef, #ffe5d4);
+  color: var(--ink);
+  font-size: 1.9rem;
+  font-weight: 900;
+  box-shadow: 0 1rem 2rem rgba(33, 48, 77, 0.1);
+  animation: explainer-token-pop 1.8s ease-in-out infinite;
+}
+
 .step-list {
   display: grid;
   gap: 1.6rem;
@@ -1461,6 +1607,34 @@ body::before {
   }
 }
 
+@keyframes explainer-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes explainer-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -0.8rem;
+  }
+}
+
+@keyframes explainer-token-pop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  45% {
+    transform: translateY(-0.35rem) scale(1.05);
+  }
+}
+
 .summary-grid,
 .dashboard-grid,
 .weak-list,
@@ -2128,6 +2302,12 @@ body::before {
 
   .stage-report-card {
     grid-template-columns: 1fr;
+  }
+
+  .animated-explainer-intro,
+  .animated-explainer-video {
+    grid-template-columns: 1fr;
+    display: grid;
   }
 
   .panel-heading-row {
