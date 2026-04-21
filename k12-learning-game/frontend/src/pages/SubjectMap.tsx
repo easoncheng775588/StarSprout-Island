@@ -10,14 +10,16 @@ export function SubjectMap() {
   const params = useParams<{ subjectCode: SubjectCode }>();
   const [subject, setSubject] = useState<SubjectMapData | null>(null);
   const { session } = useSession();
+  const activeChildStageLabel = session?.children.find((child) => child.id === session.childProfileId)?.stageLabel ?? '幼小衔接';
 
   useEffect(() => {
     if (!params.subjectCode) {
       return;
     }
 
+    setSubject(null);
     getSubjectMap(params.subjectCode).then(setSubject);
-  }, [params.subjectCode, session?.childProfileId]);
+  }, [params.subjectCode, session?.childProfileId, activeChildStageLabel]);
 
   if (!params.subjectCode) {
     return <main className="screen"><p>暂时找不到这座学科岛。</p></main>;
