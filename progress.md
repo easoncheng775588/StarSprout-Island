@@ -205,3 +205,13 @@
   - 前端测试：`npm test -- --run`，15 个测试文件、66 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成英语岛口语内容增强：
+  - 新增 3 个幼小衔接英语关卡：字母发音小剧场、单词读音小耳朵、日常短句跟读
+  - 字母关卡区分字母名和字母音，支持 A/B/C 字母音跟读
+  - 单词关卡支持播放 apple 读音并进行听辨选择
+  - 短句关卡支持 Good morning. / I like apples. / Thank you. 逐句跟读与整段领读
+  - 后端英语地图、关卡详情、知识点标题、题型配置和前端兜底数据已同步
+- 本轮验证通过：
+  - 前端测试：`npm test -- --run`，18 个测试文件、80 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

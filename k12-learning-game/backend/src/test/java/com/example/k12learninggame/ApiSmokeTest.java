@@ -226,14 +226,17 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.subject.code").value("english"))
                 .andExpect(jsonPath("$.chapters[0].title").value("字母海湾"))
                 .andExpect(jsonPath("$.chapters[0].levels[4].code").value("english-case-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[5].code").value("english-letter-sounds-001"))
                 .andExpect(jsonPath("$.chapters[1].title").value("拼读码头"))
                 .andExpect(jsonPath("$.chapters[1].levels[1].code").value("english-phonics-002"))
                 .andExpect(jsonPath("$.chapters[2].title").value("单词沙滩"))
                 .andExpect(jsonPath("$.chapters[2].levels[2].code").value("english-words-003"))
                 .andExpect(jsonPath("$.chapters[2].levels[3].code").value("english-family-001"))
+                .andExpect(jsonPath("$.chapters[2].levels[4].code").value("english-word-sounds-001"))
                 .andExpect(jsonPath("$.chapters[3].title").value("绘本港湾"))
                 .andExpect(jsonPath("$.chapters[3].levels[2].code").value("english-story-003"))
-                .andExpect(jsonPath("$.chapters[3].levels[3].code").value("english-story-004"));
+                .andExpect(jsonPath("$.chapters[3].levels[3].code").value("english-story-004"))
+                .andExpect(jsonPath("$.chapters[3].levels[4].code").value("english-daily-sentences-001"));
     }
 
     @Test
@@ -675,6 +678,30 @@ class ApiSmokeTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("english-story-003"))
                 .andExpect(jsonPath("$.steps[0].type").value("sentence-read"));
+    }
+
+    @Test
+    void shouldReturnExpandedEnglishSpeakingLevelDetails() throws Exception {
+        mockMvc.perform(get("/api/levels/english-letter-sounds-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("english-letter-sounds-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("follow-read"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("英语字母：字母音跟读"))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("A, /a/, apple")));
+
+        mockMvc.perform(get("/api/levels/english-word-sounds-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("english-word-sounds-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("listen-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("英语单词：日常单词读音"))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("播放单词读音")));
+
+        mockMvc.perform(get("/api/levels/english-daily-sentences-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("english-daily-sentences-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("sentence-read"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("英语口语：日常短句跟读"))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("Good morning.")));
     }
 
     @Test

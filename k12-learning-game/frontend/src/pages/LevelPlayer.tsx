@@ -803,6 +803,17 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       ]
     }
   },
+  'english-letter-sounds-001': {
+    'step-1': {
+      kind: 'follow-read',
+      instruction: '字母名和字母音不一样，先听清楚，再跟着读。',
+      letters: [
+        { label: 'A', phonetic: '/a/', exampleWord: 'apple', emoji: '🍎', audioText: 'A, /a/, apple' },
+        { label: 'B', phonetic: '/b/', exampleWord: 'book', emoji: '📘', audioText: 'B, /b/, book' },
+        { label: 'C', phonetic: '/k/', exampleWord: 'cat', emoji: '🐱', audioText: 'C, /k/, cat' }
+      ]
+    }
+  },
   'english-phonics-001': {
     'step-1': {
       kind: 'listen-choice',
@@ -877,6 +888,21 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       ]
     }
   },
+  'english-word-sounds-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '先按播放键听单词，再选择听到的单词卡。',
+      audioPrompt: 'apple',
+      audioText: 'apple',
+      lang: 'en-US',
+      playButtonLabel: '播放单词读音',
+      choiceAriaLabelPrefix: '单词卡片',
+      choices: ['apple', 'book', 'cat'],
+      correctChoice: 'apple',
+      successFeedback: '听对了，apple 是苹果，也是一口清楚的开头音',
+      failureFeedback: '再听一遍，apple 的开头音像短短的 /a/'
+    }
+  },
   'english-story-001': {
     'step-1': {
       kind: 'sentence-read',
@@ -923,6 +949,18 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { text: 'I like the park.', emoji: '💚', scene: '我喜欢公园' }
       ],
       successFeedback: '公园小绘本读完啦'
+    }
+  },
+  'english-daily-sentences-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '点一句、听一句、跟一句，把日常表达读出来。',
+      sentences: [
+        { text: 'Good morning.', emoji: '🌞', scene: '早上见面说早安' },
+        { text: 'I like apples.', emoji: '🍎', scene: '说出自己喜欢苹果' },
+        { text: 'Thank you.', emoji: '🎁', scene: '收到帮助说谢谢' }
+      ],
+      successFeedback: '日常短句都读完啦，今天可以试着用一句'
     }
   },
   'math-grade1-numbers-001': {
@@ -2457,7 +2495,7 @@ export function LevelPlayer() {
     config: Extract<StepActivityConfig, { kind: 'sentence-read' }>
   ) {
     const played = playNarration(
-      config.sentences.map((sentence) => sentence.audioText ?? sentence.text).join(' ... '),
+      config.sentences.map((sentence) => sentence.audioText ?? sentence.text).join(' '),
       'en-US'
     );
 
@@ -2906,7 +2944,7 @@ export function LevelPlayer() {
 
                         return (
                           <button
-                            aria-label={`字母卡片 ${letter.label}`}
+                            aria-label={`字母卡片 ${letter.label} ${letter.phonetic} ${letter.exampleWord}`}
                             className={`letter-card ${isRead ? 'letter-card-read' : ''}`}
                             key={letter.label}
                             onClick={() => handleFollowRead(step.id, letter, config.letters.length)}

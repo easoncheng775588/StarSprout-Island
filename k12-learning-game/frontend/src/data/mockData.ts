@@ -279,7 +279,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
           { code: 'english-letters-002', title: '字母 G 到 L', status: 'available' },
           { code: 'english-letters-003', title: '字母 M 到 R', status: 'available' },
           { code: 'english-letters-004', title: '字母 S 到 Z', status: 'available' },
-          { code: 'english-case-001', title: '大小写找朋友', status: 'available' }
+          { code: 'english-case-001', title: '大小写找朋友', status: 'available' },
+          { code: 'english-letter-sounds-001', title: '字母发音小剧场', status: 'available' }
         ]
       },
       {
@@ -301,7 +302,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
           { code: 'english-words-001', title: '日常单词配对', status: 'available' },
           { code: 'english-words-002', title: '生活单词跟读', status: 'available' },
           { code: 'english-words-003', title: '颜色单词沙堡', status: 'available' },
-          { code: 'english-family-001', title: '家庭单词屋', status: 'available' }
+          { code: 'english-family-001', title: '家庭单词屋', status: 'available' },
+          { code: 'english-word-sounds-001', title: '单词读音小耳朵', status: 'available' }
         ]
       },
       {
@@ -313,7 +315,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
           { code: 'english-story-001', title: '海湾小绘本', status: 'available' },
           { code: 'english-story-002', title: '晨光小绘本', status: 'available' },
           { code: 'english-story-003', title: '晚安小绘本', status: 'available' },
-          { code: 'english-story-004', title: '公园小绘本', status: 'available' }
+          { code: 'english-story-004', title: '公园小绘本', status: 'available' },
+          { code: 'english-daily-sentences-001', title: '日常短句跟读', status: 'available' }
         ]
       },
       {
@@ -807,6 +810,19 @@ export const levelDetails: Record<string, LevelDetail> = {
       badgeName: '大小写配对星'
     }
   },
+  'english-letter-sounds-001': {
+    code: 'english-letter-sounds-001',
+    title: '字母发音小剧场',
+    subjectTitle: '英语岛',
+    description: '把字母名和常见字母音分开听、分开跟读。',
+    steps: [
+      { id: 'step-1', type: 'follow-read', prompt: '跟读 A、B、C 的字母名和字母音' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '字母发音星'
+    }
+  },
   'english-phonics-001': {
     code: 'english-phonics-001',
     title: '字母藏在单词里',
@@ -885,6 +901,19 @@ export const levelDetails: Record<string, LevelDetail> = {
       badgeName: '家庭单词星'
     }
   },
+  'english-word-sounds-001': {
+    code: 'english-word-sounds-001',
+    title: '单词读音小耳朵',
+    subjectTitle: '英语岛',
+    description: '听单词读音，选择对应的日常单词卡。',
+    steps: [
+      { id: 'step-1', type: 'listen-choice', prompt: '听老师读 apple，选出正确单词' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '单词读音星'
+    }
+  },
   'english-story-001': {
     code: 'english-story-001',
     title: '海湾小绘本',
@@ -935,6 +964,19 @@ export const levelDetails: Record<string, LevelDetail> = {
     reward: {
       stars: 2,
       badgeName: '公园朗读星'
+    }
+  },
+  'english-daily-sentences-001': {
+    code: 'english-daily-sentences-001',
+    title: '日常短句跟读',
+    subjectTitle: '英语岛',
+    description: '跟读早安、喜欢、感谢这些生活里马上能用的小句子。',
+    steps: [
+      { id: 'step-1', type: 'sentence-read', prompt: '按顺序跟读三句日常短句' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '日常表达星'
     }
   }
 };

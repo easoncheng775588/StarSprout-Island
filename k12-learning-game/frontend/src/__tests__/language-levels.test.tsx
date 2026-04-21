@@ -85,6 +85,36 @@ function mockLevelResponse(levelCode: string) {
         { id: 'step-1', type: 'drag-match', prompt: '把 apple、book、cat 和图片连起来' }
       ],
       reward: { stars: 1, badgeName: '单词小海星' }
+    },
+    'english-letter-sounds-001': {
+      code: 'english-letter-sounds-001',
+      title: '字母发音小剧场',
+      subjectTitle: '英语岛',
+      description: '把字母名和常见字母音分开听、分开跟读。',
+      steps: [
+        { id: 'step-1', type: 'follow-read', prompt: '跟读 A、B、C 的字母名和字母音' }
+      ],
+      reward: { stars: 2, badgeName: '字母发音星' }
+    },
+    'english-word-sounds-001': {
+      code: 'english-word-sounds-001',
+      title: '单词读音小耳朵',
+      subjectTitle: '英语岛',
+      description: '听单词读音，选择对应的日常单词卡。',
+      steps: [
+        { id: 'step-1', type: 'listen-choice', prompt: '听老师读 apple，选出正确单词' }
+      ],
+      reward: { stars: 2, badgeName: '单词读音星' }
+    },
+    'english-daily-sentences-001': {
+      code: 'english-daily-sentences-001',
+      title: '日常短句跟读',
+      subjectTitle: '英语岛',
+      description: '跟读早安、喜欢、感谢这些生活里马上能用的小句子。',
+      steps: [
+        { id: 'step-1', type: 'sentence-read', prompt: '按顺序跟读三句日常短句' }
+      ],
+      reward: { stars: 2, badgeName: '日常表达星' }
     }
   };
 
@@ -130,7 +160,10 @@ describe('Language level interactions', () => {
           'english-letters-001',
           'english-phonics-001',
           'english-phonics-002',
-          'english-words-001'
+          'english-words-001',
+          'english-letter-sounds-001',
+          'english-word-sounds-001',
+          'english-daily-sentences-001'
         ]) {
           if (url.endsWith(`/api/levels/${levelCode}`) && !init?.method) {
             return {
@@ -272,13 +305,13 @@ describe('Language level interactions', () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole('button', { name: '字母卡片 A' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '字母卡片 F' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '字母卡片 A /ei/ apple' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '字母卡片 F /ef/ fish' })).toBeInTheDocument();
 
     const completeButton = screen.getByRole('button', { name: '完成本关' });
     expect(completeButton).toBeDisabled();
 
-    await user.click(screen.getByRole('button', { name: '字母卡片 A' }));
+    await user.click(screen.getByRole('button', { name: '字母卡片 A /ei/ apple' }));
     expect(screen.getByText('A /ei/ · apple')).toBeInTheDocument();
     expect(speakMock).toHaveBeenCalledTimes(1);
     expect(speakMock.mock.calls[0]?.[0]).toMatchObject({
@@ -290,8 +323,8 @@ describe('Language level interactions', () => {
       }
     });
 
-    for (const letter of ['B', 'C', 'D', 'E', 'F']) {
-      await user.click(screen.getByRole('button', { name: `字母卡片 ${letter}` }));
+    for (const letterName of ['B /biː/ book', 'C /siː/ cat', 'D /diː/ dog', 'E /iː/ egg', 'F /ef/ fish']) {
+      await user.click(screen.getByRole('button', { name: `字母卡片 ${letterName}` }));
     }
 
     expect(screen.getByText('已跟读 6 / 6 个字母')).toBeInTheDocument();
@@ -373,5 +406,68 @@ describe('Language level interactions', () => {
     await user.click(screen.getByRole('button', { name: '发音单词 sun' }));
     expect(screen.getByText('答对了，sun 开头就是 /s/ 的声音')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
+  });
+
+  test('renders english letter sound follow-read practice', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/english-letter-sounds-001']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('字母名和字母音不一样，先听清楚，再跟着读。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '字母卡片 A /a/ apple' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '字母卡片 C /k/ cat' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '字母卡片 A /a/ apple' }));
+
+    expect(screen.getByText('A /a/ · apple')).toBeInTheDocument();
+    expect(speakMock.mock.calls[0]?.[0]).toMatchObject({
+      text: 'A, /a/, apple',
+      lang: 'en-US'
+    });
+  });
+
+  test('renders english word pronunciation listening practice', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/english-word-sounds-001']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole('button', { name: '播放单词读音' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '单词卡片 apple' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '单词卡片 book' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '播放单词读音' }));
+    expect(screen.getByText('老师正在读：apple')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '单词卡片 apple' }));
+    expect(screen.getByText('听对了，apple 是苹果，也是一口清楚的开头音')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
+  });
+
+  test('renders english daily sentence shadowing practice', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/english-daily-sentences-001']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole('button', { name: '句子卡片 Good morning.' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '句子卡片 I like apples.' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '句子卡片 Thank you.' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '老师先整段领读' }));
+    expect(speakMock.mock.calls[0]?.[0]).toMatchObject({
+      text: 'Good morning. I like apples. Thank you.',
+      lang: 'en-US'
+    });
   });
 });
