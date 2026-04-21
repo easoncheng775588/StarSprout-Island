@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { PageTopBar } from '../components/PageTopBar';
 import { Link, useParams } from 'react-router-dom';
 import { completeLevel, getLevel } from '../api';
@@ -20,6 +21,52 @@ type PictureMathGroup = {
   tone?: 'normal' | 'add' | 'remove' | 'result';
 };
 
+type MathVisualModel = (
+  | {
+      kind: 'grid';
+      title: string;
+      caption: string;
+      rows: number;
+      columns: number;
+      filledCount: number;
+      emoji?: string;
+    }
+  | {
+      kind: 'number-line';
+      title: string;
+      caption: string;
+      start: number;
+      end: number;
+      points: Array<{
+        value: number;
+        label: string;
+        tone?: 'start' | 'end' | 'mid';
+      }>;
+      jumpLabel?: string;
+    }
+  | {
+      kind: 'bar-model';
+      title: string;
+      caption: string;
+      segments: Array<{
+        label: string;
+        value: number;
+        tone?: 'known' | 'extra' | 'result';
+      }>;
+    }
+  | {
+      kind: 'fraction-bars';
+      title: string;
+      caption: string;
+      bars: Array<{
+        label: string;
+        totalParts: number;
+        filledParts: number;
+        tone?: 'primary' | 'secondary';
+      }>;
+    }
+);
+
 type StepActivityConfig = ActivityConfigMetadata & (
   {
       kind: 'basket-count';
@@ -35,6 +82,7 @@ type StepActivityConfig = ActivityConfigMetadata & (
       successFeedback: string;
       failureFeedback: string;
       pictureGroups?: PictureMathGroup[];
+      mathModel?: MathVisualModel;
     }
   | {
       kind: 'take-away';
@@ -138,6 +186,7 @@ type StepActivityConfig = ActivityConfigMetadata & (
       successFeedback: string;
       failureFeedback: string;
       pictureGroups?: PictureMathGroup[];
+      mathModel?: MathVisualModel;
     }
 );
 
@@ -189,6 +238,102 @@ function PictureMathBoard({ groups }: { groups?: PictureMathGroup[] }) {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function MathModelBoard({ model }: { model?: MathVisualModel }) {
+  if (!model) {
+    return null;
+  }
+
+  return (
+    <div aria-label="数形结合模型" className={`math-model-board math-model-board-${model.kind}`}>
+      <div className="math-model-header">
+        <strong>{model.title}</strong>
+        <span>{model.caption}</span>
+      </div>
+
+      {model.kind === 'grid' ? (
+        <div
+          className="math-model-grid"
+          style={{
+            '--math-grid-columns': model.columns
+          } as CSSProperties}
+        >
+          {Array.from({ length: model.rows * model.columns }, (_, cellIndex) => {
+            const isFilled = cellIndex < model.filledCount;
+
+            return (
+              <span
+                aria-label={`${model.title} 格子 ${cellIndex + 1}`}
+                className={`math-model-cell ${isFilled ? 'math-model-cell-filled' : ''}`}
+                key={`${model.title}-${cellIndex + 1}`}
+              >
+                {isFilled ? model.emoji ?? '' : ''}
+              </span>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {model.kind === 'number-line' ? (
+        <div className="math-model-number-line">
+          {model.jumpLabel ? <p>{model.jumpLabel}</p> : null}
+          <div className="math-model-number-track">
+            {Array.from({ length: model.end - model.start + 1 }, (_, tickIndex) => {
+              const value = model.start + tickIndex;
+              const point = model.points.find((item) => item.value === value);
+
+              return (
+                <span
+                  aria-label={point ? `数轴点 ${value} ${point.label}` : `数轴点 ${value}`}
+                  className={`math-model-number-point ${point ? 'math-model-number-point-active' : ''} ${point?.tone ? `math-model-number-point-${point.tone}` : ''}`}
+                  key={value}
+                >
+                  {value}
+                  {point ? <small>{point.label}</small> : null}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      {model.kind === 'bar-model' ? (
+        <div className="math-model-bars">
+          {model.segments.map((segment) => (
+            <span
+              aria-label={`线段 ${segment.label} ${segment.value}`}
+              className={`math-model-bar-segment ${segment.tone ? `math-model-bar-segment-${segment.tone}` : ''}`}
+              key={segment.label}
+              style={{ '--math-bar-flex': segment.value } as CSSProperties}
+            >
+              <strong>{segment.label}</strong>
+              <small>{segment.value}</small>
+            </span>
+          ))}
+        </div>
+      ) : null}
+
+      {model.kind === 'fraction-bars' ? (
+        <div className="math-model-fraction-list">
+          {model.bars.map((bar) => (
+            <div className="math-model-fraction-row" key={bar.label}>
+              <span>{bar.label}</span>
+              <div className="math-model-fraction-parts">
+                {Array.from({ length: bar.totalParts }, (_, partIndex) => (
+                  <span
+                    aria-label={`${bar.label} 分数条 ${partIndex + 1}`}
+                    className={`math-model-fraction-part ${partIndex < bar.filledParts ? 'math-model-fraction-part-filled' : ''} ${bar.tone ? `math-model-fraction-part-${bar.tone}` : ''}`}
+                    key={`${bar.label}-${partIndex + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -791,6 +936,48 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再看看十位和个位，4 在前面，6 在后面'
     }
   },
+  'math-grade1-hundredchart-001': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '先看百格图，数一数点亮了几个格子，再选出对应数字。',
+      choices: [27, 37, 73],
+      correctChoice: 37,
+      optionLabelPrefix: '数字卡',
+      successFeedback: '答对了，37 是 3 个十和 7 个一',
+      failureFeedback: '再看一看，点亮了 3 行多 7 个，不是 73',
+      mathModel: {
+        kind: 'grid',
+        title: '百格图认数',
+        caption: '点亮 37：3 个十和 7 个一',
+        rows: 10,
+        columns: 10,
+        filledCount: 37
+      }
+    }
+  },
+  'math-grade1-numberline-001': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '把加法放到数轴上，从起点往右跳，看看落在哪个数。',
+      choices: [16, 17, 18],
+      correctChoice: 17,
+      optionLabelPrefix: '数字卡',
+      successFeedback: '答对了，12 往前跳 5 格就是 17',
+      failureFeedback: '从 12 开始往右数 5 格：13、14、15、16、17',
+      mathModel: {
+        kind: 'number-line',
+        title: '数轴跳跳桥',
+        caption: '从 12 到 17 的移动',
+        start: 10,
+        end: 20,
+        jumpLabel: '从 12 出发，向右跳 5 格',
+        points: [
+          { value: 12, label: '起点', tone: 'start' },
+          { value: 17, label: '终点', tone: 'end' }
+        ]
+      }
+    }
+  },
   'math-grade1-addition-001': {
     'step-1': {
       kind: 'story-choice',
@@ -945,6 +1132,26 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再想一想，4 + 4 + 4 一共是多少'
     }
   },
+  'math-grade2-array-001': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '把花摆成整齐的行和列，先看几行，再看每行几个。',
+      choices: [16, 20, 25],
+      correctChoice: 20,
+      optionLabelPrefix: '数字石牌',
+      successFeedback: '答对了，4 行 5 列就是 20 朵花',
+      failureFeedback: '再按一行 5 朵数：5、10、15、20',
+      mathModel: {
+        kind: 'grid',
+        title: '乘法数组花园',
+        caption: '4 行，每行 5 朵花',
+        rows: 4,
+        columns: 5,
+        filledCount: 20,
+        emoji: '🌼'
+      }
+    }
+  },
   'math-grade2-length-001': {
     'step-1': {
       kind: 'story-choice',
@@ -969,6 +1176,28 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       correctChoice: 9,
       successFeedback: '答对了，先算 8 + 6 = 14，再算 14 - 5 = 9',
       failureFeedback: '先把买来的本子合起来，再减去送出去的数量'
+    }
+  },
+  'math-grade2-bar-model-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '先看线段图：蓝气球和红气球一样多，还多出 7 个。',
+      emoji: '🎈',
+      characterLabel: '线段图',
+      detailLines: ['红气球 18 个', '蓝气球比红气球多 7 个', '蓝气球 = 18 + 7'],
+      choices: [24, 25, 26],
+      correctChoice: 25,
+      successFeedback: '答对了，18 + 7 = 25，蓝气球有 25 个',
+      failureFeedback: '蓝气球比红气球更多，要在 18 的基础上再加 7',
+      mathModel: {
+        kind: 'bar-model',
+        title: '线段图应用题',
+        caption: '用线段看见“同样多”和“多出的部分”',
+        segments: [
+          { label: '红气球', value: 18, tone: 'known' },
+          { label: '多出的', value: 7, tone: 'extra' }
+        ]
+      }
     }
   },
   'math-grade2-time-001': {
@@ -1117,6 +1346,27 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '别忘了长方形有两条长边和两条宽边'
     }
   },
+  'math-grade3-area-model-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '把 12×4 拆成 10×4 和 2×4，用长方形面积模型看清楚。',
+      emoji: '🧩',
+      characterLabel: '面积模型',
+      detailLines: ['10×4 + 2×4', '先算整十部分 40，再算剩下 8。'],
+      choices: [46, 48, 52],
+      correctChoice: 48,
+      successFeedback: '答对了，10×4 是 40，2×4 是 8，一共 48',
+      failureFeedback: '先把 12 拆成 10 和 2，再分别乘 4',
+      mathModel: {
+        kind: 'grid',
+        title: '面积模型乘法',
+        caption: '12 列 × 4 行，可以拆成 10 列和 2 列',
+        rows: 4,
+        columns: 12,
+        filledCount: 48
+      }
+    }
+  },
   'math-grade3-fraction-001': {
     'step-1': {
       kind: 'story-choice',
@@ -1128,6 +1378,28 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       correctChoice: 3,
       successFeedback: '答对了，涂色部分是 8 份里的 3 份',
       failureFeedback: '先看一共分成几份，再数涂色的几份'
+    }
+  },
+  'math-grade3-fractionbar-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '两个分数条都平均分成 8 份，只要比较涂色份数。',
+      emoji: '🟦',
+      characterLabel: '分数条',
+      detailLines: ['5/8 和 3/8 比大小', '分母相同，分子越大，涂色越多。'],
+      choices: [3, 5, 8],
+      correctChoice: 5,
+      successFeedback: '答对了，5/8 的涂色更多，所以 5/8 更大',
+      failureFeedback: '两个分数条都分成 8 份，比较涂色了几份',
+      mathModel: {
+        kind: 'fraction-bars',
+        title: '分数条比较',
+        caption: '5/8 和 3/8 比大小',
+        bars: [
+          { label: '5/8', totalParts: 8, filledParts: 5, tone: 'primary' },
+          { label: '3/8', totalParts: 8, filledParts: 3, tone: 'secondary' }
+        ]
+      }
     }
   },
   'math-grade3-wordproblem-001': {
@@ -2284,6 +2556,7 @@ export function LevelPlayer() {
                 {config?.kind === 'number-choice' ? (
                   <div className="play-surface">
                     <p className="play-instruction">{config.instruction}</p>
+                    <MathModelBoard model={config.mathModel} />
                     <PictureMathBoard groups={config.pictureGroups} />
                     <div className="stone-row">
                       {config.choices.map((choice) => {
@@ -2691,8 +2964,8 @@ export function LevelPlayer() {
 
                 {config?.kind === 'story-choice' ? (
                   <div className="play-surface">
-                    <p className="play-instruction">{config.instruction}</p>
-                    <div className="story-problem-board">
+                      <p className="play-instruction">{config.instruction}</p>
+                      <div className="story-problem-board">
                       <div className="story-problem-hero">
                         <span className="story-problem-emoji">{config.emoji}</span>
                         <strong>{config.characterLabel}</strong>
@@ -2703,6 +2976,7 @@ export function LevelPlayer() {
                         ))}
                       </div>
                     </div>
+                    <MathModelBoard model={config.mathModel} />
                     <PictureMathBoard groups={config.pictureGroups} />
                     <div className="story-answer-row">
                       {config.choices.map((choice) => {

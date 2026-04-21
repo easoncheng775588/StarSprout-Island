@@ -1117,6 +1117,184 @@ body::before {
   filter: grayscale(0.2);
 }
 
+.math-model-board {
+  display: grid;
+  gap: 1.4rem;
+  padding: 1.8rem;
+  border: 0.2rem solid rgba(255, 138, 91, 0.2);
+  border-radius: 2.8rem;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.92), transparent 30%),
+    linear-gradient(135deg, rgba(255, 247, 225, 0.96), rgba(226, 247, 255, 0.9));
+  box-shadow: 0 1.6rem 3.2rem rgba(33, 48, 77, 0.1);
+}
+
+.math-model-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+
+.math-model-header strong {
+  color: var(--ink);
+  font-size: 1.8rem;
+}
+
+.math-model-header span {
+  max-width: 42rem;
+  color: var(--muted);
+  font-size: 1.36rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.math-model-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--math-grid-columns), minmax(0, 1fr));
+  gap: 0.42rem;
+  padding: 1rem;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.math-model-cell {
+  display: grid;
+  min-height: 2.4rem;
+  place-items: center;
+  border-radius: 0.76rem;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 0 0 0.1rem rgba(71, 96, 140, 0.08);
+  font-size: 1.36rem;
+}
+
+.math-model-cell-filled {
+  background: linear-gradient(145deg, #ffcf70, #ff8a5b);
+  box-shadow: 0 0.7rem 1.2rem rgba(255, 138, 91, 0.2);
+}
+
+.math-model-number-line {
+  display: grid;
+  gap: 1rem;
+}
+
+.math-model-number-line p {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.math-model-number-track {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(4.4rem, 1fr));
+  gap: 0.8rem;
+  padding: 1rem;
+  border-radius: 2rem;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.88), rgba(255, 245, 225, 0.78));
+}
+
+.math-model-number-point {
+  display: grid;
+  min-height: 4.8rem;
+  place-items: center;
+  border-radius: 1.4rem;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--muted);
+  font-weight: 900;
+  box-shadow: inset 0 0 0 0.1rem rgba(71, 96, 140, 0.08);
+}
+
+.math-model-number-point small {
+  color: var(--muted);
+  font-size: 1.08rem;
+}
+
+.math-model-number-point-active {
+  background: #fff0c7;
+  color: var(--ink);
+  transform: translateY(-0.2rem);
+  box-shadow: 0 1rem 1.8rem rgba(255, 138, 91, 0.16);
+}
+
+.math-model-number-point-end {
+  background: linear-gradient(145deg, #9be7c8, #4fc18b);
+}
+
+.math-model-bars {
+  display: flex;
+  gap: 0.8rem;
+  align-items: stretch;
+  padding: 1rem;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.math-model-bar-segment {
+  display: grid;
+  flex: var(--math-bar-flex);
+  min-height: 6rem;
+  place-items: center;
+  min-width: 6rem;
+  padding: 0.8rem;
+  border-radius: 1.8rem;
+  background: linear-gradient(145deg, #ffd77d, #ffac75);
+  color: var(--ink);
+  text-align: center;
+  box-shadow: 0 1rem 2rem rgba(255, 138, 91, 0.16);
+}
+
+.math-model-bar-segment-extra {
+  background: linear-gradient(145deg, #a9e9ff, #80caff);
+}
+
+.math-model-bar-segment small {
+  font-size: 1.24rem;
+  font-weight: 900;
+}
+
+.math-model-fraction-list {
+  display: grid;
+  gap: 1.2rem;
+  padding: 1rem;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.math-model-fraction-row {
+  display: grid;
+  grid-template-columns: 5rem 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.math-model-fraction-row > span {
+  color: var(--ink);
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+
+.math-model-fraction-parts {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0.36rem;
+}
+
+.math-model-fraction-part {
+  min-height: 3.6rem;
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: inset 0 0 0 0.1rem rgba(71, 96, 140, 0.1);
+}
+
+.math-model-fraction-part-filled {
+  background: linear-gradient(145deg, #8ad1ff, #39b7a5);
+  box-shadow: 0 0.7rem 1.2rem rgba(57, 183, 165, 0.16);
+}
+
+.math-model-fraction-part-secondary.math-model-fraction-part-filled {
+  background: linear-gradient(145deg, #ffcf70, #ff9f7a);
+}
+
 .story-problem-board {
   grid-template-columns: 18rem 1fr;
 }

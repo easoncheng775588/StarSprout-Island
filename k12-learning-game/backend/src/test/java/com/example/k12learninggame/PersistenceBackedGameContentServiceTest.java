@@ -173,14 +173,62 @@ class PersistenceBackedGameContentServiceTest {
                         org.assertj.core.groups.Tuple.tuple("math-grade1-numbers", "百数启航站"),
                         org.assertj.core.groups.Tuple.tuple("math-grade1-life", "生活应用站")
                 );
+        assertThat(mathMap.chapters().get(0).levels())
+                .extracting(level -> level.code())
+                .containsExactly(
+                        "math-grade1-numbers-001",
+                        "math-grade1-hundredchart-001",
+                        "math-grade1-numberline-001",
+                        "math-grade1-addition-001"
+                );
         assertThat(dashboard.subjectInsights())
                 .filteredOn(insight -> insight.subjectCode().equals("math"))
                 .singleElement()
                 .satisfies(insight -> {
                     assertThat(insight.completedLevels()).isZero();
-                    assertThat(insight.totalLevels()).isEqualTo(4);
+                    assertThat(insight.totalLevels()).isEqualTo(6);
                     assertThat(insight.nextLevelTitle()).isEqualTo("认识 100 以内的数");
                 });
+    }
+
+    @Test
+    @Transactional
+    void shouldExposeNumberShapeThinkingCurriculumForYearTwoAndThreeMath() {
+        var yearTwoChild = childProfileRepository.findById(2L).orElseThrow();
+        yearTwoChild.setStageLabel("二年级");
+        childProfileRepository.save(yearTwoChild);
+
+        var yearThreeChild = childProfileRepository.findById(3L).orElseThrow();
+        yearThreeChild.setStageLabel("三年级");
+        childProfileRepository.save(yearThreeChild);
+
+        var yearTwoMathMap = gameContentService.getSubjectMap("math", 2L);
+        var yearThreeMathMap = gameContentService.getSubjectMap("math", 3L);
+        var yearTwoDashboard = gameContentService.getParentDashboard(2L);
+        var yearThreeDashboard = gameContentService.getParentDashboard(3L);
+
+        assertThat(yearTwoMathMap.chapters())
+                .flatExtracting(chapter -> chapter.levels())
+                .extracting(level -> level.code())
+                .contains(
+                        "math-grade2-array-001",
+                        "math-grade2-bar-model-001"
+                );
+        assertThat(yearThreeMathMap.chapters())
+                .flatExtracting(chapter -> chapter.levels())
+                .extracting(level -> level.code())
+                .contains(
+                        "math-grade3-area-model-001",
+                        "math-grade3-fractionbar-001"
+                );
+        assertThat(yearTwoDashboard.subjectInsights())
+                .filteredOn(insight -> insight.subjectCode().equals("math"))
+                .singleElement()
+                .satisfies(insight -> assertThat(insight.totalLevels()).isEqualTo(6));
+        assertThat(yearThreeDashboard.subjectInsights())
+                .filteredOn(insight -> insight.subjectCode().equals("math"))
+                .singleElement()
+                .satisfies(insight -> assertThat(insight.totalLevels()).isEqualTo(6));
     }
 
     @Test

@@ -57,6 +57,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '认识 100 以内的数，把位值和大小规律慢慢看清楚。',
         levels: [
           { code: 'math-grade1-numbers-001', title: '认识 100 以内的数', status: 'recommended' },
+          { code: 'math-grade1-hundredchart-001', title: '百格图认数', status: 'available' },
+          { code: 'math-grade1-numberline-001', title: '数轴跳跳桥', status: 'available' },
           { code: 'math-grade1-addition-001', title: '20 以内进位加法', status: 'available' }
         ]
       },
@@ -77,6 +79,7 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '把乘法和长度观察放到一起，让二年级数学更有条理。',
         levels: [
           { code: 'math-grade2-multiply-001', title: '表内乘法起步', status: 'recommended' },
+          { code: 'math-grade2-array-001', title: '乘法数组花园', status: 'available' },
           { code: 'math-grade2-length-001', title: '长度单位比一比', status: 'available' }
         ]
       },
@@ -87,6 +90,7 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '把应用题和时间问题放进生活里，继续培养数学思维。',
         levels: [
           { code: 'math-grade2-wordproblem-001', title: '两步应用题', status: 'available' },
+          { code: 'math-grade2-bar-model-001', title: '线段图应用题', status: 'available' },
           { code: 'math-grade2-time-001', title: '时间小管家', status: 'available' }
         ]
       },
@@ -97,7 +101,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '从平均分到周长，开始看见三年级数学里的结构。',
         levels: [
           { code: 'math-grade3-division-001', title: '除法平均分', status: 'recommended' },
-          { code: 'math-grade3-perimeter-001', title: '周长小侦探', status: 'available' }
+          { code: 'math-grade3-perimeter-001', title: '周长小侦探', status: 'available' },
+          { code: 'math-grade3-area-model-001', title: '面积模型乘法', status: 'available' }
         ]
       },
       {
@@ -107,6 +112,7 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '用分数和多步应用题继续训练推理与表达。',
         levels: [
           { code: 'math-grade3-fraction-001', title: '分数初步', status: 'available' },
+          { code: 'math-grade3-fractionbar-001', title: '分数条比较', status: 'available' },
           { code: 'math-grade3-wordproblem-001', title: '多步应用题', status: 'available' }
         ]
       },

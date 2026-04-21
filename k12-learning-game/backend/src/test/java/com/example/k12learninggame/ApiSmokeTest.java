@@ -416,10 +416,12 @@ class ApiSmokeTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.configuredLevelCount").value(org.hamcrest.Matchers.greaterThan(0)))
                 .andExpect(jsonPath("$.totalVariantCount").value(org.hamcrest.Matchers.greaterThan(0)))
-                .andExpect(jsonPath("$.items[0].levelCode").value(org.hamcrest.Matchers.anyOf(
-                        org.hamcrest.Matchers.is("math-grade4-decimal-001"),
-                        org.hamcrest.Matchers.is("math-numbers-001")
-                )))
+                .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade1-hundredchart-001')].knowledgePointTitle")
+                        .value(org.hamcrest.Matchers.hasItem("数形结合：百格图认数")))
+                .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade2-array-001')].variantCount")
+                        .value(org.hamcrest.Matchers.hasItem(10)))
+                .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade3-fractionbar-001')].knowledgePointTitle")
+                        .value(org.hamcrest.Matchers.hasItem("数形结合：分数条比较")))
                 .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade4-decimal-001')].assetTheme").value(org.hamcrest.Matchers.hasItem("小数灯塔")))
                 .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade4-decimal-001')].audioQuality").value(org.hamcrest.Matchers.hasItem(org.hamcrest.Matchers.containsString("TTS"))))
                 .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade4-decimal-001')].variantCount").value(org.hamcrest.Matchers.hasItem(6)));
@@ -533,9 +535,11 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.chapters[0].code").value("math-grade2-skills"))
                 .andExpect(jsonPath("$.chapters[0].title").value("乘法巧思站"))
                 .andExpect(jsonPath("$.chapters[0].levels[0].code").value("math-grade2-multiply-001"))
-                .andExpect(jsonPath("$.chapters[0].levels[1].code").value("math-grade2-length-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[1].code").value("math-grade2-array-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[2].code").value("math-grade2-length-001"))
                 .andExpect(jsonPath("$.chapters[1].code").value("math-grade2-life"))
-                .andExpect(jsonPath("$.chapters[1].levels[1].code").value("math-grade2-time-001"));
+                .andExpect(jsonPath("$.chapters[1].levels[1].code").value("math-grade2-bar-model-001"))
+                .andExpect(jsonPath("$.chapters[1].levels[2].code").value("math-grade2-time-001"));
     }
 
     @Test
