@@ -693,7 +693,13 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.subjectInsights[0].totalLevels").value(11))
                 .andExpect(jsonPath("$.subjectInsights[0].accuracyPercent").value(75))
                 .andExpect(jsonPath("$.subjectInsights[0].nextLevelReason").isNotEmpty())
-                .andExpect(jsonPath("$.recentActivities[0].subjectTitle").value("语文岛"));
+                .andExpect(jsonPath("$.recentActivities[0].subjectTitle").value("语文岛"))
+                .andExpect(jsonPath("$.siblingComparisons.length()").value(3))
+                .andExpect(jsonPath("$.siblingComparisons[0].childNickname").value("小星星"))
+                .andExpect(jsonPath("$.siblingComparisons[0].activeChild").value(true))
+                .andExpect(jsonPath("$.siblingComparisons[1].childNickname").value("小火箭"))
+                .andExpect(jsonPath("$.siblingComparisons[1].weeklyStars").isNumber())
+                .andExpect(jsonPath("$.siblingComparisons[1].statusLabel").isNotEmpty());
     }
 
     @Test

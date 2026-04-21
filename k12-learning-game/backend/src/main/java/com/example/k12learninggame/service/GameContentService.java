@@ -45,6 +45,7 @@ import com.example.k12learninggame.dto.MistakeReviewCenterResponse;
 import com.example.k12learninggame.dto.MistakeReviewItemDto;
 import com.example.k12learninggame.dto.MistakeReviewSubmitRequest;
 import com.example.k12learninggame.dto.MistakeReviewSubmitResponse;
+import com.example.k12learninggame.dto.ParentChildComparisonDto;
 import com.example.k12learninggame.dto.ParentDashboardResponse;
 import com.example.k12learninggame.dto.ParentSettingsDto;
 import com.example.k12learninggame.dto.ParentActiveChildUpdateRequest;
@@ -647,6 +648,7 @@ public class GameContentService {
                         .limit(3)
                         .map(this::toRecentActivityDto)
                         .toList(),
+                buildSiblingComparisons(child),
                 buildStageReport(child),
                 buildKnowledgeMap(child, completions),
                 buildMistakeReviewPlan(child, completions)
@@ -961,6 +963,57 @@ public class GameContentService {
                     );
                 })
                 .toList();
+    }
+
+    private List<ParentChildComparisonDto> buildSiblingComparisons(ChildProfileEntity activeChild) {
+        Long parentAccountId = activeChild.getParentAccount().getId();
+
+        return childProfileRepository.findAllByOrderByIdAsc().stream()
+                .filter(profile -> profile.getParentAccount().getId().equals(parentAccountId))
+                .map(profile -> {
+                    List<LevelCompletionEntity> completions = getChildCompletions(profile);
+                    int weeklyStars = scoreForBoard("weekly_star", profile);
+                    int completedLevels = getCompletedLevelCodesForCurrentStage(profile).size();
+                    int averageAccuracyPercent = calculateAverageAccuracyPercent(completions);
+                    boolean active = profile.getId().equals(activeChild.getId());
+
+                    return new ParentChildComparisonDto(
+                            profile.getNickname(),
+                            resolveStageLabel(profile),
+                            completedLevels,
+                            weeklyStars,
+                            averageAccuracyPercent,
+                            active,
+                            buildSiblingStatusLabel(active, weeklyStars, completedLevels, averageAccuracyPercent)
+                    );
+                })
+                .sorted(Comparator
+                        .comparing(ParentChildComparisonDto::activeChild)
+                        .reversed()
+                        .thenComparing(ParentChildComparisonDto::weeklyStars, Comparator.reverseOrder())
+                        .thenComparing(ParentChildComparisonDto::completedLevels, Comparator.reverseOrder()))
+                .toList();
+    }
+
+    private String buildSiblingStatusLabel(
+            boolean active,
+            int weeklyStars,
+            int completedLevels,
+            int averageAccuracyPercent
+    ) {
+        if (active) {
+            return "当前查看";
+        }
+        if (weeklyStars >= 10) {
+            return "本周星星更多";
+        }
+        if (averageAccuracyPercent >= 90) {
+            return "准确率很稳";
+        }
+        if (completedLevels == 0) {
+            return "等待开启学习";
+        }
+        return "保持自己的节奏";
     }
 
     private StageReportDto buildStageReport(ChildProfileEntity child) {

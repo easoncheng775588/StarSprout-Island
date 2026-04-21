@@ -170,3 +170,15 @@
   - 新增前端测试覆盖“有下一关”和“主线完成”两种首页状态
 - P1 首页定向验证通过：
   - 前端测试：`npm test -- --run src/__tests__/product-engagement.test.tsx`
+
+## 2026-04-21
+
+- 已完成 P1 家长端多孩子横向对比：
+  - 后端 `ParentDashboardResponse` 新增 `siblingComparisons`
+  - 家长中心可展示同一账号下每个孩子的学段、已完成关数、本周星星、平均准确率和状态标签
+  - 对比卡采用“当前查看置顶 + 其余按本周星星/完成关数排序”，避免制造强竞争压力
+  - 前端家长中心新增“多孩子对比”面板，帮助家长快速判断陪伴重点
+- 本轮验证通过：
+  - 前端测试：`npm test -- --run`，14 个测试文件、62 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 test`

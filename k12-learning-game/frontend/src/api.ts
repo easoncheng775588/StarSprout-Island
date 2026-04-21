@@ -205,6 +205,15 @@ export interface ParentDashboardData {
     completedAtLabel: string;
     earnedStars: number;
   }>;
+  siblingComparisons: Array<{
+    childNickname: string;
+    stageLabel: string;
+    completedLevels: number;
+    weeklyStars: number;
+    averageAccuracyPercent: number;
+    activeChild: boolean;
+    statusLabel: string;
+  }>;
   stageReport: {
     stageLabel: string;
     completedLevels: number;

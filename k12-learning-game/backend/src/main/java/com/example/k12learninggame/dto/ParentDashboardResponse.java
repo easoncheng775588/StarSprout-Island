@@ -15,6 +15,7 @@ public record ParentDashboardResponse(
         LearningVitalsDto learningVitals,
         List<ParentSubjectInsightDto> subjectInsights,
         List<RecentActivityDto> recentActivities,
+        List<ParentChildComparisonDto> siblingComparisons,
         StageReportDto stageReport,
         List<KnowledgeMapItemDto> knowledgeMap,
         List<MistakeReviewItemDto> mistakeReviewPlan

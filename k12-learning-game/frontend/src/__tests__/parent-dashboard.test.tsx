@@ -88,6 +88,26 @@ describe('ParentDashboard', () => {
               { subjectTitle: '语文岛', levelTitle: '拼音泡泡大作战', completedAtLabel: '今天 18:35', earnedStars: 1 },
               { subjectTitle: '数学岛', levelTitle: '数字小探险', completedAtLabel: '今天 17:35', earnedStars: 3 }
             ],
+            siblingComparisons: [
+              {
+                childNickname: '小星星',
+                stageLabel: '幼小衔接',
+                completedLevels: 5,
+                weeklyStars: 10,
+                averageAccuracyPercent: 86,
+                activeChild: true,
+                statusLabel: '当前查看'
+              },
+              {
+                childNickname: '小火箭',
+                stageLabel: '幼小衔接',
+                completedLevels: 7,
+                weeklyStars: 14,
+                averageAccuracyPercent: 100,
+                activeChild: false,
+                statusLabel: '本周星星更多'
+              }
+            ],
             stageReport: {
               stageLabel: '一年级',
               completedLevels: 8,
@@ -134,6 +154,10 @@ describe('ParentDashboard', () => {
     expect(screen.getAllByText('数学岛').length).toBeGreaterThan(0);
     expect(screen.getByText('20 以内减法需要多练习')).toBeInTheDocument();
     expect(screen.getByText('最近 7 天数学岛正确率 72%，比整体平均低了 14%。')).toBeInTheDocument();
+    expect(screen.getByText('多孩子对比')).toBeInTheDocument();
+    expect(screen.getByText('小火箭')).toBeInTheDocument();
+    expect(screen.getByText('本周 14 颗星星')).toBeInTheDocument();
+    expect(screen.getByText('准确率 100% · 已完成 7 关')).toBeInTheDocument();
     expect(screen.getByText('排行榜已开启')).toBeInTheDocument();
     expect(screen.getByText('今日目标完成 90%')).toBeInTheDocument();
     expect(screen.getByText('已点亮 6 枚成就徽章')).toBeInTheDocument();
@@ -221,6 +245,7 @@ describe('ParentDashboard', () => {
             },
             subjectInsights: [],
             recentActivities: [],
+            siblingComparisons: [],
             stageReport: {
               stageLabel: '一年级',
               completedLevels: 8,

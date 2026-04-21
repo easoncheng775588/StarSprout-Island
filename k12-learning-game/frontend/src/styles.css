@@ -1570,6 +1570,95 @@ body::before {
   font-weight: 800;
 }
 
+.sibling-comparison-panel {
+  display: grid;
+  gap: 1.8rem;
+  margin-top: 2.4rem;
+  background:
+    radial-gradient(circle at 8% 18%, rgba(255, 143, 107, 0.18), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 239, 0.92));
+}
+
+.panel-heading-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.8rem;
+  align-items: end;
+}
+
+.panel-heading-row h2 {
+  margin: 0;
+}
+
+.panel-heading-row p:last-child {
+  max-width: 42rem;
+  margin: 0;
+  color: rgba(33, 48, 77, 0.72);
+  line-height: 1.7;
+}
+
+.sibling-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+  gap: 1.4rem;
+}
+
+.sibling-comparison-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.8rem;
+  border-radius: 2.2rem;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 1.4rem 3rem rgba(33, 48, 77, 0.08),
+    inset 0 0 0 0.1rem rgba(33, 48, 77, 0.06);
+}
+
+.sibling-comparison-card-active {
+  background: linear-gradient(135deg, rgba(255, 212, 107, 0.34), rgba(255, 255, 255, 0.94));
+  box-shadow:
+    0 1.6rem 3.4rem rgba(255, 143, 107, 0.14),
+    inset 0 0 0 0.2rem rgba(255, 143, 107, 0.18);
+}
+
+.sibling-comparison-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.sibling-comparison-card-header span,
+.sibling-comparison-card-header strong {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.7rem 1rem;
+  border-radius: 99.9rem;
+  background: rgba(89, 190, 168, 0.13);
+  color: #2a8d7b;
+  font-size: 1.344rem;
+  font-weight: 900;
+}
+
+.sibling-comparison-card-header strong {
+  background: rgba(255, 212, 107, 0.28);
+  color: #b25a2f;
+}
+
+.sibling-comparison-card h3,
+.sibling-comparison-card p {
+  margin: 0;
+}
+
+.sibling-comparison-card h3 {
+  margin-top: 0.8rem;
+}
+
+.sibling-comparison-card p {
+  color: rgba(33, 48, 77, 0.72);
+  font-weight: 800;
+}
+
 .dashboard-grid-parent-insights {
   grid-template-columns: minmax(0, 1.1fr) minmax(32rem, 0.9fr);
 }
@@ -2039,6 +2128,11 @@ body::before {
 
   .stage-report-card {
     grid-template-columns: 1fr;
+  }
+
+  .panel-heading-row {
+    display: grid;
+    align-items: start;
   }
 
   .dashboard-grid-parent-insights,

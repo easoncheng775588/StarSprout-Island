@@ -120,6 +120,36 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
         </section>
       )}
 
+      {dashboard.siblingComparisons.length > 0 && (
+        <section className="panel-card sibling-comparison-panel">
+          <div className="panel-heading-row">
+            <div>
+              <p className="eyebrow">多孩子对比</p>
+              <h2>看看每个孩子自己的星光节奏</h2>
+            </div>
+            <p>这里不做压力排名，只帮助家长快速看见谁需要陪伴、谁最近状态很稳。</p>
+          </div>
+          <div className="sibling-comparison-grid">
+            {dashboard.siblingComparisons.map((item) => (
+              <article
+                className={`sibling-comparison-card${item.activeChild ? ' sibling-comparison-card-active' : ''}`}
+                key={item.childNickname}
+              >
+                <div className="sibling-comparison-card-header">
+                  <div>
+                    <span>{item.stageLabel}</span>
+                    <h3>{item.childNickname}</h3>
+                  </div>
+                  <strong>{item.statusLabel}</strong>
+                </div>
+                <p>本周 {item.weeklyStars} 颗星星</p>
+                <p>准确率 {item.averageAccuracyPercent}% · 已完成 {item.completedLevels} 关</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="dashboard-grid dashboard-grid-parent-insights">
         <article className="panel-card knowledge-map-panel">
           <p className="eyebrow">知识点掌握图谱</p>
