@@ -182,7 +182,7 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
           <div className="trend-strip">
             {dashboard.weeklyTrend.map((point) => (
               <div className="trend-bar" key={point.dayLabel}>
-                <span style={{ height: `${Math.max(point.minutes * 3, 24)}px` }} />
+                <span style={{ height: `${Math.max(point.minutes * 0.3, 2.4)}rem` }} />
                 <strong>{point.dayLabel}</strong>
               </div>
             ))}
