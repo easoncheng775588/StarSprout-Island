@@ -56,6 +56,16 @@ function mockLevelResponse(levelCode: string) {
         { id: 'step-1', type: 'tap-choice', prompt: '9 只小鸟又飞来 5 只，一共有几只？' }
       ],
       reward: { stars: 2, badgeName: '20 以内加法星' }
+    },
+    'math-subtraction-002': {
+      code: 'math-subtraction-002',
+      title: '树上小鸟减法',
+      subjectTitle: '数学岛',
+      description: '把 20 以内减法放进故事里，一边听一边算。',
+      steps: [
+        { id: 'step-1', type: 'story-choice', prompt: '树上有 15 只小鸟，飞走 6 只，还剩几只？' }
+      ],
+      reward: { stars: 2, badgeName: '20 以内减法星' }
     }
   };
 
@@ -69,7 +79,7 @@ describe('Expanded math levels', () => {
       vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input);
 
-        for (const levelCode of ['math-subtraction-001', 'math-compare-001', 'math-equation-001', 'math-wordproblem-001', 'math-addition-002']) {
+        for (const levelCode of ['math-subtraction-001', 'math-compare-001', 'math-equation-001', 'math-wordproblem-001', 'math-addition-002', 'math-subtraction-002']) {
           if (url.endsWith(`/api/levels/${levelCode}`) && !init?.method) {
             return {
               ok: true,
@@ -195,11 +205,38 @@ describe('Expanded math levels', () => {
 
     expect(await screen.findByText('彩虹桥加法')).toBeInTheDocument();
     expect(screen.getByText('9 只小鸟又飞来 5 只，一共有几只？')).toBeInTheDocument();
+    expect(screen.getByLabelText('图片算式')).toBeInTheDocument();
+    expect(screen.getByText('原来有 9 只小鸟')).toBeInTheDocument();
+    expect(screen.getByText('又飞来 5 只小鸟')).toBeInTheDocument();
+    expect(screen.getAllByLabelText(/原来有 9 只小鸟 图片/)).toHaveLength(9);
+    expect(screen.getAllByLabelText(/又飞来 5 只小鸟 图片/)).toHaveLength(5);
     expect(screen.getByRole('button', { name: '数字石牌 14' })).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '数字石牌 14' }));
 
     expect(screen.getByText('答对了，9 + 5 = 14')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
+  });
+
+  test('renders picture-rich subtraction story with crossed-out objects', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/math-subtraction-002']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('树上小鸟减法')).toBeInTheDocument();
+    expect(screen.getByLabelText('图片算式')).toBeInTheDocument();
+    expect(screen.getByText('树上原来 15 只小鸟')).toBeInTheDocument();
+    expect(screen.getByText('飞走 6 只小鸟')).toBeInTheDocument();
+    expect(screen.getByText('还剩 9 只小鸟')).toBeInTheDocument();
+    expect(screen.getAllByLabelText(/飞走 6 只小鸟 图片/)).toHaveLength(6);
+
+    await user.click(screen.getByRole('button', { name: '答案卡片 9' }));
+
+    expect(screen.getByText('答对了，15 - 6 = 9')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
   });
 });

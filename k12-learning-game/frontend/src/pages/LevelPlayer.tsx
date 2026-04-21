@@ -13,6 +13,13 @@ type ActivityConfigMetadata = {
   variantCount?: number;
 };
 
+type PictureMathGroup = {
+  label: string;
+  emoji: string;
+  count: number;
+  tone?: 'normal' | 'add' | 'remove' | 'result';
+};
+
 type StepActivityConfig = ActivityConfigMetadata & (
   {
       kind: 'basket-count';
@@ -27,6 +34,7 @@ type StepActivityConfig = ActivityConfigMetadata & (
       optionLabelPrefix: string;
       successFeedback: string;
       failureFeedback: string;
+      pictureGroups?: PictureMathGroup[];
     }
   | {
       kind: 'take-away';
@@ -129,6 +137,7 @@ type StepActivityConfig = ActivityConfigMetadata & (
       correctChoice: number;
       successFeedback: string;
       failureFeedback: string;
+      pictureGroups?: PictureMathGroup[];
     }
 );
 
@@ -152,6 +161,36 @@ interface AnimatedExplainer {
     narration: string;
     tokens: string[];
   }>;
+}
+
+function PictureMathBoard({ groups }: { groups?: PictureMathGroup[] }) {
+  if (!groups?.length) {
+    return null;
+  }
+
+  return (
+    <div aria-label="图片算式" className="picture-math-board">
+      {groups.map((group) => (
+        <div className={`picture-math-group picture-math-group-${group.tone ?? 'normal'}`} key={group.label}>
+          <div className="picture-math-group-header">
+            <strong>{group.label}</strong>
+            <span>{group.count} 个</span>
+          </div>
+          <div className="picture-math-token-row">
+            {Array.from({ length: group.count }, (_, itemIndex) => (
+              <span
+                aria-label={`${group.label} 图片 ${itemIndex + 1}`}
+                className="picture-math-token"
+                key={`${group.label}-${itemIndex + 1}`}
+              >
+                {group.emoji}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> = {
@@ -190,7 +229,11 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       correctChoice: 5,
       optionLabelPrefix: '数字石牌',
       successFeedback: '答对了，2 + 3 = 5',
-      failureFeedback: '差一点点，再算一遍看看'
+      failureFeedback: '差一点点，再算一遍看看',
+      pictureGroups: [
+        { label: '原来有 2 颗糖果', emoji: '🍬', count: 2, tone: 'normal' },
+        { label: '又放进 3 颗糖果', emoji: '🍭', count: 3, tone: 'add' }
+      ]
     }
   },
   'math-addition-002': {
@@ -201,7 +244,11 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       correctChoice: 14,
       optionLabelPrefix: '数字石牌',
       successFeedback: '答对了，9 + 5 = 14',
-      failureFeedback: '可以先想 9 再往后数 5 个'
+      failureFeedback: '可以先想 9 再往后数 5 个',
+      pictureGroups: [
+        { label: '原来有 9 只小鸟', emoji: '🐦', count: 9, tone: 'normal' },
+        { label: '又飞来 5 只小鸟', emoji: '🕊️', count: 5, tone: 'add' }
+      ]
     }
   },
   'math-thinking-001': {
@@ -275,7 +322,12 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       choices: [8, 9, 10],
       correctChoice: 9,
       successFeedback: '答对了，15 - 6 = 9',
-      failureFeedback: '把 15 只小鸟减去飞走的 6 只再想一想'
+      failureFeedback: '把 15 只小鸟减去飞走的 6 只再想一想',
+      pictureGroups: [
+        { label: '树上原来 15 只小鸟', emoji: '🐦', count: 15, tone: 'normal' },
+        { label: '飞走 6 只小鸟', emoji: '🕊️', count: 6, tone: 'remove' },
+        { label: '还剩 9 只小鸟', emoji: '🐦', count: 9, tone: 'result' }
+      ]
     }
   },
   'math-compare-001': {
@@ -2232,6 +2284,7 @@ export function LevelPlayer() {
                 {config?.kind === 'number-choice' ? (
                   <div className="play-surface">
                     <p className="play-instruction">{config.instruction}</p>
+                    <PictureMathBoard groups={config.pictureGroups} />
                     <div className="stone-row">
                       {config.choices.map((choice) => {
                         const isSelected = progress?.selectedChoice === choice;
@@ -2650,6 +2703,7 @@ export function LevelPlayer() {
                         ))}
                       </div>
                     </div>
+                    <PictureMathBoard groups={config.pictureGroups} />
                     <div className="story-answer-row">
                       {config.choices.map((choice) => {
                         const isSelected = progress?.selectedChoice === choice;

@@ -1038,6 +1038,85 @@ body::before {
   background: linear-gradient(135deg, rgba(191, 231, 255, 0.88), rgba(255, 255, 255, 0.98));
 }
 
+.picture-math-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1.4rem;
+}
+
+.picture-math-group {
+  position: relative;
+  overflow: hidden;
+  padding: 1.6rem;
+  border-radius: 2.6rem;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255, 255, 255, 0.95), transparent 34%),
+    linear-gradient(145deg, rgba(255, 248, 229, 0.96), rgba(255, 224, 190, 0.92));
+  box-shadow: 0 1.4rem 3rem rgba(33, 48, 77, 0.11);
+}
+
+.picture-math-group-add {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.95), transparent 32%),
+    linear-gradient(145deg, rgba(221, 249, 232, 0.96), rgba(172, 232, 196, 0.9));
+}
+
+.picture-math-group-remove {
+  background:
+    radial-gradient(circle at 16% 18%, rgba(255, 255, 255, 0.95), transparent 32%),
+    linear-gradient(145deg, rgba(255, 232, 224, 0.96), rgba(255, 197, 177, 0.9));
+}
+
+.picture-math-group-result {
+  background:
+    radial-gradient(circle at 16% 18%, rgba(255, 255, 255, 0.95), transparent 32%),
+    linear-gradient(145deg, rgba(222, 244, 255, 0.96), rgba(183, 225, 255, 0.9));
+}
+
+.picture-math-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+  color: var(--ink);
+}
+
+.picture-math-group-header strong {
+  font-size: 1.6rem;
+}
+
+.picture-math-group-header span {
+  padding: 0.4rem 0.8rem;
+  border-radius: 99.9rem;
+  background: rgba(255, 255, 255, 0.68);
+  font-size: 1.28rem;
+  font-weight: 900;
+}
+
+.picture-math-token-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.72rem;
+}
+
+.picture-math-token {
+  display: inline-grid;
+  place-items: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 1.4rem;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 2.24rem;
+  box-shadow: 0 0.8rem 1.6rem rgba(33, 48, 77, 0.08);
+}
+
+.picture-math-group-remove .picture-math-token {
+  opacity: 0.58;
+  text-decoration: line-through;
+  filter: grayscale(0.2);
+}
+
 .story-problem-board {
   grid-template-columns: 18rem 1fr;
 }
