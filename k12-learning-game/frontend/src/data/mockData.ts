@@ -1,4 +1,5 @@
 import type { HomeOverview, LevelDetail, SubjectMapData, SubjectCode } from '../types';
+import { olympiadSubjectMap } from './olympiadData';
 
 export const homeOverview: HomeOverview = {
   child: {
@@ -396,7 +397,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         ]
       }
     ]
-  }
+  },
+  olympiad: olympiadSubjectMap
 };
 
 export const levelDetails: Record<string, LevelDetail> = {

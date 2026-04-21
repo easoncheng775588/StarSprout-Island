@@ -1,4 +1,4 @@
-export type SubjectCode = 'math' | 'chinese' | 'english';
+export type SubjectCode = 'math' | 'chinese' | 'english' | 'olympiad';
 
 export interface SubjectSummary {
   code: SubjectCode;

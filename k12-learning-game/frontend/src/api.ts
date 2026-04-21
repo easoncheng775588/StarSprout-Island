@@ -449,12 +449,14 @@ export async function getHomeOverview(): Promise<HomeOverview> {
     nextLevelCode: data.nextLevelCode ?? null,
     nextLevelTitle: data.nextLevelTitle ?? null,
     achievementPreview: data.achievementPreview ?? defaultAchievementPreview,
-    subjects: data.subjects.map((subject) => ({
-      code: subject.code,
-      title: subject.title,
-      subtitle: subject.subtitle,
-      color: subject.accentColor
-    }))
+    subjects: data.subjects
+      .filter((subject) => subject.code !== 'olympiad')
+      .map((subject) => ({
+        code: subject.code,
+        title: subject.title,
+        subtitle: subject.subtitle,
+        color: subject.accentColor
+      }))
   };
 }
 

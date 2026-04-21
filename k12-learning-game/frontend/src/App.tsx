@@ -10,6 +10,7 @@ import { DailyTasksPage } from './pages/DailyTasksPage';
 import { LearningPathPage } from './pages/LearningPathPage';
 import { LoginPage } from './pages/LoginPage';
 import { MistakeReviewPage } from './pages/MistakeReviewPage';
+import { OlympiadTrainingPage } from './pages/OlympiadTrainingPage';
 import { SessionProvider, useSession } from './session';
 import './styles.css';
 
@@ -31,6 +32,7 @@ function AppRoutes() {
       <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} />
       <Route path="/" element={<ProtectedRoute><HomeWorld /></ProtectedRoute>} />
       <Route path="/subjects/:subjectCode" element={<ProtectedRoute><SubjectMap /></ProtectedRoute>} />
+      <Route path="/olympiad" element={<ProtectedRoute><OlympiadTrainingPage /></ProtectedRoute>} />
       <Route path="/levels/:levelCode" element={<ProtectedRoute><LevelPlayer /></ProtectedRoute>} />
       <Route path="/parent" element={<ProtectedRoute><ParentDashboard /></ProtectedRoute>} />
       <Route path="/daily-tasks" element={<ProtectedRoute><DailyTasksPage /></ProtectedRoute>} />

@@ -99,6 +99,7 @@ public class GameContentService {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final String DEFAULT_STAGE_LABEL = "幼小衔接";
+    private static final Set<String> MAINLINE_SUBJECT_CODES = Set.of("math", "chinese", "english");
 
     private final ChildProfileRepository childProfileRepository;
     private final SubjectRepository subjectRepository;
@@ -230,7 +231,7 @@ public class GameContentService {
 
         return new HomeOverviewResponse(
                 toChildProfileDto(child),
-                subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
+                getMainlineSubjects().stream()
                         .map(subject -> new SubjectCardDto(
                                 subject.getCode(),
                                 subject.getTitle(),
@@ -498,7 +499,7 @@ public class GameContentService {
                 .findFirst()
                 .orElse(null);
 
-        List<LearningPathChapterDto> chapters = subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
+        List<LearningPathChapterDto> chapters = getMainlineSubjects().stream()
                 .flatMap(subject -> getStageChapters(subject, child).stream()
                         .map(chapter -> new LearningPathChapterDto(
                                 subject.getCode(),
@@ -837,6 +838,12 @@ public class GameContentService {
                 .orElse(DEFAULT_STAGE_LABEL);
     }
 
+    private List<SubjectEntity> getMainlineSubjects() {
+        return subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
+                .filter(subject -> MAINLINE_SUBJECT_CODES.contains(subject.getCode()))
+                .toList();
+    }
+
     private List<ChapterEntity> getStageChapters(SubjectEntity subject, ChildProfileEntity child) {
         String stageLabel = resolveStageLabel(child);
 
@@ -858,7 +865,7 @@ public class GameContentService {
     }
 
     private List<LevelEntity> getAllStageLevels(ChildProfileEntity child) {
-        return subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
+        return getMainlineSubjects().stream()
                 .flatMap(subject -> getStageLevels(subject, child).stream())
                 .toList();
     }
@@ -874,7 +881,7 @@ public class GameContentService {
     private LevelEntity findNextIncompleteLevel(ChildProfileEntity child) {
         Set<String> completedLevelCodes = getCompletedLevelCodesForCurrentStage(child);
 
-        return subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
+        return getMainlineSubjects().stream()
                 .flatMap(subject -> getStageLevels(subject, child).stream())
                 .filter(level -> !completedLevelCodes.contains(level.getCode()))
                 .findFirst()
@@ -905,7 +912,7 @@ public class GameContentService {
     private List<ParentSubjectProgressDto> buildSubjectProgress(ChildProfileEntity child) {
         Set<String> completedLevelCodes = getCompletedLevelCodesForCurrentStage(child);
 
-        return subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
+        return getMainlineSubjects().stream()
                 .map(subject -> {
                     List<LevelEntity> stageLevels = getStageLevels(subject, child);
                     long totalLevels = stageLevels.size();
@@ -926,7 +933,7 @@ public class GameContentService {
     private List<ParentSubjectInsightDto> buildSubjectInsights(ChildProfileEntity child, List<LevelCompletionEntity> completions) {
         Set<String> completedLevelCodes = getCompletedLevelCodesForCurrentStage(child);
 
-        return subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
+        return getMainlineSubjects().stream()
                 .map(subject -> {
                     List<LevelEntity> subjectLevels = getStageLevels(subject, child);
                     Set<String> subjectLevelCodes = subjectLevels.stream()
@@ -1315,7 +1322,7 @@ public class GameContentService {
 
     private List<WeakPointDto> buildWeakPoints(ChildProfileEntity child, List<LevelCompletionEntity> completions) {
         int overallAccuracy = calculateAverageAccuracyPercent(completions);
-        List<SubjectScore> subjectScores = subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
+        List<SubjectScore> subjectScores = getMainlineSubjects().stream()
                 .map(subject -> {
                     List<LevelEntity> stageLevels = getStageLevels(subject, child);
                     Set<String> stageLevelCodes = stageLevels.stream()
@@ -1353,7 +1360,7 @@ public class GameContentService {
     private List<RecommendedActionDto> buildRecommendedActions(ChildProfileEntity child, int limit) {
         Set<String> completedLevelCodes = getCompletedLevelCodesForCurrentStage(child);
 
-        return subjectRepository.findAllByOrderByDisplayOrderAsc().stream()
+        return getMainlineSubjects().stream()
                 .flatMap(subject -> getStageLevels(subject, child).stream())
                 .filter(level -> !completedLevelCodes.contains(level.getCode()))
                 .limit(limit)

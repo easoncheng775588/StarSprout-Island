@@ -107,10 +107,20 @@ export function HomeWorld() {
           <Link className="cta-button cta-button-secondary" to="/daily-tasks">每日任务</Link>
           <Link className="cta-button cta-button-secondary" to="/mistakes">错题本</Link>
           <Link className="cta-button cta-button-secondary" to="/learning-path">学习路径</Link>
+          <Link className="cta-button cta-button-secondary" to="/olympiad">奥数训练营</Link>
           <Link className="cta-button cta-button-secondary" to="/leaderboard">排行榜</Link>
           <Link className="cta-button cta-button-secondary" to="/achievements">成就墙</Link>
           <Link className="cta-button cta-button-secondary" to="/content-configs">题库配置</Link>
         </div>
+      </section>
+
+      <section className="olympiad-home-card" aria-label="奥数训练营入口">
+        <div>
+          <p className="eyebrow">思维进阶</p>
+          <h2>奥数训练营：从找规律到逻辑推理</h2>
+          <p>1-6 年级各有代表主题关卡，用图像模型和故事选择题训练孩子的数学思维。</p>
+        </div>
+        <Link className="cta-button" to="/olympiad">进入奥数训练营</Link>
       </section>
 
       <section className="island-grid">

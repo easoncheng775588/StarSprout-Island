@@ -1807,7 +1807,8 @@ function speakText(text: string, lang: string, speedMode: 'normal' | 'slow' = 'n
 const subjectTitleToCode: Record<string, string> = {
   数学岛: 'math',
   语文岛: 'chinese',
-  英语岛: 'english'
+  英语岛: 'english',
+  奥数训练营: 'olympiad'
 };
 
 const celebrationStars = ['★', '✦', '★', '✦', '★', '✦'];
@@ -1842,7 +1843,7 @@ function getNextLevelCode(levelCode: string, subjectCode?: string, stageLabel = 
   }
 
   const orderedLevels = subjectMaps[subjectCode as keyof typeof subjectMaps].chapters
-    .filter((chapter) => (chapter.stageLabel ?? '幼小衔接') === stageLabel)
+    .filter((chapter) => subjectCode === 'olympiad' || (chapter.stageLabel ?? '幼小衔接') === stageLabel)
     .flatMap((chapter) => chapter.levels.map((level) => level.code));
   const currentIndex = orderedLevels.indexOf(levelCode);
 
@@ -2114,7 +2115,7 @@ export function LevelPlayer() {
   }
 
   const allStepsCompleted = currentLevel.steps.every((step) => stepProgress[step.id]?.completed);
-  const backTarget = subjectCode ? `/subjects/${subjectCode}` : '/';
+  const backTarget = subjectCode === 'olympiad' ? '/olympiad' : subjectCode ? `/subjects/${subjectCode}` : '/';
   const backLabel = subjectCode ? `返回${currentLevel.subjectTitle}` : '返回首页';
 
   function getStepConfig(step: LevelStep): StepActivityConfig | undefined {

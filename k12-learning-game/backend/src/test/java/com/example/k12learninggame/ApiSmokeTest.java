@@ -642,6 +642,18 @@ class ApiSmokeTest {
     }
 
     @Test
+    void shouldReturnOlympiadTrainingLevelDetails() throws Exception {
+        mockMvc.perform(get("/api/levels/olympiad-g4-chicken-rabbit-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("olympiad-g4-chicken-rabbit-001"))
+                .andExpect(jsonPath("$.subjectTitle").value("奥数训练营"))
+                .andExpect(jsonPath("$.steps[0].type").value("story-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointCode").value("olympiad.g4.chicken-rabbit"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("四年级奥数：鸡兔同笼"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(8));
+    }
+
+    @Test
     void shouldReturnExpandedEnglishPhonicsLevelDetails() throws Exception {
         mockMvc.perform(get("/api/levels/english-phonics-001"))
                 .andExpect(status().isOk())
