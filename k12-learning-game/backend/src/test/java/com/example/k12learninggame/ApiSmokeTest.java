@@ -200,7 +200,10 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.chapters[0].levels[10].code").value("math-wordproblem-001"))
                 .andExpect(jsonPath("$.chapters[0].levels[11].code").value("math-shapes-001"))
                 .andExpect(jsonPath("$.chapters[0].levels[12].code").value("math-position-001"))
-                .andExpect(jsonPath("$.chapters[0].levels[13].code").value("math-ordinal-001"));
+                .andExpect(jsonPath("$.chapters[0].levels[13].code").value("math-ordinal-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[14].code").value("math-subitizing-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[15].code").value("math-part-whole-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[16].code").value("math-picture-addition-001"));
     }
 
     @Test
@@ -648,6 +651,30 @@ class ApiSmokeTest {
     }
 
     @Test
+    void shouldReturnExpandedPreschoolMathThinkingLevelDetails() throws Exception {
+        mockMvc.perform(get("/api/levels/math-subitizing-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("math-subitizing-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("tap-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("数学数感：快速看数量"))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("number-choice")));
+
+        mockMvc.perform(get("/api/levels/math-part-whole-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("math-part-whole-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("equation-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("数学数感：数的分合"))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("数字分合小屋")));
+
+        mockMvc.perform(get("/api/levels/math-picture-addition-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("math-picture-addition-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("story-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("数学运算：看图加法"))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("4 + 3 = 7")));
+    }
+
+    @Test
     void shouldReturnOlympiadTrainingLevelDetails() throws Exception {
         mockMvc.perform(get("/api/levels/olympiad-g4-chicken-rabbit-001"))
                 .andExpect(status().isOk())
@@ -775,7 +802,7 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.learningVitals.effectiveLearningDays").value(3))
                 .andExpect(jsonPath("$.subjectInsights[0].subjectCode").value("math"))
                 .andExpect(jsonPath("$.subjectInsights[0].completedLevels").value(2))
-                .andExpect(jsonPath("$.subjectInsights[0].totalLevels").value(14))
+                .andExpect(jsonPath("$.subjectInsights[0].totalLevels").value(17))
                 .andExpect(jsonPath("$.subjectInsights[0].accuracyPercent").value(75))
                 .andExpect(jsonPath("$.subjectInsights[0].nextLevelReason").isNotEmpty())
                 .andExpect(jsonPath("$.recentActivities[0].subjectTitle").value("语文岛"))

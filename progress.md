@@ -225,3 +225,21 @@
   - 前端测试：`npm test -- --run`，18 个测试文件、83 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+
+## 2026-04-22
+
+- 已完成逐年级产品化实施规划：
+  - 新增 `docs/plans/2026-04-22-grade-by-grade-productization-plan.md`
+  - 明确后续按幼小衔接、一年级、二年级、三年级、四年级逐阶段优化
+  - 工程守则：不盲目新增课程表，业务引用使用稳定字符串 code，自增 ID 只作技术主键
+  - 前端守则：继续抽取可复用组件，避免 `LevelPlayer` 继续膨胀
+- 已完成幼小衔接成熟化一期：
+  - 抽取 `AudioModeControls`，复用听辨、跟读和短句朗读里的音频模式控制
+  - 新增 3 个幼小衔接数学关卡：一眼看数量、数字分合小屋、看图加法故事
+  - 后端 `data.sql` 同步新增关卡、步骤、知识点 code/title、题型配置和变体数量
+  - 前端静态兜底地图与关卡详情同步更新
+  - 新增/更新前端测试与后端 smoke test，覆盖新增幼小衔接数学关卡和组件复用
+- 本轮验证通过：
+  - 前端测试：`npm test -- --run`，19 个测试文件、86 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

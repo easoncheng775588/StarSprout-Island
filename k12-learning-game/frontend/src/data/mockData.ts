@@ -48,7 +48,10 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
           { code: 'math-wordproblem-001', title: '故事应用题', status: 'available' },
           { code: 'math-shapes-001', title: '图形分类屋', status: 'available' },
           { code: 'math-position-001', title: '上下左右小地图', status: 'available' },
-          { code: 'math-ordinal-001', title: '排队第几个', status: 'available' }
+          { code: 'math-ordinal-001', title: '排队第几个', status: 'available' },
+          { code: 'math-subitizing-001', title: '一眼看数量', status: 'available' },
+          { code: 'math-part-whole-001', title: '数字分合小屋', status: 'available' },
+          { code: 'math-picture-addition-001', title: '看图加法故事', status: 'available' }
         ]
       },
       {
@@ -590,6 +593,45 @@ export const levelDetails: Record<string, LevelDetail> = {
     reward: {
       stars: 2,
       badgeName: '序数小队长'
+    }
+  },
+  'math-subitizing-001': {
+    code: 'math-subitizing-001',
+    title: '一眼看数量',
+    subjectTitle: '数学岛',
+    description: '把小圆点看成几组，不用一个个数也能快速看出总数。',
+    steps: [
+      { id: 'step-1', type: 'tap-choice', prompt: '不用一个个数，先看成 3 和 3，再选出总数。' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '数感闪电眼'
+    }
+  },
+  'math-part-whole-001': {
+    code: 'math-part-whole-001',
+    title: '数字分合小屋',
+    subjectTitle: '数学岛',
+    description: '观察数字小屋，理解一个数可以分成两个部分。',
+    steps: [
+      { id: 'step-1', type: 'equation-choice', prompt: '看数字小屋，6 已经分出 4，另一边应该是几？' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '分合小建筑师'
+    }
+  },
+  'math-picture-addition-001': {
+    code: 'math-picture-addition-001',
+    title: '看图加法故事',
+    subjectTitle: '数学岛',
+    description: '先看图讲出加法故事，再把总数算出来。',
+    steps: [
+      { id: 'step-1', type: 'story-choice', prompt: '看图先说故事：4 只小猫在玩，又跑来 3 只。' }
+    ],
+    reward: {
+      stars: 2,
+      badgeName: '看图列式星'
     }
   },
   'chinese-characters-001': {

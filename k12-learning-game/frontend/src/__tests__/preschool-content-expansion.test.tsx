@@ -16,6 +16,36 @@ function mockLevelResponse(levelCode: string) {
       ],
       reward: { stars: 2, badgeName: '图形小侦探' }
     },
+    'math-subitizing-001': {
+      code: 'math-subitizing-001',
+      title: '一眼看数量',
+      subjectTitle: '数学岛',
+      description: '不用一个个数，先观察排列，再快速判断数量。',
+      steps: [
+        { id: 'step-1', type: 'tap-choice', prompt: '一眼看出点点卡上有几个' }
+      ],
+      reward: { stars: 2, badgeName: '一眼数感星' }
+    },
+    'math-part-whole-001': {
+      code: 'math-part-whole-001',
+      title: '数字分合小屋',
+      subjectTitle: '数学岛',
+      description: '把一个数拆成两部分，理解加法和减法的关系。',
+      steps: [
+        { id: 'step-1', type: 'equation-choice', prompt: '6 可以分成 4 和几？' }
+      ],
+      reward: { stars: 2, badgeName: '分合小建筑师' }
+    },
+    'math-picture-addition-001': {
+      code: 'math-picture-addition-001',
+      title: '看图加法故事',
+      subjectTitle: '数学岛',
+      description: '用图片看懂“又来了几个”，再算出总数。',
+      steps: [
+        { id: 'step-1', type: 'story-choice', prompt: '4 只小猫又来了 3 只，一共有几只？' }
+      ],
+      reward: { stars: 2, badgeName: '看图加法星' }
+    },
     'chinese-radicals-001': {
       code: 'chinese-radicals-001',
       title: '偏旁小树',
@@ -72,7 +102,14 @@ describe('Preschool content expansion', () => {
       vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input);
 
-        for (const levelCode of ['math-shapes-001', 'chinese-radicals-001', 'english-family-001']) {
+        for (const levelCode of [
+          'math-shapes-001',
+          'math-subitizing-001',
+          'math-part-whole-001',
+          'math-picture-addition-001',
+          'chinese-radicals-001',
+          'english-family-001'
+        ]) {
           if (url.endsWith(`/api/levels/${levelCode}`) && !init?.method) {
             return {
               ok: true,
@@ -120,6 +157,34 @@ describe('Preschool content expansion', () => {
 
     expect(screen.getByText('答对了，圆形像太阳和皮球，边边是弯弯的')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
+  });
+
+  test('renders preschool subitizing and part-whole math levels', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/math-subitizing-001']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('不用一个个数，先看成 3 和 3，再选出总数。')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '数字卡 6' }));
+    expect(screen.getByText('真快，3 和 3 合起来就是 6')).toBeInTheDocument();
+  });
+
+  test('renders preschool picture based addition story', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/math-picture-addition-001']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('看图先说故事：4 只小猫在玩，又跑来 3 只。')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '答案卡片 7' }));
+    expect(screen.getByText('答对了，4 + 3 = 7，小猫都到齐啦')).toBeInTheDocument();
   });
 
   test('renders a preschool radical observation chinese level', async () => {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
+import { AudioModeControls, type AudioSpeedMode } from '../components/AudioModeControls';
 import { PageTopBar } from '../components/PageTopBar';
 import { Link, useParams } from 'react-router-dom';
 import { completeLevel, getLevel } from '../api';
@@ -503,6 +504,54 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       correctChoice: '2 + 3 = 5',
       successFeedback: '答对了，2 只加 3 只一共是 5 只',
       failureFeedback: '再看一看两边的小鸭数量'
+    }
+  },
+  'math-subitizing-001': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '不用一个个数，先看成 3 和 3，再选出总数。',
+      choices: [5, 6, 7],
+      correctChoice: 6,
+      optionLabelPrefix: '数字卡',
+      successFeedback: '真快，3 和 3 合起来就是 6',
+      failureFeedback: '再看一眼，上面 3 个点点，下面也有 3 个点点',
+      pictureGroups: [
+        { label: '上面 3 个点点', emoji: '🔵', count: 3, tone: 'normal' },
+        { label: '下面 3 个点点', emoji: '🔵', count: 3, tone: 'add' }
+      ]
+    }
+  },
+  'math-part-whole-001': {
+    'step-1': {
+      kind: 'equation-choice',
+      instruction: '看数字小屋，6 已经分出 4，另一边应该是几？',
+      emoji: '⭐',
+      leftLabel: '已经有 4 颗星',
+      rightLabel: '还要补 2 颗星',
+      leftCount: 4,
+      rightCount: 2,
+      choices: ['6 = 4 + 2', '6 = 4 + 1', '6 = 3 + 2'],
+      correctChoice: '6 = 4 + 2',
+      successFeedback: '答对了，6 可以分成 4 和 2',
+      failureFeedback: '先从 4 往后数到 6，还差几个？'
+    }
+  },
+  'math-picture-addition-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '看图先说故事：4 只小猫在玩，又跑来 3 只。',
+      emoji: '🐱',
+      characterLabel: '草地上的小猫',
+      detailLines: ['原来有 4 只小猫', '又跑来 3 只小猫'],
+      choices: [6, 7, 8],
+      correctChoice: 7,
+      successFeedback: '答对了，4 + 3 = 7，小猫都到齐啦',
+      failureFeedback: '先数原来的 4 只，再加上后来跑来的 3 只',
+      pictureGroups: [
+        { label: '原来 4 只小猫', emoji: '🐱', count: 4, tone: 'normal' },
+        { label: '又来 3 只小猫', emoji: '🐈', count: 3, tone: 'add' },
+        { label: '一共 7 只小猫', emoji: '🐱', count: 7, tone: 'result' }
+      ]
     }
   },
   'math-wordproblem-001': {
@@ -2137,7 +2186,7 @@ export function LevelPlayer() {
   const [draggingApple, setDraggingApple] = useState<{ stepId: string; appleId: number } | null>(null);
   const [showNextLevelNudge, setShowNextLevelNudge] = useState(false);
   const [showAnimatedExplainer, setShowAnimatedExplainer] = useState(false);
-  const [audioSpeedMode, setAudioSpeedMode] = useState<'normal' | 'slow'>(readAudioSpeedMode);
+  const [audioSpeedMode, setAudioSpeedMode] = useState<AudioSpeedMode>(readAudioSpeedMode);
   const [audioTeacherLabel, setAudioTeacherLabel] = useState('系统默认老师');
   const [levelStartedAt, setLevelStartedAt] = useState(() => Date.now());
   const currentLevel = level;
@@ -2915,23 +2964,11 @@ export function LevelPlayer() {
                 {config?.kind === 'listen-choice' ? (
                   <div className="play-surface">
                     <p className="play-instruction">{config.instruction}</p>
-                    <div className="audio-mode-row">
-                      <button
-                        className={`audio-mode-chip ${audioSpeedMode === 'normal' ? 'audio-mode-chip-active' : ''}`}
-                        onClick={() => setAudioSpeedMode('normal')}
-                        type="button"
-                      >
-                        标准速度
-                      </button>
-                      <button
-                        className={`audio-mode-chip ${audioSpeedMode === 'slow' ? 'audio-mode-chip-active' : ''}`}
-                        onClick={() => setAudioSpeedMode('slow')}
-                        type="button"
-                      >
-                        慢速跟读
-                      </button>
-                    </div>
-                    <p className="audio-helper-text">当前老师音色：{audioTeacherLabel}</p>
+                    <AudioModeControls
+                      audioSpeedMode={audioSpeedMode}
+                      audioTeacherLabel={audioTeacherLabel}
+                      onModeChange={setAudioSpeedMode}
+                    />
                     <button className="audio-button" onClick={() => handlePlayAudio(step.id, config)} type="button">
                       {config.playButtonLabel ?? '播放拼音读音'}
                     </button>
@@ -2959,23 +2996,11 @@ export function LevelPlayer() {
                 {config?.kind === 'follow-read' ? (
                   <div className="play-surface">
                     <p className="play-instruction">{config.instruction}</p>
-                    <div className="audio-mode-row">
-                      <button
-                        className={`audio-mode-chip ${audioSpeedMode === 'normal' ? 'audio-mode-chip-active' : ''}`}
-                        onClick={() => setAudioSpeedMode('normal')}
-                        type="button"
-                      >
-                        标准速度
-                      </button>
-                      <button
-                        className={`audio-mode-chip ${audioSpeedMode === 'slow' ? 'audio-mode-chip-active' : ''}`}
-                        onClick={() => setAudioSpeedMode('slow')}
-                        type="button"
-                      >
-                        慢速跟读
-                      </button>
-                    </div>
-                    <p className="audio-helper-text">当前老师音色：{audioTeacherLabel}</p>
+                    <AudioModeControls
+                      audioSpeedMode={audioSpeedMode}
+                      audioTeacherLabel={audioTeacherLabel}
+                      onModeChange={setAudioSpeedMode}
+                    />
                     <div className="letter-row">
                       {config.letters.map((letter) => {
                         const isRead = progress?.completedItems?.includes(letter.label) ?? false;
@@ -3074,23 +3099,11 @@ export function LevelPlayer() {
                 {config?.kind === 'sentence-read' ? (
                   <div className="play-surface">
                     <p className="play-instruction">{config.instruction}</p>
-                    <div className="audio-mode-row">
-                      <button
-                        className={`audio-mode-chip ${audioSpeedMode === 'normal' ? 'audio-mode-chip-active' : ''}`}
-                        onClick={() => setAudioSpeedMode('normal')}
-                        type="button"
-                      >
-                        标准速度
-                      </button>
-                      <button
-                        className={`audio-mode-chip ${audioSpeedMode === 'slow' ? 'audio-mode-chip-active' : ''}`}
-                        onClick={() => setAudioSpeedMode('slow')}
-                        type="button"
-                      >
-                        慢速跟读
-                      </button>
-                    </div>
-                    <p className="audio-helper-text">当前老师音色：{audioTeacherLabel}</p>
+                    <AudioModeControls
+                      audioSpeedMode={audioSpeedMode}
+                      audioTeacherLabel={audioTeacherLabel}
+                      onModeChange={setAudioSpeedMode}
+                    />
                     <button className="audio-button audio-button-secondary" onClick={() => handleReadStoryAll(step.id, config)} type="button">
                       老师先整段领读
                     </button>
