@@ -329,3 +329,14 @@
   - 前端测试：`npm test -- --run`，23 个测试文件、96 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成跨年级成熟化：音频播放抽象：
+  - 新增前端 `learningAudio` 音频层，统一生成播放计划和播放结果
+  - 当前默认使用浏览器 TTS，接口已预留 `recordedAssetUrl`，后续可优先播放真实录音素材
+  - `LevelPlayer` 不再直接维护 TTS voice 选择逻辑，改为调用统一音频播放入口
+  - `AudioModeControls` 新增播放来源展示，让孩子/家长能看到当前是浏览器语音还是录音素材
+- 音频播放抽象 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/learning-audio.test.ts` 因缺少 `learningAudio` 模块失败；`npm test -- --run src/__tests__/audio-mode-controls.test.tsx` 因缺少播放来源文案失败
+  - GREEN：`npm test -- --run src/__tests__/learning-audio.test.ts src/__tests__/audio-mode-controls.test.tsx`，2 个测试文件、3 项测试通过
+- 音频播放抽象全量验证通过：
+  - 前端测试：`npm test -- --run`，24 个测试文件、98 项测试通过
+  - 前端构建：`npm run build`

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { AudioModeControls, type AudioSpeedMode } from '../components/AudioModeControls';
+import { playLearningAudio } from '../audio/learningAudio';
 import { PageTopBar } from '../components/PageTopBar';
 import { Link, useParams } from 'react-router-dom';
 import { completeLevel, getLevel } from '../api';
@@ -2259,57 +2260,6 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
   }
 };
 
-function getPreferredVoice(lang: string) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    return undefined;
-  }
-
-  const voices = window.speechSynthesis.getVoices?.() ?? [];
-  const languageRoot = lang.toLowerCase().split('-')[0];
-  const preferredNames = languageRoot === 'zh'
-    ? ['Tingting', 'Meijia', 'Eddy', 'Flo', 'Shelley', 'Reed', 'Rocko', 'Sandy']
-    : ['Samantha', 'Karen', 'Daniel', 'Alex'];
-
-  const languageMatches = voices.filter((voice) => voice.lang.toLowerCase().startsWith(languageRoot));
-
-  for (const preferredName of preferredNames) {
-    const matchedVoice = languageMatches.find((voice) => voice.name.includes(preferredName));
-    if (matchedVoice) {
-      return matchedVoice;
-    }
-  }
-
-  return languageMatches[0];
-}
-
-function speakText(text: string, lang: string, speedMode: 'normal' | 'slow' = 'normal') {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
-    return {
-      played: false,
-      voiceLabel: '当前设备暂未准备好语音老师'
-    };
-  }
-
-  window.speechSynthesis.cancel();
-  const utterance = new window.SpeechSynthesisUtterance(text);
-  utterance.lang = lang;
-  utterance.rate = speedMode === 'slow'
-    ? (lang.startsWith('zh') ? 0.72 : 0.78)
-    : (lang.startsWith('zh') ? 0.85 : 0.92);
-  utterance.pitch = lang.startsWith('zh') ? 1.05 : 1;
-
-  const preferredVoice = getPreferredVoice(lang);
-  if (preferredVoice) {
-    utterance.voice = preferredVoice;
-  }
-
-  window.speechSynthesis.speak(utterance);
-  return {
-    played: true,
-    voiceLabel: preferredVoice ? `${preferredVoice.lang} · ${preferredVoice.name}` : `${lang} · 系统默认老师`
-  };
-}
-
 const subjectTitleToCode: Record<string, string> = {
   数学岛: 'math',
   语文岛: 'chinese',
@@ -2569,6 +2519,7 @@ export function LevelPlayer() {
   const [showAnimatedExplainer, setShowAnimatedExplainer] = useState(false);
   const [audioSpeedMode, setAudioSpeedMode] = useState<AudioSpeedMode>(readAudioSpeedMode);
   const [audioTeacherLabel, setAudioTeacherLabel] = useState('系统默认老师');
+  const [audioSourceLabel, setAudioSourceLabel] = useState('使用浏览器语音领读');
   const [levelStartedAt, setLevelStartedAt] = useState(() => Date.now());
   const currentLevel = level;
   const activeChildStageLabel = session?.children.find((child) => child.id === session.childProfileId)?.stageLabel ?? '幼小衔接';
@@ -2629,8 +2580,9 @@ export function LevelPlayer() {
   }
 
   function playNarration(text: string, lang: string) {
-    const result = speakText(text, lang, audioSpeedMode);
+    const result = playLearningAudio({ text, lang, speedMode: audioSpeedMode });
     setAudioTeacherLabel(result.voiceLabel);
+    setAudioSourceLabel(result.sourceLabel);
     return result.played;
   }
 
@@ -3347,6 +3299,7 @@ export function LevelPlayer() {
                     <p className="play-instruction">{config.instruction}</p>
                     <AudioModeControls
                       audioSpeedMode={audioSpeedMode}
+                      audioSourceLabel={audioSourceLabel}
                       audioTeacherLabel={audioTeacherLabel}
                       onModeChange={setAudioSpeedMode}
                     />
@@ -3379,6 +3332,7 @@ export function LevelPlayer() {
                     <p className="play-instruction">{config.instruction}</p>
                     <AudioModeControls
                       audioSpeedMode={audioSpeedMode}
+                      audioSourceLabel={audioSourceLabel}
                       audioTeacherLabel={audioTeacherLabel}
                       onModeChange={setAudioSpeedMode}
                     />
@@ -3482,6 +3436,7 @@ export function LevelPlayer() {
                     <p className="play-instruction">{config.instruction}</p>
                     <AudioModeControls
                       audioSpeedMode={audioSpeedMode}
+                      audioSourceLabel={audioSourceLabel}
                       audioTeacherLabel={audioTeacherLabel}
                       onModeChange={setAudioSpeedMode}
                     />

@@ -2,12 +2,14 @@ export type AudioSpeedMode = 'normal' | 'slow';
 
 interface AudioModeControlsProps {
   audioSpeedMode: AudioSpeedMode;
+  audioSourceLabel?: string;
   audioTeacherLabel: string;
   onModeChange: (mode: AudioSpeedMode) => void;
 }
 
 export function AudioModeControls({
   audioSpeedMode,
+  audioSourceLabel = '使用浏览器语音领读',
   audioTeacherLabel,
   onModeChange
 }: AudioModeControlsProps) {
@@ -30,6 +32,7 @@ export function AudioModeControls({
         </button>
       </div>
       <p className="audio-helper-text">当前老师音色：{audioTeacherLabel}</p>
+      <p className="audio-helper-text">播放来源：{audioSourceLabel}</p>
     </>
   );
 }
