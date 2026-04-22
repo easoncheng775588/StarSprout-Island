@@ -12,6 +12,7 @@ import com.example.k12learninggame.domain.ParentAccountEntity;
 import com.example.k12learninggame.domain.SubjectEntity;
 import com.example.k12learninggame.dto.AchievementBadgeDto;
 import com.example.k12learninggame.dto.AchievementPreviewDto;
+import com.example.k12learninggame.dto.AchievementStageFamilyDto;
 import com.example.k12learninggame.dto.AchievementSummaryDto;
 import com.example.k12learninggame.dto.AchievementsResponse;
 import com.example.k12learninggame.dto.AuthLoginRequest;
@@ -98,6 +99,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class GameContentService {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final List<String> CORE_STAGE_LABELS = List.of("幼小衔接", "一年级", "二年级", "三年级", "四年级");
     private static final String DEFAULT_STAGE_LABEL = "幼小衔接";
     private static final Set<String> MAINLINE_SUBJECT_CODES = Set.of("math", "chinese", "english");
 
@@ -857,15 +859,23 @@ public class GameContentService {
     }
 
     private List<ChapterEntity> getStageChapters(SubjectEntity subject, ChildProfileEntity child) {
-        String stageLabel = resolveStageLabel(child);
+        return getStageChapters(subject, resolveStageLabel(child));
+    }
 
+    private List<ChapterEntity> getStageChapters(SubjectEntity subject, String stageLabel) {
         return subject.getChapters().stream()
-                .filter(chapter -> stageLabel.equals(Optional.ofNullable(chapter.getStageLabel()).orElse(DEFAULT_STAGE_LABEL)))
+                .filter(chapter -> stageLabel.equals(resolveStageLabel(chapter)))
                 .toList();
     }
 
     private List<LevelEntity> getStageLevels(SubjectEntity subject, ChildProfileEntity child) {
         return getStageChapters(subject, child).stream()
+                .flatMap(chapter -> chapter.getLevels().stream())
+                .toList();
+    }
+
+    private List<LevelEntity> getStageLevels(SubjectEntity subject, String stageLabel) {
+        return getStageChapters(subject, stageLabel).stream()
                 .flatMap(chapter -> chapter.getLevels().stream())
                 .toList();
     }
@@ -1534,9 +1544,98 @@ public class GameContentService {
                 child.getNickname(),
                 unlockedBadges.size(),
                 badges.size(),
+                resolveStageLabel(child),
+                buildStageAchievementFamilies(child, completedLevelCodes, completions),
                 unlockedBadges,
                 inProgressBadges
         );
+    }
+
+    private List<AchievementStageFamilyDto> buildStageAchievementFamilies(
+            ChildProfileEntity child,
+            Set<String> completedLevelCodes,
+            List<LevelCompletionEntity> completions
+    ) {
+        return CORE_STAGE_LABELS.stream()
+                .filter(stageLabel -> stageLabel.equals(resolveStageLabel(child)) || !getLevelsForStageLabel(stageLabel).isEmpty())
+                .map(stageLabel -> buildStageAchievementFamily(stageLabel, completedLevelCodes, completions))
+                .toList();
+    }
+
+    private AchievementStageFamilyDto buildStageAchievementFamily(
+            String stageLabel,
+            Set<String> completedLevelCodes,
+            List<LevelCompletionEntity> completions
+    ) {
+        Set<String> stageLevelCodes = getLevelsForStageLabel(stageLabel).stream()
+                .map(LevelEntity::getCode)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        long completedInStage = completedLevelCodes.stream()
+                .filter(stageLevelCodes::contains)
+                .count();
+        long completedSubjectCount = getLevelsForStageLabel(stageLabel).stream()
+                .filter(level -> completedLevelCodes.contains(level.getCode()))
+                .map(level -> level.getChapter().getSubject().getCode())
+                .distinct()
+                .count();
+        List<LevelCompletionEntity> stageCompletions = completions.stream()
+                .filter(completion -> stageLabel.equals(resolveStageLabel(completion.getLevel().getChapter())))
+                .toList();
+        int stageAccuracy = calculateAverageAccuracyPercent(stageCompletions);
+        long mainlineTarget = Math.min(6, Math.max(stageLevelCodes.size(), 1));
+
+        List<AchievementBadgeDto> badges = List.of(
+                createBadge("stage_" + stageCode(stageLabel) + "_opener", stageLabel + "启航星", "完成 1 个" + stageLabel + "关卡", completedInStage, 1, stageLabel, "阶段徽章"),
+                createBadge("stage_" + stageCode(stageLabel) + "_three_islands", stageLabel + "三岛探索家", "数学、语文、英语都完成至少 1 关", completedSubjectCount, 3, stageLabel, "阶段徽章"),
+                createBadge("stage_" + stageCode(stageLabel) + "_mainline", stageLabel + "主线推进家", "完成 " + mainlineTarget + " 个" + stageLabel + "主线关卡", completedInStage, mainlineTarget, stageLabel, "阶段徽章"),
+                createBadge("stage_" + stageCode(stageLabel) + "_accuracy", stageLabel + "稳稳通关星", "完成 3 关且平均准确率达到 85%", completedInStage >= 3 ? stageAccuracy : 0, 85, stageLabel, "阶段徽章")
+        );
+        int unlockedCount = (int) badges.stream().filter(AchievementBadgeDto::unlocked).count();
+
+        return new AchievementStageFamilyDto(
+                stageLabel,
+                stageLabel + "成长路线",
+                buildStageFamilyDescription(stageLabel),
+                unlockedCount,
+                badges.size(),
+                badges.isEmpty() ? 0 : (int) Math.round(unlockedCount * 100.0 / badges.size()),
+                badges
+        );
+    }
+
+    private List<LevelEntity> getLevelsForStageLabel(String stageLabel) {
+        return subjectRepository.findAll().stream()
+                .filter(subject -> !"olympiad".equals(subject.getCode()))
+                .flatMap(subject -> getStageLevels(subject, stageLabel).stream())
+                .toList();
+    }
+
+    private String buildStageFamilyDescription(String stageLabel) {
+        return switch (stageLabel) {
+            case "幼小衔接" -> "入学准备阶段的三岛探索进度";
+            case "一年级" -> "校园冒险阶段的基础能力成长进度";
+            case "二年级" -> "结构思维和复习闭环的成长进度";
+            case "三年级" -> "多步推理和阅读表达的成长进度";
+            case "四年级" -> "抽象模型和策略表达的成长进度";
+            default -> stageLabel + "阶段的学习成长进度";
+        };
+    }
+
+    private String stageCode(String stageLabel) {
+        return switch (stageLabel) {
+            case "幼小衔接" -> "preschool";
+            case "一年级" -> "grade1";
+            case "二年级" -> "grade2";
+            case "三年级" -> "grade3";
+            case "四年级" -> "grade4";
+            default -> stageLabel.toLowerCase().replaceAll("[^a-z0-9]+", "_");
+        };
+    }
+
+    private String resolveStageLabel(ChapterEntity chapter) {
+        return Optional.ofNullable(chapter.getStageLabel())
+                .filter(label -> !label.isBlank())
+                .orElse(DEFAULT_STAGE_LABEL);
     }
 
     private String buildWeakPointReason(String subjectTitle, double subjectAccuracy, int overallAccuracy) {

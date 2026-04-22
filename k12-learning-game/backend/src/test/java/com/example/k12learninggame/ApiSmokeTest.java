@@ -1179,6 +1179,12 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.unlockedBadges[0].title").value("数字小达人"))
                 .andExpect(jsonPath("$.unlockedBadges[0].category").value("数学启蒙"))
                 .andExpect(jsonPath("$.unlockedBadges[0].progressPercent").value(100))
-                .andExpect(jsonPath("$.inProgressBadges[0].title").value("细心守护星"));
+                .andExpect(jsonPath("$.inProgressBadges[0].title").value("细心守护星"))
+                .andExpect(jsonPath("$.currentStageLabel").value("幼小衔接"))
+                .andExpect(jsonPath("$.stageFamilies[0].stageLabel").value("幼小衔接"))
+                .andExpect(jsonPath("$.stageFamilies[0].title").value("幼小衔接成长路线"))
+                .andExpect(jsonPath("$.stageFamilies[0].badges[0].code").value("stage_preschool_opener"))
+                .andExpect(jsonPath("$.stageFamilies[0].badges[0].title").value("幼小衔接启航星"))
+                .andExpect(jsonPath("$.stageFamilies[0].badges[0].progressPercent").value(100));
     }
 }

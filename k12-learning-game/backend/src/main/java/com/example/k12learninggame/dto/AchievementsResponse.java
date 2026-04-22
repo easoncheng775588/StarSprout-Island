@@ -6,6 +6,8 @@ public record AchievementsResponse(
         String childNickname,
         int unlockedCount,
         int totalCount,
+        String currentStageLabel,
+        List<AchievementStageFamilyDto> stageFamilies,
         List<AchievementBadgeDto> unlockedBadges,
         List<AchievementBadgeDto> inProgressBadges
 ) {

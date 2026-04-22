@@ -11,6 +11,51 @@ describe('AchievementsPage', () => {
             childNickname: '小星星',
             unlockedCount: 6,
             totalCount: 10,
+            currentStageLabel: '一年级',
+            stageFamilies: [
+              {
+                stageLabel: '幼小衔接',
+                title: '幼小衔接成长路线',
+                description: '入学准备阶段的三岛探索进度',
+                unlockedCount: 4,
+                totalCount: 4,
+                progressPercent: 100,
+                badges: [
+                  {
+                    code: 'stage_preschool_opener',
+                    title: '幼小衔接启航星',
+                    description: '完成 1 个幼小衔接关卡',
+                    progressText: '已解锁',
+                    unlocked: true,
+                    category: '幼小衔接',
+                    rarityLabel: '阶段徽章',
+                    progressPercent: 100,
+                    encouragement: '入学准备已经启航'
+                  }
+                ]
+              },
+              {
+                stageLabel: '一年级',
+                title: '一年级成长路线',
+                description: '校园冒险阶段的三岛探索进度',
+                unlockedCount: 1,
+                totalCount: 4,
+                progressPercent: 25,
+                badges: [
+                  {
+                    code: 'stage_grade1_opener',
+                    title: '一年级启航星',
+                    description: '完成 1 个一年级关卡',
+                    progressText: '1 / 1',
+                    unlocked: true,
+                    category: '一年级',
+                    rarityLabel: '阶段徽章',
+                    progressPercent: 100,
+                    encouragement: '一年级路线已经点亮第一步'
+                  }
+                ]
+              }
+            ],
             unlockedBadges: [
               {
                 code: 'math_starter',
@@ -66,6 +111,10 @@ describe('AchievementsPage', () => {
 
     expect(screen.getByRole('heading', { name: '小星星的成就墙' })).toBeInTheDocument();
     expect(screen.getByText('已点亮 6 / 10 枚徽章')).toBeInTheDocument();
+    expect(screen.getByText('当前学段成就：一年级')).toBeInTheDocument();
+    expect(screen.getByText('一年级成长路线')).toBeInTheDocument();
+    expect(screen.getByText('1 / 4 枚阶段徽章')).toBeInTheDocument();
+    expect(screen.getByText('幼小衔接启航星')).toBeInTheDocument();
     expect(screen.getByText('数字小达人')).toBeInTheDocument();
     expect(screen.getByText('本周小冠军')).toBeInTheDocument();
     expect(screen.getByText('2 / 4')).toBeInTheDocument();

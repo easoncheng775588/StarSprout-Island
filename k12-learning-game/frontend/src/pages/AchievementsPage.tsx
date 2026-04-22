@@ -39,6 +39,42 @@ export function AchievementsPage({ data }: AchievementsPageProps) {
           <h2>已点亮 {achievements.unlockedCount} / {achievements.totalCount} 枚徽章</h2>
           <p>继续完成关卡、保持节奏，就会有更多奖励亮起来。</p>
         </article>
+        <article className="summary-card">
+          <span className="node-step">当前学段</span>
+          <h2>当前学段成就：{achievements.currentStageLabel}</h2>
+          <p>每个学段都有自己的启航、三岛探索、主线推进和稳稳通关目标。</p>
+        </article>
+      </section>
+
+      <section className="panel-card stage-achievement-panel">
+        <p className="eyebrow">学段成就家族</p>
+        <div className="stage-family-grid">
+          {achievements.stageFamilies.map((family) => (
+            <article
+              className={`stage-family-card ${family.stageLabel === achievements.currentStageLabel ? 'stage-family-card-current' : ''}`}
+              key={family.stageLabel}
+            >
+              <div className="stage-family-header">
+                <div>
+                  <span className="node-step">{family.stageLabel}</span>
+                  <h2>{family.title}</h2>
+                </div>
+                <strong>{family.unlockedCount} / {family.totalCount} 枚阶段徽章</strong>
+              </div>
+              <p>{family.description}</p>
+              <div className="badge-progress-track" aria-label={`${family.title}进度`}>
+                <span style={{ width: `${family.progressPercent}%` }} />
+              </div>
+              <div className="stage-badge-list">
+                {family.badges.map((badge) => (
+                  <span className={badge.unlocked ? 'stage-badge-chip stage-badge-chip-unlocked' : 'stage-badge-chip'} key={badge.code}>
+                    {badge.title}
+                  </span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="dashboard-grid">

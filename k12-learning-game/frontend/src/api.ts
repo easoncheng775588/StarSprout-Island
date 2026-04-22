@@ -284,8 +284,20 @@ export interface AchievementsData {
   childNickname: string;
   unlockedCount: number;
   totalCount: number;
+  currentStageLabel: string;
+  stageFamilies: AchievementStageFamilyData[];
   unlockedBadges: AchievementBadgeData[];
   inProgressBadges: AchievementBadgeData[];
+}
+
+export interface AchievementStageFamilyData {
+  stageLabel: string;
+  title: string;
+  description: string;
+  unlockedCount: number;
+  totalCount: number;
+  progressPercent: number;
+  badges: AchievementBadgeData[];
 }
 
 export interface DailyTaskData {

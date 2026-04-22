@@ -317,3 +317,15 @@
   - 前端测试：`npm test -- --run`，23 个测试文件、96 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成跨年级成熟化：学段成就家族：
+  - 后端 `/api/achievements` 新增 `currentStageLabel` 与 `stageFamilies`
+  - 成就家族覆盖幼小衔接、一年级、二年级、三年级、四年级，每个学段包含启航、三岛探索、主线推进、稳稳通关 4 类阶段徽章
+  - 保留原有全局 `unlockedCount` / `totalCount` 统计口径，避免影响首页成就预览和通关奖励链路
+  - 前端成就墙新增当前学段卡片和学段成就家族区域，展示阶段进度条与阶段徽章 chip
+- 学段成就家族 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/achievements.test.tsx` 缺少当前学段成就文案；`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=ApiSmokeTest#shouldReturnAchievementWall test` 缺少 `currentStageLabel`
+  - GREEN：上述两个定向测试通过
+- 学段成就家族全量验证通过：
+  - 前端测试：`npm test -- --run`，23 个测试文件、96 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
