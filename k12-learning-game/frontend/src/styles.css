@@ -2523,6 +2523,80 @@ body::before {
   line-height: 1.6;
 }
 
+.weak-action-panel {
+  display: grid;
+  gap: 1.8rem;
+  margin-top: 2.4rem;
+  background:
+    radial-gradient(circle at 8% 20%, rgba(255, 212, 107, 0.28), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(239, 250, 255, 0.9));
+}
+
+.weak-action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+  gap: 1.4rem;
+}
+
+.weak-action-card {
+  display: grid;
+  gap: 1.2rem;
+  padding: 1.8rem;
+  border-radius: 2.2rem;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 1.4rem 3rem rgba(33, 48, 77, 0.08),
+    inset 0 0 0 0.1rem rgba(33, 48, 77, 0.06);
+}
+
+.weak-action-card h3,
+.weak-action-card p {
+  margin: 0;
+}
+
+.weak-action-card p {
+  color: rgba(33, 48, 77, 0.72);
+  line-height: 1.7;
+  font-weight: 700;
+}
+
+.weak-action-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.weak-action-card-header span,
+.weak-action-card-header strong,
+.weak-action-guide span {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.7rem 1rem;
+  border-radius: 99.9rem;
+  font-size: 1.344rem;
+  font-weight: 900;
+}
+
+.weak-action-card-header span {
+  background: rgba(255, 143, 107, 0.18);
+  color: #b85e3e;
+}
+
+.weak-action-card-header strong,
+.weak-action-guide span {
+  background: rgba(89, 190, 168, 0.14);
+  color: #2a8d7b;
+}
+
+.weak-action-guide {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.4rem;
+  border-radius: 1.8rem;
+  background: rgba(255, 248, 225, 0.72);
+}
+
 .progress-bar {
   overflow: hidden;
   width: 100%;

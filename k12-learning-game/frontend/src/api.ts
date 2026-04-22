@@ -176,6 +176,15 @@ export interface ParentDashboardData {
     suggestion: string;
     reason: string;
   }>;
+  weakPointActionPlan: Array<{
+    subjectTitle: string;
+    knowledgePointTitle: string;
+    priorityLabel: string;
+    focusReason: string;
+    parentGuidance: string;
+    practicePlan: string;
+    targetLevelCode: string;
+  }>;
   achievementSummary: {
     unlockedCount: number;
     nextMilestone: string;

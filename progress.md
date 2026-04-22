@@ -363,3 +363,15 @@
   - 前端测试：`npm test -- --run`，24 个测试文件、99 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成跨年级成熟化：薄弱点陪练行动计划：
+  - 后端 `ParentDashboardResponse` 新增 `weakPointActionPlan`，由当前学段错题记录和知识点标签动态生成
+  - 每条陪练计划包含学科、知识点、优先级、错因聚焦、家长陪练话术、练习动作和目标关卡 code
+  - 前端家长中心新增“薄弱点陪练计划”卡片，家长可直接打开对应复习关卡
+  - 该功能不新增数据库表，继续复用现有完成记录、错题复习和课程知识点配置
+- 薄弱点陪练行动计划 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/parent-dashboard.test.tsx` 找不到“薄弱点陪练计划”；`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=ApiSmokeTest#shouldReturnParentDashboard test` 缺少 `weakPointActionPlan`
+  - GREEN：上述两个定向测试通过
+- 薄弱点陪练行动计划阶段验证通过：
+  - 前端测试：`npm test -- --run`，24 个测试文件、99 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

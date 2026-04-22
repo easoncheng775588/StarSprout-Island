@@ -288,6 +288,38 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
         </div>
       </section>
 
+      <section className="panel-card weak-action-panel">
+        <div className="panel-heading-row">
+          <div>
+            <p className="eyebrow">薄弱点陪练计划</p>
+            <h2>把“哪里不稳”变成今晚能做的一小步</h2>
+          </div>
+          <p>每条建议都来自错题记录和知识点标签，方便家长用短时间陪练。</p>
+        </div>
+        <div className="weak-action-grid">
+          {(dashboard.weakPointActionPlan ?? []).length > 0 ? dashboard.weakPointActionPlan.map((item) => (
+            <article className="weak-action-card" key={`${item.targetLevelCode}-${item.knowledgePointTitle}`}>
+              <div className="weak-action-card-header">
+                <span>{item.priorityLabel}</span>
+                <strong>{item.subjectTitle}</strong>
+              </div>
+              <h3>{item.knowledgePointTitle}</h3>
+              <p>{item.focusReason}</p>
+              <div className="weak-action-guide">
+                <span>家长陪练话术</span>
+                <p>{item.parentGuidance}</p>
+              </div>
+              <p>{item.practicePlan}</p>
+              <Link className="cta-button cta-button-secondary" to={`/levels/${item.targetLevelCode}`}>
+                打开陪练关卡
+              </Link>
+            </article>
+          )) : (
+            <p>当前没有需要重点陪练的错题点，可以继续保持轻松推进。</p>
+          )}
+        </div>
+      </section>
+
       <section className="dashboard-grid">
         <article className="panel-card">
           <p className="eyebrow">家长设置</p>

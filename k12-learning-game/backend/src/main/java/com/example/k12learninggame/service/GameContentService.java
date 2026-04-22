@@ -54,6 +54,7 @@ import com.example.k12learninggame.dto.ParentSettingsUpdateRequest;
 import com.example.k12learninggame.dto.ParentSubjectInsightDto;
 import com.example.k12learninggame.dto.ParentSubjectProgressDto;
 import com.example.k12learninggame.dto.ParentTodaySummaryDto;
+import com.example.k12learninggame.dto.ParentWeakPointActionDto;
 import com.example.k12learninggame.dto.ParentWeeklyReportDto;
 import com.example.k12learninggame.dto.RecommendedActionDto;
 import com.example.k12learninggame.dto.RecentActivityDto;
@@ -646,6 +647,7 @@ public class GameContentService {
                 subjectProgress,
                 buildWeeklyTrend(completions),
                 buildWeakPoints(child, completions),
+                buildWeakPointActionPlan(child, completions),
                 new AchievementSummaryDto(
                         achievements.unlockedCount(),
                         achievements.inProgressBadges().stream()
@@ -1152,6 +1154,42 @@ public class GameContentService {
                         draft.targetLevelCode()
                 ))
                 .toList();
+    }
+
+    private List<ParentWeakPointActionDto> buildWeakPointActionPlan(ChildProfileEntity child, List<LevelCompletionEntity> completions) {
+        return buildMistakeReviewPlan(child, completions).stream()
+                .limit(3)
+                .map(item -> {
+                    LevelEntity level = levelRepository.findById(item.targetLevelCode()).orElse(null);
+                    String subjectTitle = level == null ? "学习小岛" : level.getChapter().getSubject().getTitle();
+
+                    return new ParentWeakPointActionDto(
+                            subjectTitle,
+                            item.knowledgePointTitle(),
+                            "优先陪练",
+                            "错题 " + item.mistakeCount() + " 次，建议先用孩子能看见、能说出的方式复盘。",
+                            buildParentGuidance(subjectTitle, item.knowledgePointTitle()),
+                            item.reviewAction(),
+                            item.targetLevelCode()
+                    );
+                })
+                .toList();
+    }
+
+    private String buildParentGuidance(String subjectTitle, String knowledgePointTitle) {
+        if ("数学岛".equals(subjectTitle)) {
+            return "陪孩子用积木、苹果或手指摆一摆“" + knowledgePointTitle + "”，边移动边说出算式和理由。";
+        }
+
+        if ("语文岛".equals(subjectTitle)) {
+            return "陪孩子先读一遍“" + knowledgePointTitle + "”，再让孩子指着关键字说出自己的判断。";
+        }
+
+        if ("英语岛".equals(subjectTitle)) {
+            return "陪孩子听 1 遍“" + knowledgePointTitle + "”，再用轻声跟读和角色扮演完成一次复述。";
+        }
+
+        return "陪孩子先讲清“" + knowledgePointTitle + "”哪里卡住，再完成一组短练习。";
     }
 
     private List<KnowledgePointDraft> knowledgePointsForLevel(LevelEntity level) {

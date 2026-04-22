@@ -9,6 +9,7 @@ public record ParentDashboardResponse(
         List<ParentSubjectProgressDto> subjectProgress,
         List<TrendPointDto> weeklyTrend,
         List<WeakPointDto> weakPoints,
+        List<ParentWeakPointActionDto> weakPointActionPlan,
         AchievementSummaryDto achievementSummary,
         GoalProgressDto goalProgress,
         List<RecommendedActionDto> recommendedActions,

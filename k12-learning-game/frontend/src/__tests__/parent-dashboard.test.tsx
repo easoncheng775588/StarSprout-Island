@@ -46,6 +46,17 @@ describe('ParentDashboard', () => {
                 reason: '最近 7 天数学岛正确率 72%，比整体平均低了 14%。'
               }
             ],
+            weakPointActionPlan: [
+              {
+                subjectTitle: '数学岛',
+                knowledgePointTitle: '20 以内退位减法',
+                priorityLabel: '优先陪练',
+                focusReason: '错题 3 次，建议先用实物图复盘。',
+                parentGuidance: '陪孩子摆 10 个积木，边拿走边说出算式。',
+                practicePlan: '先讲错因，再完成 1 组同类变式。',
+                targetLevelCode: 'math-subtraction-002'
+              }
+            ],
             achievementSummary: {
               unlockedCount: 6,
               nextMilestone: '再完成 2 关点亮“本周小冠军”'
@@ -175,6 +186,11 @@ describe('ParentDashboard', () => {
     expect(screen.getAllByText('数学岛').length).toBeGreaterThan(0);
     expect(screen.getByText('20 以内减法需要多练习')).toBeInTheDocument();
     expect(screen.getByText('最近 7 天数学岛正确率 72%，比整体平均低了 14%。')).toBeInTheDocument();
+    expect(screen.getByText('薄弱点陪练计划')).toBeInTheDocument();
+    expect(screen.getByText('20 以内退位减法')).toBeInTheDocument();
+    expect(screen.getByText('错题 3 次，建议先用实物图复盘。')).toBeInTheDocument();
+    expect(screen.getByText('陪孩子摆 10 个积木，边拿走边说出算式。')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '打开陪练关卡' })).toHaveAttribute('href', '/levels/math-subtraction-002');
     expect(screen.getByText('多孩子对比')).toBeInTheDocument();
     expect(screen.getByText('小火箭')).toBeInTheDocument();
     expect(screen.getByText('本周 14 颗星星')).toBeInTheDocument();
@@ -259,6 +275,7 @@ describe('ParentDashboard', () => {
             subjectProgress: [],
             weeklyTrend: [],
             weakPoints: [],
+            weakPointActionPlan: [],
             achievementSummary: {
               unlockedCount: 6,
               nextMilestone: '再完成 2 关点亮“本周小冠军”'
