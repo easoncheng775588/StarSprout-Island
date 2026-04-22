@@ -148,6 +148,20 @@ export interface ParentDashboardData {
     studyMinutes: number;
     earnedStars: number;
   };
+  weeklyReport: {
+    title: string;
+    dateRangeLabel: string;
+    summary: string;
+    highlightText: string;
+    growthFocus: string;
+    parentAction: string;
+    completedLevels: number;
+    studyMinutes: number;
+    earnedStars: number;
+    averageAccuracyPercent: number;
+    effectiveLearningDays: number;
+    subjectHighlights: string[];
+  };
   subjectProgress: Array<{
     subjectCode: string;
     subjectTitle: string;

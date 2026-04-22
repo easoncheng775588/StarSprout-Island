@@ -66,6 +66,10 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
     }
   }
 
+  function handlePrintWeeklyReport() {
+    window.print();
+  }
+
   return (
     <main className="screen screen-parent">
       <PageTopBar backLabel="返回首页" backTo="/" />
@@ -101,6 +105,57 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
           <h2>已点亮 {dashboard.achievementSummary.unlockedCount} 枚成就徽章</h2>
           <p>{dashboard.achievementSummary.nextMilestone}</p>
         </article>
+      </section>
+
+      <section className="weekly-report-sheet" aria-label="本周成长周报">
+        <div className="weekly-report-header">
+          <div>
+            <p className="eyebrow">本周成长周报</p>
+            <h2>{dashboard.weeklyReport.title}</h2>
+            <span>{dashboard.weeklyReport.dateRangeLabel}</span>
+          </div>
+          <button className="cta-button cta-button-secondary weekly-report-print" type="button" onClick={handlePrintWeeklyReport}>
+            打印/导出周报
+          </button>
+        </div>
+        <p className="weekly-report-summary">{dashboard.weeklyReport.summary}</p>
+        <div className="weekly-report-metrics">
+          <article>
+            <strong>{dashboard.weeklyReport.completedLevels}</strong>
+            <span>完成关卡</span>
+          </article>
+          <article>
+            <strong>{dashboard.weeklyReport.studyMinutes}</strong>
+            <span>学习分钟</span>
+          </article>
+          <article>
+            <strong>{dashboard.weeklyReport.earnedStars}</strong>
+            <span>收集星星</span>
+          </article>
+          <article>
+            <strong>{dashboard.weeklyReport.averageAccuracyPercent}%</strong>
+            <span>平均准确率</span>
+          </article>
+        </div>
+        <div className="weekly-report-body">
+          <article>
+            <span className="node-step">本周亮点</span>
+            <p>{dashboard.weeklyReport.highlightText}</p>
+          </article>
+          <article>
+            <span className="node-step">下周重点</span>
+            <p>{dashboard.weeklyReport.growthFocus}</p>
+          </article>
+          <article>
+            <span className="node-step">陪伴建议</span>
+            <p>{dashboard.weeklyReport.parentAction}</p>
+          </article>
+        </div>
+        <div className="weekly-report-subjects">
+          {dashboard.weeklyReport.subjectHighlights.map((item) => (
+            <span key={item}>{item}</span>
+          ))}
+        </div>
       </section>
 
       {dashboard.stageReport && (

@@ -1105,7 +1105,15 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.siblingComparisons[0].activeChild").value(true))
                 .andExpect(jsonPath("$.siblingComparisons[1].childNickname").value("小火箭"))
                 .andExpect(jsonPath("$.siblingComparisons[1].weeklyStars").isNumber())
-                .andExpect(jsonPath("$.siblingComparisons[1].statusLabel").isNotEmpty());
+                .andExpect(jsonPath("$.siblingComparisons[1].statusLabel").isNotEmpty())
+                .andExpect(jsonPath("$.weeklyReport.title").value("小星星的本周成长周报"))
+                .andExpect(jsonPath("$.weeklyReport.dateRangeLabel").value(org.hamcrest.Matchers.containsString("-")))
+                .andExpect(jsonPath("$.weeklyReport.completedLevels").value(5))
+                .andExpect(jsonPath("$.weeklyReport.studyMinutes").value(31))
+                .andExpect(jsonPath("$.weeklyReport.earnedStars").value(9))
+                .andExpect(jsonPath("$.weeklyReport.averageAccuracyPercent").value(86))
+                .andExpect(jsonPath("$.weeklyReport.subjectHighlights[0]").value(org.hamcrest.Matchers.containsString("数学岛")))
+                .andExpect(jsonPath("$.weeklyReport.parentAction").value(org.hamcrest.Matchers.containsString("每天")));
     }
 
     @Test

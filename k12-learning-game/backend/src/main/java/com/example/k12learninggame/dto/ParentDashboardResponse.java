@@ -5,6 +5,7 @@ import java.util.List;
 public record ParentDashboardResponse(
         String childNickname,
         ParentTodaySummaryDto todaySummary,
+        ParentWeeklyReportDto weeklyReport,
         List<ParentSubjectProgressDto> subjectProgress,
         List<TrendPointDto> weeklyTrend,
         List<WeakPointDto> weakPoints,

@@ -15,6 +15,20 @@ describe('ParentDashboard', () => {
           data={{
             childNickname: '小星星',
             todaySummary: { completedLevels: 3, studyMinutes: 18, earnedStars: 8 },
+            weeklyReport: {
+              title: '小星星的本周成长周报',
+              dateRangeLabel: '04月16日-04月22日',
+              summary: '本周完成 5 关，学习 31 分钟，收集 11 颗星星。',
+              highlightText: '数学岛推进最明显，已经形成稳定的主线节奏。',
+              growthFocus: '下周重点：继续巩固 20 以内减法。',
+              parentAction: '建议每天 15-20 分钟，先复习错题再挑战下一关。',
+              completedLevels: 5,
+              studyMinutes: 31,
+              earnedStars: 11,
+              averageAccuracyPercent: 86,
+              effectiveLearningDays: 3,
+              subjectHighlights: ['数学岛：完成 3 关，准确率 88%', '英语岛：完成 1 关，准确率 80%']
+            },
             subjectProgress: [
               { subjectCode: 'math', subjectTitle: '数学岛', progressPercent: 78 },
               { subjectCode: 'chinese', subjectTitle: '语文岛', progressPercent: 64 },
@@ -151,6 +165,13 @@ describe('ParentDashboard', () => {
     expect(screen.getByText('家长中心')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '返回首页' })).toHaveAttribute('href', '/');
     expect(screen.getByText('今日完成 3 关')).toBeInTheDocument();
+    expect(screen.getByText('本周成长周报')).toBeInTheDocument();
+    expect(screen.getByText('小星星的本周成长周报')).toBeInTheDocument();
+    expect(screen.getByText('04月16日-04月22日')).toBeInTheDocument();
+    expect(screen.getByText('本周完成 5 关，学习 31 分钟，收集 11 颗星星。')).toBeInTheDocument();
+    expect(screen.getByText('下周重点：继续巩固 20 以内减法。')).toBeInTheDocument();
+    expect(screen.getByText('数学岛：完成 3 关，准确率 88%')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '打印/导出周报' })).toBeInTheDocument();
     expect(screen.getAllByText('数学岛').length).toBeGreaterThan(0);
     expect(screen.getByText('20 以内减法需要多练习')).toBeInTheDocument();
     expect(screen.getByText('最近 7 天数学岛正确率 72%，比整体平均低了 14%。')).toBeInTheDocument();
@@ -221,6 +242,20 @@ describe('ParentDashboard', () => {
           data={{
             childNickname: '小星星',
             todaySummary: { completedLevels: 3, studyMinutes: 18, earnedStars: 8 },
+            weeklyReport: {
+              title: '小星星的本周成长周报',
+              dateRangeLabel: '04月16日-04月22日',
+              summary: '本周完成 5 关，学习 31 分钟，收集 11 颗星星。',
+              highlightText: '数学岛推进最明显，已经形成稳定的主线节奏。',
+              growthFocus: '下周重点：继续巩固 20 以内减法。',
+              parentAction: '建议每天 15-20 分钟，先复习错题再挑战下一关。',
+              completedLevels: 5,
+              studyMinutes: 31,
+              earnedStars: 11,
+              averageAccuracyPercent: 86,
+              effectiveLearningDays: 3,
+              subjectHighlights: []
+            },
             subjectProgress: [],
             weeklyTrend: [],
             weakPoints: [],

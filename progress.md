@@ -340,3 +340,15 @@
 - 音频播放抽象全量验证通过：
   - 前端测试：`npm test -- --run`，24 个测试文件、98 项测试通过
   - 前端构建：`npm run build`
+- 已完成跨年级成熟化：家长周报导出式布局：
+  - 后端 `ParentDashboardResponse` 新增 `weeklyReport`，包含周报标题、日期范围、完成关数、学习分钟、星星、平均准确率、有效学习天数、学科亮点和陪伴建议
+  - 周报数据复用近 7 天完成记录、学科洞察、薄弱点和当前孩子档案，不新增数据库表
+  - 前端家长中心新增“本周成长周报”报告卡，支持一键 `window.print()` 打印/导出
+  - 周报卡使用独立布局，适配移动端单列展示
+- 家长周报 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/parent-dashboard.test.tsx` 缺少“本周成长周报”；`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=ApiSmokeTest#shouldReturnParentDashboard test` 缺少 `weeklyReport`
+  - GREEN：上述两个定向测试通过
+- 家长周报全量验证通过：
+  - 前端测试：`npm test -- --run`，24 个测试文件、98 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

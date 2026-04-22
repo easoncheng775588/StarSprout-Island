@@ -54,6 +54,7 @@ import com.example.k12learninggame.dto.ParentSettingsUpdateRequest;
 import com.example.k12learninggame.dto.ParentSubjectInsightDto;
 import com.example.k12learninggame.dto.ParentSubjectProgressDto;
 import com.example.k12learninggame.dto.ParentTodaySummaryDto;
+import com.example.k12learninggame.dto.ParentWeeklyReportDto;
 import com.example.k12learninggame.dto.RecommendedActionDto;
 import com.example.k12learninggame.dto.RecentActivityDto;
 import com.example.k12learninggame.dto.RewardDto;
@@ -99,6 +100,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class GameContentService {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter WEEK_REPORT_DATE_FORMATTER = DateTimeFormatter.ofPattern("MM月dd日");
     private static final List<String> CORE_STAGE_LABELS = List.of("幼小衔接", "一年级", "二年级", "三年级", "四年级");
     private static final String DEFAULT_STAGE_LABEL = "幼小衔接";
     private static final Set<String> MAINLINE_SUBJECT_CODES = Set.of("math", "chinese", "english");
@@ -640,6 +642,7 @@ public class GameContentService {
                         completedMinutes,
                         todayCompletions.stream().mapToInt(item -> item.getLevel().getRewardStars()).sum()
                 ),
+                buildWeeklyReport(child, completions),
                 subjectProgress,
                 buildWeeklyTrend(completions),
                 buildWeakPoints(child, completions),
@@ -1067,6 +1070,50 @@ public class GameContentService {
                 completionPercent,
                 readinessLabel(completionPercent),
                 nextMilestone
+        );
+    }
+
+    private ParentWeeklyReportDto buildWeeklyReport(ChildProfileEntity child, List<LevelCompletionEntity> completions) {
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(6);
+        List<LevelCompletionEntity> weeklyCompletions = completions.stream()
+                .filter(item -> !item.getCompletedAt().toLocalDate().isBefore(startDate))
+                .filter(item -> !item.getCompletedAt().toLocalDate().isAfter(endDate))
+                .toList();
+        List<ParentSubjectInsightDto> subjectInsights = buildSubjectInsights(child, weeklyCompletions);
+        ParentSubjectInsightDto strongestSubject = subjectInsights.stream()
+                .max(Comparator.comparingInt(ParentSubjectInsightDto::completedLevels)
+                        .thenComparingInt(ParentSubjectInsightDto::accuracyPercent))
+                .orElse(null);
+        List<WeakPointDto> weakPoints = buildWeakPoints(child, weeklyCompletions);
+
+        int completedLevels = weeklyCompletions.size();
+        int studyMinutes = toRoundedMinutes(weeklyCompletions);
+        int earnedStars = weeklyCompletions.stream().mapToInt(item -> item.getLevel().getRewardStars()).sum();
+        int averageAccuracyPercent = calculateAverageAccuracyPercent(weeklyCompletions);
+        String dateRangeLabel = startDate.format(WEEK_REPORT_DATE_FORMATTER) + "-" + endDate.format(WEEK_REPORT_DATE_FORMATTER);
+        String highlightText = strongestSubject == null
+                ? "本周还在积累学习数据，先保持轻松开始。"
+                : strongestSubject.subjectTitle() + "推进最明显，已完成 " + strongestSubject.completedLevels() + " 关，准确率 " + strongestSubject.accuracyPercent() + "%。";
+        String growthFocus = weakPoints.isEmpty()
+                ? "下周重点：保持当前节奏，继续点亮主线下一关。"
+                : "下周重点：" + weakPoints.get(0).title() + "。";
+
+        return new ParentWeeklyReportDto(
+                child.getNickname() + "的本周成长周报",
+                dateRangeLabel,
+                "本周完成 " + completedLevels + " 关，学习 " + studyMinutes + " 分钟，收集 " + earnedStars + " 颗星星。",
+                highlightText,
+                growthFocus,
+                "建议每天 " + Math.max(10, Math.min(25, studyMinutes / Math.max(countEffectiveLearningDays(child, 7), 1) + 10)) + " 分钟，先复习错题再挑战下一关。",
+                completedLevels,
+                studyMinutes,
+                earnedStars,
+                averageAccuracyPercent,
+                countEffectiveLearningDays(child, 7),
+                subjectInsights.stream()
+                        .map(item -> item.subjectTitle() + "：完成 " + item.completedLevels() + " 关，准确率 " + item.accuracyPercent() + "%")
+                        .toList()
         );
     }
 
