@@ -352,3 +352,14 @@
   - 前端测试：`npm test -- --run`，24 个测试文件、98 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成跨年级成熟化：周报打印与响应式打磨：
+  - 家长周报新增 `@media print` 打印样式，导出时隐藏导航、统计卡、非周报面板和打印按钮
+  - 打印视图保留周报颜色输出，并将周报主体改成单页友好的纯报告布局
+  - 保持全局 rem 规范，没有引入固定 px 样式
+- 周报打印样式 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/responsive-scale.test.ts` 因缺少 `@media print` 打印样式失败
+  - GREEN：`npm test -- --run src/__tests__/responsive-scale.test.ts`，1 个测试文件、4 项测试通过
+- 周报打印样式阶段验证通过：
+  - 前端测试：`npm test -- --run`，24 个测试文件、99 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

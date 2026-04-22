@@ -37,4 +37,11 @@ describe('Responsive scale foundation', () => {
 
     expect(filesWithPixels).toEqual([]);
   });
+
+  it('provides print styles for exporting the parent weekly report', () => {
+    expect(styles).toContain('@media print');
+    expect(styles).toContain('.weekly-report-sheet');
+    expect(styles).toContain('.weekly-report-print');
+    expect(styles).toContain('print-color-adjust: exact;');
+  });
 });

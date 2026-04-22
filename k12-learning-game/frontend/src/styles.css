@@ -3422,3 +3422,45 @@ body::before {
     grid-template-columns: 1fr;
   }
 }
+
+@media print {
+  html,
+  body {
+    background: #ffffff;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  body::before,
+  .page-top-bar,
+  .map-header,
+  .summary-grid,
+  .stage-report-card,
+  .sibling-comparison-panel,
+  .dashboard-grid,
+  .panel-card:not(.weekly-report-sheet),
+  .weekly-report-print {
+    display: none !important;
+  }
+
+  .screen {
+    max-width: none;
+    padding: 0;
+  }
+
+  .weekly-report-sheet {
+    margin: 0;
+    padding: 2.4rem;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: #ffffff;
+    page-break-inside: avoid;
+  }
+
+  .weekly-report-header,
+  .weekly-report-body,
+  .weekly-report-metrics {
+    grid-template-columns: 1fr;
+  }
+}
