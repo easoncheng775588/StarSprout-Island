@@ -230,7 +230,9 @@ class PersistenceBackedGameContentServiceTest {
                 .extracting(level -> level.code())
                 .contains(
                         "math-grade3-area-model-001",
-                        "math-grade3-fractionbar-001"
+                        "math-grade3-fractionbar-001",
+                        "math-grade3-remainder-001",
+                        "math-grade3-area-001"
                 );
         assertThat(yearTwoDashboard.subjectInsights())
                 .filteredOn(insight -> insight.subjectCode().equals("math"))
@@ -239,7 +241,7 @@ class PersistenceBackedGameContentServiceTest {
         assertThat(yearThreeDashboard.subjectInsights())
                 .filteredOn(insight -> insight.subjectCode().equals("math"))
                 .singleElement()
-                .satisfies(insight -> assertThat(insight.totalLevels()).isEqualTo(6));
+                .satisfies(insight -> assertThat(insight.totalLevels()).isEqualTo(8));
     }
 
     @Test
@@ -295,7 +297,7 @@ class PersistenceBackedGameContentServiceTest {
                 .singleElement()
                 .satisfies(insight -> {
                     assertThat(insight.completedLevels()).isZero();
-                    assertThat(insight.totalLevels()).isEqualTo(4);
+                    assertThat(insight.totalLevels()).isEqualTo(6);
                     assertThat(insight.nextLevelTitle()).isEqualTo("段落理解");
                 });
     }

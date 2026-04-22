@@ -111,7 +111,9 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'math-grade3-division-001', title: '除法平均分', status: 'recommended' },
           { code: 'math-grade3-perimeter-001', title: '周长小侦探', status: 'available' },
-          { code: 'math-grade3-area-model-001', title: '面积模型乘法', status: 'available' }
+          { code: 'math-grade3-area-model-001', title: '面积模型乘法', status: 'available' },
+          { code: 'math-grade3-remainder-001', title: '有余数除法', status: 'available' },
+          { code: 'math-grade3-area-001', title: '长方形面积', status: 'available' }
         ]
       },
       {
@@ -243,7 +245,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '读懂一小段话，也开始留意段落中的关键词。',
         levels: [
           { code: 'chinese-grade3-paragraph-001', title: '段落理解', status: 'recommended' },
-          { code: 'chinese-grade3-antonym-001', title: '近反义词', status: 'available' }
+          { code: 'chinese-grade3-antonym-001', title: '近反义词', status: 'available' },
+          { code: 'chinese-grade3-main-idea-001', title: '主要内容雷达', status: 'available' }
         ]
       },
       {
@@ -253,7 +256,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '认识简单修辞，试着把阅读感受说得更清楚。',
         levels: [
           { code: 'chinese-grade3-rhetoric-001', title: '修辞感知', status: 'available' },
-          { code: 'chinese-grade3-expression-001', title: '阅读表达', status: 'available' }
+          { code: 'chinese-grade3-expression-001', title: '阅读表达', status: 'available' },
+          { code: 'chinese-grade3-writing-order-001', title: '顺序观察表达', status: 'available' }
         ]
       },
       {
@@ -387,7 +391,9 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '从句型变换到词组搭配，开始搭建更完整的英语表达。',
         levels: [
           { code: 'english-grade3-transform-001', title: '句型变换', status: 'recommended' },
-          { code: 'english-grade3-phrase-001', title: '词组搭配', status: 'available' }
+          { code: 'english-grade3-phrase-001', title: '词组搭配', status: 'available' },
+          { code: 'english-grade3-listening-001', title: '日常句听辨', status: 'available' },
+          { code: 'english-grade3-question-001', title: '一般疑问句转换', status: 'available' }
         ]
       },
       {

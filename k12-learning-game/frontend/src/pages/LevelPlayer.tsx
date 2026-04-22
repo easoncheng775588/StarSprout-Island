@@ -1699,6 +1699,40 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       }
     }
   },
+  'math-grade3-remainder-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '17 个橘子每 5 个装一袋，可以装满几袋，还剩几个？',
+      emoji: '🍊',
+      characterLabel: '橘子装袋站',
+      detailLines: ['先每 5 个装一袋。', '17 里面有 3 个 5，还剩 2 个。'],
+      choices: [2, 3, 4],
+      correctChoice: 3,
+      successFeedback: '答对了，17 ÷ 5 = 3 袋余 2 个',
+      failureFeedback: '先数 5、10、15，看看离 17 还差几个。'
+    }
+  },
+  'math-grade3-area-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '长方形花坛长 8 米、宽 3 米，面积是多少平方米？',
+      emoji: '🌷',
+      characterLabel: '花坛面积格',
+      detailLines: ['可以看成 3 行，每行 8 格。', '面积就是 8 × 3。'],
+      choices: [22, 24, 28],
+      correctChoice: 24,
+      successFeedback: '答对了，8 × 3 = 24 平方米',
+      failureFeedback: '长方形面积用长乘宽。',
+      mathModel: {
+        kind: 'grid',
+        title: '长方形面积模型',
+        caption: '8 列 × 3 行，一共有 24 个小方格',
+        rows: 3,
+        columns: 8,
+        filledCount: 24
+      }
+    }
+  },
   'math-grade3-fraction-001': {
     'step-1': {
       kind: 'story-choice',
@@ -1801,6 +1835,33 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       successFeedback: '阅读表达完成，已经能抓住雨后观察的画面了'
     }
   },
+  'chinese-grade3-main-idea-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '读秋游短文，选出最能概括内容的一句。',
+      choices: [
+        { label: '同学们秋游时观察了美丽的公园。', hint: '能概括地点、人物和主要活动' },
+        { label: '小明带了一个水壶。', hint: '只是细节' },
+        { label: '树叶是黄色的。', hint: '只是一个画面' }
+      ],
+      correctChoice: '同学们秋游时观察了美丽的公园。',
+      successFeedback: '答对了，这句话概括了人物、地点和主要活动',
+      detailLines: ['概括主要内容时，要抓住谁、在哪里、做了什么。'],
+      failureFeedback: '不要只选细节，要选能说完整段意思的句子。'
+    }
+  },
+  'chinese-grade3-writing-order-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '按“先、接着、最后”的顺序读完观察小蚂蚁的三句话。',
+      sentences: [
+        { text: '先看见一只小蚂蚁搬着米粒。', emoji: '🐜', scene: '先看到蚂蚁搬米粒' },
+        { text: '接着，它叫来了两个伙伴。', emoji: '👀', scene: '接着伙伴来了' },
+        { text: '最后，大家一起把米粒搬回洞里。', emoji: '🏡', scene: '最后搬回洞里' }
+      ],
+      successFeedback: '顺序表达完成，观察过程说清楚了'
+    }
+  },
   'english-grade3-transform-001': {
     'step-1': {
       kind: 'character-choice',
@@ -1825,6 +1886,36 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { word: 'get up', pictureLabel: '起床', emoji: '🛏️', phonetic: '/ɡet ʌp/' },
         { word: 'go home', pictureLabel: '回家', emoji: '🏠', phonetic: '/ɡoʊ hoʊm/' }
       ]
+    }
+  },
+  'english-grade3-listening-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: 'Listen and choose: I go to school by bus.',
+      audioPrompt: 'I go to school by bus.',
+      audioText: 'I go to school by bus.',
+      lang: 'en-US',
+      playButtonLabel: '播放日常句',
+      choiceAriaLabelPrefix: '英语句子',
+      choices: ['I go to school by bus.', 'I go home by bike.', 'I read books at school.'],
+      correctChoice: 'I go to school by bus.',
+      successFeedback: 'Good! You heard school and bus.',
+      failureFeedback: 'Listen for the words school and bus.'
+    }
+  },
+  'english-grade3-question-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '找到 You like apples. 的一般疑问句。',
+      choices: [
+        { label: 'Do you like apples?', hint: 'Do 放到句首，形成一般疑问句' },
+        { label: 'You do like apples.', hint: '这是强调句' },
+        { label: 'You like apples?', hint: '口语里可用，但不是标准转换' }
+      ],
+      correctChoice: 'Do you like apples?',
+      successFeedback: '答对了，一般疑问句要把 Do 放到句首',
+      detailLines: ['You like apples. 变问句时，在句首加 Do。'],
+      failureFeedback: '找一找哪一句以 Do 开头，并且句末是问号。'
     }
   },
   'english-grade3-reading-001': {

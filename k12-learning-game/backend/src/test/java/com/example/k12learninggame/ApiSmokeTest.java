@@ -616,8 +616,23 @@ class ApiSmokeTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.chapters[0].code").value("english-grade3-sentences"))
                 .andExpect(jsonPath("$.chapters[0].levels[0].code").value("english-grade3-transform-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[2].code").value("english-grade3-listening-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[3].code").value("english-grade3-question-001"))
                 .andExpect(jsonPath("$.chapters[1].code").value("english-grade3-reading"))
                 .andExpect(jsonPath("$.chapters[1].levels[1].code").value("english-grade3-topic-001"));
+
+        mockMvc.perform(get("/api/subjects/math/map").header("X-Child-Profile-Id", 2))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.chapters[0].code").value("math-grade3-operations"))
+                .andExpect(jsonPath("$.chapters[0].levels[3].code").value("math-grade3-remainder-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[4].code").value("math-grade3-area-001"));
+
+        mockMvc.perform(get("/api/subjects/chinese/map").header("X-Child-Profile-Id", 2))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.chapters[0].code").value("chinese-grade3-reading"))
+                .andExpect(jsonPath("$.chapters[0].levels[2].code").value("chinese-grade3-main-idea-001"))
+                .andExpect(jsonPath("$.chapters[1].code").value("chinese-grade3-expression"))
+                .andExpect(jsonPath("$.chapters[1].levels[2].code").value("chinese-grade3-writing-order-001"));
     }
 
     @Test
@@ -825,6 +840,57 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("二年级英语：动物主题对话"))
                 .andExpect(jsonPath("$.steps[0].variantCount").value(6))
                 .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("Do you like cats?")));
+    }
+
+    @Test
+    void shouldReturnExpandedGradeThreeMaturityLevelDetails() throws Exception {
+        mockMvc.perform(get("/api/levels/math-grade3-remainder-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("math-grade3-remainder-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("story-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("三年级运算：有余数除法"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(8))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("橘子装袋站")));
+
+        mockMvc.perform(get("/api/levels/math-grade3-area-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("math-grade3-area-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("story-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("三年级图形：长方形面积"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(8))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("长方形面积模型")));
+
+        mockMvc.perform(get("/api/levels/chinese-grade3-main-idea-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("chinese-grade3-main-idea-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("tap-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("三年级阅读：概括主要内容"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(6))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("秋游")));
+
+        mockMvc.perform(get("/api/levels/chinese-grade3-writing-order-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("chinese-grade3-writing-order-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("sentence-read"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("三年级表达：按顺序写观察"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(6))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("先看见一只小蚂蚁")));
+
+        mockMvc.perform(get("/api/levels/english-grade3-listening-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("english-grade3-listening-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("listen-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("三年级英语：日常句听辨"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(8))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("播放日常句")));
+
+        mockMvc.perform(get("/api/levels/english-grade3-question-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("english-grade3-question-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("tap-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("三年级英语：一般疑问句转换"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(8))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("Do you like apples?")));
     }
 
     @Test
