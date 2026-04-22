@@ -134,9 +134,11 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '从小数到角和图形，把抽象概念放进可观察的画面。',
         levels: [
           { code: 'math-grade4-decimal-001', title: '小数初步', status: 'recommended' },
+          { code: 'math-grade4-decimal-compare-001', title: '小数大小比较', status: 'available' },
           { code: 'math-grade4-hundredths-001', title: '小数百格图', status: 'available' },
           { code: 'math-grade4-angle-001', title: '角与图形', status: 'available' },
-          { code: 'math-grade4-angle-classify-001', title: '角度分类挑战', status: 'available' }
+          { code: 'math-grade4-angle-classify-001', title: '角度分类挑战', status: 'available' },
+          { code: 'math-grade4-parallel-001', title: '平行与垂直', status: 'available' }
         ]
       },
       {
@@ -267,7 +269,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '从段落走向篇章，学会抓住中心和线索。',
         levels: [
           { code: 'chinese-grade4-passage-001', title: '篇章理解', status: 'recommended' },
-          { code: 'chinese-grade4-writing-001', title: '写作表达', status: 'available' }
+          { code: 'chinese-grade4-writing-001', title: '写作表达', status: 'available' },
+          { code: 'chinese-grade4-central-clue-001', title: '中心线索站', status: 'available' }
         ]
       },
       {
@@ -277,7 +280,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '积累古诗，也开始认识句子里的表达规则。',
         levels: [
           { code: 'chinese-grade4-poem-001', title: '古诗积累', status: 'available' },
-          { code: 'chinese-grade4-grammar-001', title: '语法规范', status: 'available' }
+          { code: 'chinese-grade4-grammar-001', title: '语法规范', status: 'available' },
+          { code: 'chinese-grade4-poem-image-001', title: '古诗意象理解', status: 'available' }
         ]
       }
     ]
@@ -413,7 +417,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '从时态线索到短文理解，学会判断句子发生的时间。',
         levels: [
           { code: 'english-grade4-tense-001', title: '时态初步', status: 'recommended' },
-          { code: 'english-grade4-passage-001', title: '短文理解', status: 'available' }
+          { code: 'english-grade4-passage-001', title: '短文理解', status: 'available' },
+          { code: 'english-grade4-listening-judgment-001', title: '时态关键词听辨', status: 'available' }
         ]
       },
       {
@@ -423,7 +428,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '围绕话题组织句子，并通过综合练习巩固表达。',
         levels: [
           { code: 'english-grade4-topic-001', title: '话题表达', status: 'available' },
-          { code: 'english-grade4-review-001', title: '综合练习', status: 'available' }
+          { code: 'english-grade4-review-001', title: '综合练习', status: 'available' },
+          { code: 'english-grade4-scene-dialogue-001', title: '购物场景对话', status: 'available' }
         ]
       }
     ]

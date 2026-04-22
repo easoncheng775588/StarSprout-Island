@@ -325,9 +325,11 @@ class PersistenceBackedGameContentServiceTest {
                 .extracting(level -> level.code())
                 .containsExactly(
                         "math-grade4-decimal-001",
+                        "math-grade4-decimal-compare-001",
                         "math-grade4-hundredths-001",
                         "math-grade4-angle-001",
-                        "math-grade4-angle-classify-001"
+                        "math-grade4-angle-classify-001",
+                        "math-grade4-parallel-001"
                 );
         assertThat(mathMap.chapters().get(1).levels())
                 .extracting(level -> level.code())
@@ -342,7 +344,7 @@ class PersistenceBackedGameContentServiceTest {
                 .singleElement()
                 .satisfies(insight -> {
                     assertThat(insight.completedLevels()).isZero();
-                    assertThat(insight.totalLevels()).isEqualTo(8);
+                    assertThat(insight.totalLevels()).isEqualTo(10);
                     assertThat(insight.nextLevelTitle()).isEqualTo("小数初步");
                 });
     }

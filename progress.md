@@ -291,3 +291,17 @@
   - 前端测试：`npm test -- --run`，22 个测试文件、94 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成四年级成熟化一期：
+  - 数学新增 2 关：小数大小比较、平行与垂直
+  - 语文新增 2 关：中心线索站、古诗意象理解
+  - 英语新增 2 关：时态关键词听辨、购物场景对话
+  - 新关卡继续复用 `number-choice`、`character-choice`、`listen-choice`、`sentence-read`，不新增数据库表
+  - 后端同步 `activityConfigJson`、知识点 code/title 和题库变体数
+  - 前端地图、关卡兜底配置和自动化测试已同步
+- 四年级定向验证通过：
+  - 前端测试：`npm test -- --run src/__tests__/grade4-maturity.test.tsx`，1 个测试文件、2 项测试通过
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=ApiSmokeTest#shouldFilterCurriculumByFourthGradeStage,ApiSmokeTest#shouldReturnExpandedGradeFourMaturityLevelDetails,PersistenceBackedGameContentServiceTest#shouldUseStageSpecificCurriculumForYearFourChildren test`
+- 四年级阶段全量验证通过：
+  - 前端测试：`npm test -- --run`，23 个测试文件、96 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

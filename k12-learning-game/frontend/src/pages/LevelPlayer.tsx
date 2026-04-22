@@ -1953,6 +1953,17 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再想想 10 份中的 7 份可以写成 0.7'
     }
   },
+  'math-grade4-decimal-compare-001': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '0.6、0.48、0.75 中，哪个小数最大？',
+      choices: [0.6, 0.48, 0.75],
+      correctChoice: 0.75,
+      optionLabelPrefix: '小数卡',
+      successFeedback: '答对了，0.75 最大，因为 75 个百分之一比 60 个百分之一更多',
+      failureFeedback: '可以先把 0.6 看成 0.60，再比较百分位。'
+    }
+  },
   'math-grade4-hundredths-001': {
     'step-1': {
       kind: 'number-choice',
@@ -2000,6 +2011,21 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       successFeedback: '答对了，135° 大于 90° 小于 180°，是钝角',
       detailLines: ['锐角 < 90°，直角 = 90°，钝角在 90° 和 180° 之间。'],
       failureFeedback: '再比较一下 135° 和 90°，它的张口更大'
+    }
+  },
+  'math-grade4-parallel-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '找到“两条直线永不相交”的关系。',
+      choices: [
+        { label: '平行', hint: '两条线保持一样远' },
+        { label: '垂直', hint: '相交成直角' },
+        { label: '相交', hint: '两条线会碰到一起' }
+      ],
+      correctChoice: '平行',
+      successFeedback: '答对了，永不相交的两条直线互相平行',
+      detailLines: ['平行线之间的距离处处相等。'],
+      failureFeedback: '想一想铁路轨道的两条线。'
     }
   },
   'math-grade4-operation-001': {
@@ -2122,6 +2148,36 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再想一想，这句话是在提出问题'
     }
   },
+  'chinese-grade4-central-clue-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '读海边短文，选出贯穿全文的线索词。',
+      choices: [
+        { label: '海风', hint: '开头、中间、结尾都出现并推动画面' },
+        { label: '贝壳', hint: '只是一个细节' },
+        { label: '书包', hint: '不是全文重点' }
+      ],
+      correctChoice: '海风',
+      successFeedback: '答对了，海风贯穿全文，是这段文字的线索',
+      detailLines: ['线索常常把多个画面串在一起。'],
+      failureFeedback: '找一找哪个词反复出现，并连接了不同画面。'
+    }
+  },
+  'chinese-grade4-poem-image-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '“月落乌啼霜满天”主要写出了什么画面？',
+      choices: [
+        { label: '夜晚清冷的江边景象', hint: '月落、乌啼、霜满天都让画面清冷' },
+        { label: '热闹的春游场景', hint: '和诗句氛围不符' },
+        { label: '中午阳光很强', hint: '诗句写的是夜晚' }
+      ],
+      correctChoice: '夜晚清冷的江边景象',
+      successFeedback: '答对了，这句诗写出夜晚清冷的画面',
+      detailLines: ['读古诗可以先抓景物，再感受氛围。'],
+      failureFeedback: '看看月落、乌啼、霜这些景物带来什么感觉。'
+    }
+  },
   'english-grade4-tense-001': {
     'step-1': {
       kind: 'character-choice',
@@ -2172,6 +2228,33 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       correctChoice: 'season',
       successFeedback: '答对了，听到的关键词是 season',
       failureFeedback: '再听一遍，注意开头是 see 的声音'
+    }
+  },
+  'english-grade4-listening-judgment-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: 'Listen and choose the sentence with last Sunday.',
+      audioPrompt: 'I visited my grandma last Sunday.',
+      audioText: 'I visited my grandma last Sunday.',
+      lang: 'en-US',
+      playButtonLabel: '播放时态关键词句',
+      choiceAriaLabelPrefix: '英语句子',
+      choices: ['I visited my grandma last Sunday.', 'I visit my grandma every Sunday.', 'I will visit my grandma tomorrow.'],
+      correctChoice: 'I visited my grandma last Sunday.',
+      successFeedback: 'Good! last Sunday tells us it happened in the past.',
+      failureFeedback: 'Listen for last Sunday and visited.'
+    }
+  },
+  'english-grade4-scene-dialogue-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '按顺序跟读购物场景三句话。',
+      sentences: [
+        { text: 'Can I help you?', emoji: '🛍️', scene: '店员询问需要帮助吗' },
+        { text: 'I want a blue pencil.', emoji: '✏️', scene: '说出想买的物品' },
+        { text: 'Here you are.', emoji: '🤲', scene: '递给对方物品' }
+      ],
+      successFeedback: '购物场景对话跟读完成啦'
     }
   }
 };
