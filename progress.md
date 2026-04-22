@@ -253,3 +253,13 @@
   - 前端测试：`npm test -- --run`，19 个测试文件、87 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成一年级语文/英语成熟化一期：
+  - 语文新增 3 关：韵母听辨站、量词搭配桥、看图说一句
+  - 英语新增 3 关：短元音听辨、数字颜色配对、课堂对话跟读
+  - 新关卡继续复用现有课程表和稳定 code，不新增数据库表
+  - 后端同步 `activityConfigJson`、知识点 code/title 和题库变体数
+  - 前端地图、关卡兜底配置和自动化测试已同步
+- 本轮验证通过：
+  - 前端测试：`npm test -- --run`，20 个测试文件、90 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

@@ -1240,6 +1240,47 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再想一想，这句话是在平静地把意思说完整'
     }
   },
+  'chinese-grade1-finals-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '听老师读 ai，选出正确韵母。',
+      audioPrompt: 'ai',
+      audioText: 'ai',
+      lang: 'zh-CN',
+      playButtonLabel: '播放韵母',
+      choices: ['ai', 'ei', 'ao'],
+      correctChoice: 'ai',
+      successFeedback: '听对了，ai 像“挨着”的 ai',
+      failureFeedback: '再听一遍，先听开头 a，再滑到 i。'
+    }
+  },
+  'chinese-grade1-measure-word-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '给“一条小鱼”选择正确的量词。',
+      choices: [
+        { label: '条', hint: '一条小鱼' },
+        { label: '朵', hint: '一朵花' },
+        { label: '本', hint: '一本书' }
+      ],
+      correctChoice: '条',
+      successFeedback: '答对了，小鱼常说“一条小鱼”',
+      detailLines: ['量词要和后面的事物搭配。', '鱼、河、路常用“条”。'],
+      failureFeedback: '想一想，平时我们会说一什么小鱼？'
+    }
+  },
+  'chinese-grade1-picture-speaking-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '看图先找人物、地点和动作，再把句子读出来。',
+      sentences: [
+        { text: '早上，小明来到学校。', emoji: '🏫', scene: '小明背着书包到校门口' },
+        { text: '他和老师说早上好。', emoji: '👩‍🏫', scene: '小明向老师问好' },
+        { text: '同学们一起走进教室。', emoji: '📚', scene: '大家准备上课' }
+      ],
+      successFeedback: '看图说话读顺啦，人物、地点和动作都找到了'
+    }
+  },
   'english-grade1-words-001': {
     'step-1': {
       kind: 'word-match',
@@ -1287,6 +1328,44 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { word: 'jump', pictureLabel: '跳跃', emoji: '🦘', phonetic: '/dʒʌmp/' },
         { word: 'read', pictureLabel: '读书', emoji: '📖', phonetic: '/riːd/' }
       ]
+    }
+  },
+  'english-grade1-short-vowel-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '听 /æ/ 的声音，选出对应单词。',
+      audioPrompt: '/æ/',
+      audioText: 'cat',
+      lang: 'en-US',
+      playButtonLabel: '播放短元音单词',
+      choiceAriaLabelPrefix: '短元音单词',
+      choices: ['cat', 'bed', 'pig'],
+      correctChoice: 'cat',
+      successFeedback: '听对了，cat 里有短短的 /æ/',
+      failureFeedback: '再听一遍，cat 的嘴巴要打开一点。'
+    }
+  },
+  'english-grade1-number-color-001': {
+    'step-1': {
+      kind: 'word-match',
+      instruction: '先点英文词，再点对应图片。',
+      pairs: [
+        { word: 'one', pictureLabel: '一个星星', emoji: '⭐', phonetic: '/wʌn/' },
+        { word: 'two', pictureLabel: '两个气球', emoji: '🎈', phonetic: '/tuː/' },
+        { word: 'red', pictureLabel: '红色蜡笔', emoji: '🟥', phonetic: '/red/' }
+      ]
+    }
+  },
+  'english-grade1-dialogue-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '像课堂对话一样，点一句、听一句、跟一句。',
+      sentences: [
+        { text: 'May I come in?', emoji: '🚪', scene: '进教室前礼貌询问' },
+        { text: 'Sit down, please.', emoji: '🪑', scene: '老师请同学坐下' },
+        { text: 'Open your book.', emoji: '📘', scene: '打开书准备学习' }
+      ],
+      successFeedback: '课堂小对话跟读完成啦'
     }
   },
   'math-grade2-multiply-001': {

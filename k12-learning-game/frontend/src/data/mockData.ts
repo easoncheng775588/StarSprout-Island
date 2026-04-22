@@ -196,7 +196,9 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '从常见生字出发，试着把字放进词语里读一读。',
         levels: [
           { code: 'chinese-grade1-words-001', title: '生字组词', status: 'recommended' },
-          { code: 'chinese-grade1-pinyin-001', title: '拼音拼读提升', status: 'available' }
+          { code: 'chinese-grade1-pinyin-001', title: '拼音拼读提升', status: 'available' },
+          { code: 'chinese-grade1-finals-001', title: '韵母听辨站', status: 'available' },
+          { code: 'chinese-grade1-measure-word-001', title: '量词搭配桥', status: 'available' }
         ]
       },
       {
@@ -206,7 +208,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '从拼音到词语再到句子，一步步把一年级基础读起来。',
         levels: [
           { code: 'chinese-grade1-sentence-001', title: '看图读句', status: 'available' },
-          { code: 'chinese-grade1-punctuation-001', title: '标点小卫士', status: 'available' }
+          { code: 'chinese-grade1-punctuation-001', title: '标点小卫士', status: 'available' },
+          { code: 'chinese-grade1-picture-speaking-001', title: '看图说一句', status: 'available' }
         ]
       },
       {
@@ -335,7 +338,9 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '把一年级常见校园和动作单词认出来、配起来。',
         levels: [
           { code: 'english-grade1-words-001', title: '校园单词配对', status: 'recommended' },
-          { code: 'english-grade1-phonics-001', title: 'CVC 拼读入门', status: 'available' }
+          { code: 'english-grade1-phonics-001', title: 'CVC 拼读入门', status: 'available' },
+          { code: 'english-grade1-short-vowel-001', title: '短元音听辨', status: 'available' },
+          { code: 'english-grade1-number-color-001', title: '数字颜色配对', status: 'available' }
         ]
       },
       {
@@ -345,7 +350,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '从自然拼读到问候句，把英语说得更完整。',
         levels: [
           { code: 'english-grade1-sentence-001', title: '问候句跟读', status: 'available' },
-          { code: 'english-grade1-actions-001', title: '动作单词配对', status: 'available' }
+          { code: 'english-grade1-actions-001', title: '动作单词配对', status: 'available' },
+          { code: 'english-grade1-dialogue-001', title: '课堂对话跟读', status: 'available' }
         ]
       },
       {
