@@ -527,11 +527,23 @@ public class GameContentService {
                         .thenComparingInt(level -> level.getChapter().getDisplayOrder())
                         .thenComparing(LevelEntity::getCode))
                 .map(this::toContentConfigItem)
-                .filter(java.util.Objects::nonNull)
                 .toList();
+        int totalLevelCount = items.size();
+        int configuredLevelCount = (int) items.stream()
+                .filter(item -> item.configSource().contains("activityConfigJson"))
+                .count();
+        int healthyLevelCount = (int) items.stream()
+                .filter(item -> item.healthStatus().equals("healthy"))
+                .count();
+        int warningLevelCount = totalLevelCount - healthyLevelCount;
+        int configCoveragePercent = totalLevelCount == 0 ? 0 : Math.round(configuredLevelCount * 100f / totalLevelCount);
 
         return new ContentConfigCatalogResponse(
-                items.size(),
+                totalLevelCount,
+                configuredLevelCount,
+                healthyLevelCount,
+                warningLevelCount,
+                configCoveragePercent,
                 items.stream().mapToInt(ContentConfigItemDto::variantCount).sum(),
                 items
         );
@@ -1178,14 +1190,15 @@ public class GameContentService {
 
     private ContentConfigItemDto toContentConfigItem(LevelEntity level) {
         LevelStepEntity configStep = level.getSteps().stream()
+                .sorted(Comparator.comparingInt(LevelStepEntity::getDisplayOrder))
                 .filter(step -> hasConfigSignal(step))
                 .findFirst()
-                .orElse(null);
-        if (configStep == null) {
-            return null;
-        }
+                .orElseGet(() -> level.getSteps().stream()
+                        .sorted(Comparator.comparingInt(LevelStepEntity::getDisplayOrder))
+                        .findFirst()
+                        .orElse(null));
 
-        String activityConfigJson = configStep.getActivityConfigJson();
+        String activityConfigJson = configStep == null ? null : configStep.getActivityConfigJson();
         String assetTheme = Optional.ofNullable(extractJsonStringValue(activityConfigJson, "assetTheme"))
                 .filter(value -> !value.isBlank())
                 .orElse("待补素材主题");
@@ -1193,18 +1206,22 @@ public class GameContentService {
                 .filter(value -> !value.isBlank())
                 .orElse("待补音频质量");
         String configSource = buildConfigSource(configStep, assetTheme, audioQuality);
-        int variantCount = Optional.ofNullable(configStep.getVariantCount()).orElse(0);
+        int variantCount = configStep == null ? 0 : Optional.ofNullable(configStep.getVariantCount()).orElse(0);
+        List<String> healthNotes = buildConfigHealthNotes(configStep, assetTheme, audioQuality, variantCount);
+        String healthStatus = healthNotes.isEmpty() ? "healthy" : "warning";
 
         return new ContentConfigItemDto(
                 level.getCode(),
                 level.getSummaryTitle(),
                 level.getChapter().getSubject().getTitle(),
-                configStep.getKnowledgePointCode(),
-                configStep.getKnowledgePointTitle(),
+                configStep == null ? level.getCode() + ".step-1" : Optional.ofNullable(configStep.getKnowledgePointCode()).orElse(level.getCode() + "." + configStep.getStepCode()),
+                configStep == null ? level.getSummaryTitle() : Optional.ofNullable(configStep.getKnowledgePointTitle()).orElse(level.getSummaryTitle()),
                 variantCount,
                 assetTheme,
                 audioQuality,
-                configSource
+                configSource,
+                healthStatus,
+                healthNotes.isEmpty() ? List.of("配置完整") : healthNotes
         );
     }
 
@@ -1216,6 +1233,9 @@ public class GameContentService {
     }
 
     private String buildConfigSource(LevelStepEntity step, String assetTheme, String audioQuality) {
+        if (step == null) {
+            return "none";
+        }
         boolean hasJson = step.getActivityConfigJson() != null && !step.getActivityConfigJson().isBlank();
         boolean hasKnowledge = (step.getKnowledgePointCode() != null && !step.getKnowledgePointCode().isBlank())
                 || (step.getKnowledgePointTitle() != null && !step.getKnowledgePointTitle().isBlank())
@@ -1230,11 +1250,37 @@ public class GameContentService {
         if (hasKnowledge) {
             return "knowledge";
         }
-        if (assetTheme != null || audioQuality != null) {
-            return "activityConfigJson";
-        }
 
         return "unknown";
+    }
+
+    private List<String> buildConfigHealthNotes(LevelStepEntity step, String assetTheme, String audioQuality, int variantCount) {
+        java.util.ArrayList<String> notes = new java.util.ArrayList<>();
+        if (step == null) {
+            notes.add("缺少关卡步骤");
+            return notes;
+        }
+
+        if (step.getActivityConfigJson() == null || step.getActivityConfigJson().isBlank()) {
+            notes.add("缺少后端玩法配置");
+        }
+        if (step.getKnowledgePointCode() == null || step.getKnowledgePointCode().isBlank()) {
+            notes.add("缺少知识点 code");
+        }
+        if (step.getKnowledgePointTitle() == null || step.getKnowledgePointTitle().isBlank()) {
+            notes.add("缺少知识点标题");
+        }
+        if (variantCount <= 0) {
+            notes.add("缺少题库变体数");
+        }
+        if ("待补素材主题".equals(assetTheme)) {
+            notes.add("缺少素材主题");
+        }
+        if ("待补音频质量".equals(audioQuality)) {
+            notes.add("缺少音频质量标记");
+        }
+
+        return notes;
     }
 
     private String extractJsonStringValue(String json, String key) {

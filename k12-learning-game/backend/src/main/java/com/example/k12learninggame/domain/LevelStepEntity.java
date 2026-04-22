@@ -54,6 +54,10 @@ public class LevelStepEntity {
         return prompt;
     }
 
+    public int getDisplayOrder() {
+        return displayOrder;
+    }
+
     public String getActivityConfigJson() {
         return activityConfigJson;
     }

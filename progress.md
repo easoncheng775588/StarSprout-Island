@@ -305,3 +305,15 @@
   - 前端测试：`npm test -- --run`，23 个测试文件、96 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成跨年级成熟化：题库配置健康检查：
+  - 后端 `/api/content/configs` 新增 `totalLevelCount`、`configCoveragePercent`、`healthyLevelCount`、`warningLevelCount`
+  - 配置目录现在返回全量关卡，而不是只返回已有配置提示的关卡
+  - 每个关卡新增 `healthStatus` 和 `healthNotes`，可提示缺少后端玩法配置、知识点、变体数、素材主题或音频质量标记
+  - 前端题库配置中心新增覆盖率、健康/需补齐指标和逐关卡状态标签
+- 题库配置健康检查定向验证通过：
+  - 前端测试：`npm test -- --run src/__tests__/product-engagement.test.tsx`，1 个测试文件、9 项测试通过
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=ApiSmokeTest#shouldReturnContentConfigCatalog test`
+- 题库配置健康检查全量验证通过：
+  - 前端测试：`npm test -- --run`，23 个测试文件、96 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

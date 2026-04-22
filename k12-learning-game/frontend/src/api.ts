@@ -379,10 +379,16 @@ export interface ContentConfigItemData {
   assetTheme: string;
   audioQuality: string;
   configSource: string;
+  healthStatus: 'healthy' | 'warning';
+  healthNotes: string[];
 }
 
 export interface ContentConfigCatalogData {
+  totalLevelCount: number;
   configuredLevelCount: number;
+  healthyLevelCount: number;
+  warningLevelCount: number;
+  configCoveragePercent: number;
   totalVariantCount: number;
   items: ContentConfigItemData[];
 }

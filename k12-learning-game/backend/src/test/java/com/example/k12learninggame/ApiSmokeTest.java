@@ -423,10 +423,18 @@ class ApiSmokeTest {
     void shouldReturnContentConfigCatalog() throws Exception {
         mockMvc.perform(get("/api/content/configs"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalLevelCount").value(org.hamcrest.Matchers.greaterThan(0)))
                 .andExpect(jsonPath("$.configuredLevelCount").value(org.hamcrest.Matchers.greaterThan(0)))
+                .andExpect(jsonPath("$.healthyLevelCount").value(org.hamcrest.Matchers.greaterThan(0)))
+                .andExpect(jsonPath("$.warningLevelCount").value(org.hamcrest.Matchers.greaterThan(0)))
+                .andExpect(jsonPath("$.configCoveragePercent").value(org.hamcrest.Matchers.greaterThan(0)))
                 .andExpect(jsonPath("$.totalVariantCount").value(org.hamcrest.Matchers.greaterThan(0)))
                 .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade1-hundredchart-001')].knowledgePointTitle")
                         .value(org.hamcrest.Matchers.hasItem("数形结合：百格图认数")))
+                .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade1-hundredchart-001')].healthStatus")
+                        .value(org.hamcrest.Matchers.hasItem("warning")))
+                .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade1-hundredchart-001')].healthNotes[0]")
+                        .value(org.hamcrest.Matchers.hasItem(org.hamcrest.Matchers.containsString("缺少后端玩法配置"))))
                 .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade2-array-001')].variantCount")
                         .value(org.hamcrest.Matchers.hasItem(10)))
                 .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade3-fractionbar-001')].knowledgePointTitle")
@@ -439,7 +447,8 @@ class ApiSmokeTest {
                         .value(org.hamcrest.Matchers.hasItem(10)))
                 .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade4-decimal-001')].assetTheme").value(org.hamcrest.Matchers.hasItem("小数灯塔")))
                 .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade4-decimal-001')].audioQuality").value(org.hamcrest.Matchers.hasItem(org.hamcrest.Matchers.containsString("TTS"))))
-                .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade4-decimal-001')].variantCount").value(org.hamcrest.Matchers.hasItem(6)));
+                .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade4-decimal-001')].variantCount").value(org.hamcrest.Matchers.hasItem(6)))
+                .andExpect(jsonPath("$.items[?(@.levelCode=='math-grade4-decimal-001')].healthStatus").value(org.hamcrest.Matchers.hasItem("healthy")));
     }
 
     @Test

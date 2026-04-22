@@ -454,7 +454,11 @@ describe('Product engagement surfaces', () => {
       <MemoryRouter>
         <ContentConfigCatalog
           data={{
+            totalLevelCount: 5,
             configuredLevelCount: 3,
+            healthyLevelCount: 2,
+            warningLevelCount: 1,
+            configCoveragePercent: 60,
             totalVariantCount: 17,
             items: [
               {
@@ -466,7 +470,22 @@ describe('Product engagement surfaces', () => {
                 variantCount: 6,
                 assetTheme: '小数灯塔',
                 audioQuality: '高质量儿童 TTS',
-                configSource: 'backend'
+                configSource: 'backend',
+                healthStatus: 'healthy',
+                healthNotes: ['配置完整']
+              },
+              {
+                levelCode: 'math-grade1-hundredchart-001',
+                levelTitle: '百格图认数',
+                subjectTitle: '数学岛',
+                knowledgePointCode: 'math.g1.number-shape.hundred-chart',
+                knowledgePointTitle: '数形结合：百格图认数',
+                variantCount: 8,
+                assetTheme: '待补素材主题',
+                audioQuality: '待补音频质量',
+                configSource: 'knowledge',
+                healthStatus: 'warning',
+                healthNotes: ['缺少后端玩法配置', '缺少素材主题']
               }
             ]
           }}
@@ -477,7 +496,14 @@ describe('Product engagement surfaces', () => {
     expect(screen.getByRole('heading', { name: '题库配置中心' })).toBeInTheDocument();
     expect(screen.getByText('已配置 3 个后端玩法关卡')).toBeInTheDocument();
     expect(screen.getByText('累计 17 组题库变体')).toBeInTheDocument();
+    expect(screen.getByText('配置覆盖率 60%')).toBeInTheDocument();
+    expect(screen.getByText('健康 2 个')).toBeInTheDocument();
+    expect(screen.getByText('需补齐 1 个')).toBeInTheDocument();
     expect(screen.getByText('小数点灯塔')).toBeInTheDocument();
+    expect(screen.getByText('百格图认数')).toBeInTheDocument();
+    expect(screen.getByText('状态：健康')).toBeInTheDocument();
+    expect(screen.getByText('状态：需补齐')).toBeInTheDocument();
+    expect(screen.getByText('缺少后端玩法配置')).toBeInTheDocument();
     expect(screen.getByText('素材：小数灯塔')).toBeInTheDocument();
     expect(screen.getByText('音频：高质量儿童 TTS')).toBeInTheDocument();
   });
