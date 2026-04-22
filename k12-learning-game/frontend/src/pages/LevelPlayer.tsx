@@ -1142,6 +1142,49 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再把两部分铅笔合起来数一数'
     }
   },
+  'math-grade1-money-001': {
+    'step-1': {
+      kind: 'number-choice',
+      instruction: '一本练习本 6 元，一支铅笔 2 元，一共要付多少元？',
+      choices: [7, 8, 9],
+      correctChoice: 8,
+      optionLabelPrefix: '价格卡',
+      successFeedback: '答对了，6 元 + 2 元 = 8 元',
+      failureFeedback: '先看练习本 6 元，再加上铅笔 2 元。',
+      pictureGroups: [
+        { label: '练习本价格', emoji: '📘', count: 6, tone: 'normal' },
+        { label: '铅笔价格', emoji: '✏️', count: 2, tone: 'add' }
+      ]
+    }
+  },
+  'math-grade1-time-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '时钟从 7 点走到 9 点，经过了几个小时？',
+      emoji: '🕘',
+      characterLabel: '整点时钟',
+      detailLines: ['从 7 点到 8 点是 1 小时。', '从 8 点到 9 点又是 1 小时。'],
+      choices: [1, 2, 3],
+      correctChoice: 2,
+      successFeedback: '答对了，从 7 点到 9 点经过 2 小时',
+      failureFeedback: '可以从 7 点开始，一小时一小时往后数。'
+    }
+  },
+  'math-grade1-shape-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '两个一样的三角形可以拼成哪种常见图形？',
+      choices: [
+        { label: '长方形', hint: '两块三角板可以拼成长长的四边形' },
+        { label: '圆形', hint: '圆圆的，没有角' },
+        { label: '五角星', hint: '尖角很多，不是两块三角形常见拼法' }
+      ],
+      correctChoice: '长方形',
+      successFeedback: '答对了，两个一样的三角形可以拼成长方形',
+      detailLines: ['先把两个三角形的长边靠在一起。', '外面就能看到一个长方形的轮廓。'],
+      failureFeedback: '先想想两个三角形拼在一起，外面的边会变成什么样。'
+    }
+  },
   'chinese-grade1-words-001': {
     'step-1': {
       kind: 'character-choice',

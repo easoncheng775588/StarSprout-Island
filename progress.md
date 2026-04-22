@@ -243,3 +243,13 @@
   - 前端测试：`npm test -- --run`，19 个测试文件、86 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成一年级数学成熟化一期：
+  - 新增 3 个一年级数学关卡：人民币小商店、整点时间站、图形拼拼站
+  - 关卡覆盖人民币初步、整点经过时间、图形拼组，补齐一年级生活应用和图形应用入口
+  - 新关卡继续使用现有 `levels` / `level_steps` 表和稳定 `level_code`
+  - 后端为新关卡提供 `activityConfigJson`、知识点 code/title 和题库变体数量
+  - 前端地图、关卡本地兜底配置和自动化测试已同步
+- 本轮验证通过：
+  - 前端测试：`npm test -- --run`，19 个测试文件、87 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

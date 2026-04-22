@@ -520,7 +520,10 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.chapters[0].levels[0].code").value("math-grade1-numbers-001"))
                 .andExpect(jsonPath("$.chapters[0].levels[0].status").value("recommended"))
                 .andExpect(jsonPath("$.chapters[1].code").value("math-grade1-life"))
-                .andExpect(jsonPath("$.chapters[1].levels[1].code").value("math-grade1-wordproblem-001"));
+                .andExpect(jsonPath("$.chapters[1].levels[1].code").value("math-grade1-wordproblem-001"))
+                .andExpect(jsonPath("$.chapters[1].levels[2].code").value("math-grade1-money-001"))
+                .andExpect(jsonPath("$.chapters[1].levels[3].code").value("math-grade1-time-001"))
+                .andExpect(jsonPath("$.chapters[1].levels[4].code").value("math-grade1-shape-001"));
     }
 
     @Test
@@ -672,6 +675,30 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.steps[0].type").value("story-choice"))
                 .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("数学运算：看图加法"))
                 .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("4 + 3 = 7")));
+    }
+
+    @Test
+    void shouldReturnExpandedGradeOneMathLifeLevelDetails() throws Exception {
+        mockMvc.perform(get("/api/levels/math-grade1-money-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("math-grade1-money-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("tap-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("一年级生活数学：人民币初步"))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("人民币小商店")));
+
+        mockMvc.perform(get("/api/levels/math-grade1-time-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("math-grade1-time-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("story-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("一年级生活数学：整点时间"))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("整点时钟")));
+
+        mockMvc.perform(get("/api/levels/math-grade1-shape-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("math-grade1-shape-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("tap-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("一年级图形应用：图形拼组"))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("长方形")));
     }
 
     @Test

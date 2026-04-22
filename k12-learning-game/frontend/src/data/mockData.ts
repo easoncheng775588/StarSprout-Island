@@ -73,7 +73,10 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '把 20 以内加减法放进生活场景，学会用数学想问题。',
         levels: [
           { code: 'math-grade1-subtraction-001', title: '20 以内退位减法', status: 'available' },
-          { code: 'math-grade1-wordproblem-001', title: '生活应用题', status: 'available' }
+          { code: 'math-grade1-wordproblem-001', title: '生活应用题', status: 'available' },
+          { code: 'math-grade1-money-001', title: '人民币小商店', status: 'available' },
+          { code: 'math-grade1-time-001', title: '整点时间站', status: 'available' },
+          { code: 'math-grade1-shape-001', title: '图形拼拼站', status: 'available' }
         ]
       },
       {

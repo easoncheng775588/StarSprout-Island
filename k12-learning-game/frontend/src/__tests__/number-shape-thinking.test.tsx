@@ -39,6 +39,91 @@ function mockLevelResponse(levelCode: string) {
       ],
       reward: { stars: 3, badgeName: '数轴跳跳星' }
     },
+    'math-grade1-money-001': {
+      code: 'math-grade1-money-001',
+      title: '人民币小商店',
+      subjectTitle: '数学岛',
+      description: '认识元和简单付钱情境，把加法放进小商店里。',
+      steps: [
+        {
+          id: 'step-1',
+          type: 'tap-choice',
+          prompt: '一本练习本 6 元，一支铅笔 2 元，一共要付多少元？',
+          knowledgePointTitle: '一年级生活数学：人民币初步',
+          variantCount: 8,
+          activityConfigJson: JSON.stringify({
+            kind: 'number-choice',
+            instruction: '一本练习本 6 元，一支铅笔 2 元，一共要付多少元？',
+            choices: [7, 8, 9],
+            correctChoice: 8,
+            optionLabelPrefix: '价格卡',
+            successFeedback: '答对了，6 元 + 2 元 = 8 元',
+            failureFeedback: '先看练习本 6 元，再加上铅笔 2 元。',
+            pictureGroups: [
+              { label: '练习本价格', emoji: '📘', count: 6, tone: 'normal' },
+              { label: '铅笔价格', emoji: '✏️', count: 2, tone: 'add' }
+            ]
+          })
+        }
+      ],
+      reward: { stars: 3, badgeName: '小小收银员' }
+    },
+    'math-grade1-time-001': {
+      code: 'math-grade1-time-001',
+      title: '整点时间站',
+      subjectTitle: '数学岛',
+      description: '认识整点和经过时间，把时钟上的变化说清楚。',
+      steps: [
+        {
+          id: 'step-1',
+          type: 'story-choice',
+          prompt: '时钟从 7 点走到 9 点，经过了几个小时？',
+          knowledgePointTitle: '一年级生活数学：整点时间',
+          variantCount: 8,
+          activityConfigJson: JSON.stringify({
+            kind: 'story-choice',
+            instruction: '时钟从 7 点走到 9 点，经过了几个小时？',
+            emoji: '🕘',
+            characterLabel: '整点时钟',
+            detailLines: ['从 7 点到 8 点是 1 小时。', '从 8 点到 9 点又是 1 小时。'],
+            choices: [1, 2, 3],
+            correctChoice: 2,
+            successFeedback: '答对了，从 7 点到 9 点经过 2 小时',
+            failureFeedback: '可以从 7 点开始，一小时一小时往后数。'
+          })
+        }
+      ],
+      reward: { stars: 3, badgeName: '整点小管家' }
+    },
+    'math-grade1-shape-001': {
+      code: 'math-grade1-shape-001',
+      title: '图形拼拼站',
+      subjectTitle: '数学岛',
+      description: '观察三角形、长方形和正方形，试着把图形拼出来。',
+      steps: [
+        {
+          id: 'step-1',
+          type: 'tap-choice',
+          prompt: '两个一样的三角形可以拼成哪种常见图形？',
+          knowledgePointTitle: '一年级图形应用：图形拼组',
+          variantCount: 8,
+          activityConfigJson: JSON.stringify({
+            kind: 'character-choice',
+            instruction: '两个一样的三角形可以拼成哪种常见图形？',
+            choices: [
+              { label: '长方形', hint: '两块三角板可以拼成长长的四边形' },
+              { label: '圆形', hint: '圆圆的，没有角' },
+              { label: '五角星', hint: '尖角很多，不是两块三角形常见拼法' }
+            ],
+            correctChoice: '长方形',
+            successFeedback: '答对了，两个一样的三角形可以拼成长方形',
+            detailLines: ['先把两个三角形的长边靠在一起。', '外面就能看到一个长方形的轮廓。'],
+            failureFeedback: '先想想两个三角形拼在一起，外面的边会变成什么样。'
+          })
+        }
+      ],
+      reward: { stars: 3, badgeName: '图形拼搭星' }
+    },
     'math-grade2-array-001': {
       code: 'math-grade2-array-001',
       title: '乘法数组花园',
@@ -111,6 +196,9 @@ function mockLevelResponse(levelCode: string) {
 const mathShapeLevels = [
   'math-grade1-hundredchart-001',
   'math-grade1-numberline-001',
+  'math-grade1-money-001',
+  'math-grade1-time-001',
+  'math-grade1-shape-001',
   'math-grade2-array-001',
   'math-grade2-bar-model-001',
   'math-grade3-area-model-001',
@@ -162,6 +250,9 @@ describe('Number-shape thinking levels', () => {
 
     expect(grade1LevelCodes).toContain('math-grade1-hundredchart-001');
     expect(grade1LevelCodes).toContain('math-grade1-numberline-001');
+    expect(grade1LevelCodes).toContain('math-grade1-money-001');
+    expect(grade1LevelCodes).toContain('math-grade1-time-001');
+    expect(grade1LevelCodes).toContain('math-grade1-shape-001');
   });
 
   test('renders grade 1 number line thinking as a visual model', async () => {
@@ -185,6 +276,51 @@ describe('Number-shape thinking levels', () => {
 
     expect(screen.getByText('答对了，12 往前跳 5 格就是 17')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '完成本关' })).toBeEnabled();
+  });
+
+  test('renders grade 1 life math levels for money time and shape composition', async () => {
+    const user = userEvent.setup();
+
+    const moneyLevel = render(
+      <MemoryRouter initialEntries={['/levels/math-grade1-money-001']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('人民币小商店')).toBeInTheDocument();
+    expect(screen.getByText('一年级生活数学：人民币初步')).toBeInTheDocument();
+    expect(screen.getByText('练习本价格')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '价格卡 8' }));
+    expect(screen.getByText('答对了，6 元 + 2 元 = 8 元')).toBeInTheDocument();
+
+    moneyLevel.unmount();
+
+    const timeLevel = render(
+      <MemoryRouter initialEntries={['/levels/math-grade1-time-001']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('整点时间站')).toBeInTheDocument();
+    expect(screen.getByText('一年级生活数学：整点时间')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '答案卡片 2' }));
+    expect(screen.getByText('答对了，从 7 点到 9 点经过 2 小时')).toBeInTheDocument();
+
+    timeLevel.unmount();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/math-grade1-shape-001']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('图形拼拼站')).toBeInTheDocument();
+    expect(screen.getByText('一年级图形应用：图形拼组')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '汉字卡片 长方形' }));
+    expect(screen.getByText('答对了，两个一样的三角形可以拼成长方形')).toBeInTheDocument();
   });
 
   test('renders grade 2 array and bar-model thinking levels', async () => {

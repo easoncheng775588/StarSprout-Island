@@ -181,12 +181,21 @@ class PersistenceBackedGameContentServiceTest {
                         "math-grade1-numberline-001",
                         "math-grade1-addition-001"
                 );
+        assertThat(mathMap.chapters().get(1).levels())
+                .extracting(level -> level.code())
+                .containsExactly(
+                        "math-grade1-subtraction-001",
+                        "math-grade1-wordproblem-001",
+                        "math-grade1-money-001",
+                        "math-grade1-time-001",
+                        "math-grade1-shape-001"
+                );
         assertThat(dashboard.subjectInsights())
                 .filteredOn(insight -> insight.subjectCode().equals("math"))
                 .singleElement()
                 .satisfies(insight -> {
                     assertThat(insight.completedLevels()).isZero();
-                    assertThat(insight.totalLevels()).isEqualTo(6);
+                    assertThat(insight.totalLevels()).isEqualTo(9);
                     assertThat(insight.nextLevelTitle()).isEqualTo("认识 100 以内的数");
                 });
     }
