@@ -253,6 +253,15 @@ export interface ParentDashboardData {
     statusLabel: string;
     nextAction: string;
   }>;
+  thinkingModelProgress: Array<{
+    modelCode: string;
+    modelTitle: string;
+    modelTypeLabel: string;
+    completedLevels: number;
+    totalLevels: number;
+    progressPercent: number;
+    nextAction: string;
+  }>;
   mistakeReviewPlan: Array<{
     levelTitle: string;
     knowledgePointTitle: string;

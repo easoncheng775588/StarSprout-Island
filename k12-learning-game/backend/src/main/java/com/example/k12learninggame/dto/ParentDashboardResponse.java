@@ -20,6 +20,7 @@ public record ParentDashboardResponse(
         List<ParentChildComparisonDto> siblingComparisons,
         StageReportDto stageReport,
         List<KnowledgeMapItemDto> knowledgeMap,
+        List<ParentThinkingModelProgressDto> thinkingModelProgress,
         List<MistakeReviewItemDto> mistakeReviewPlan
 ) {
 }

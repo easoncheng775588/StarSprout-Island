@@ -159,6 +159,17 @@ describe('ParentDashboard', () => {
                 nextAction: '用苹果图再做 1 组看图列式'
               }
             ],
+            thinkingModelProgress: [
+              {
+                modelCode: 'bar-model',
+                modelTitle: '线段图模型',
+                modelTypeLabel: '数量关系',
+                completedLevels: 2,
+                totalLevels: 3,
+                progressPercent: 67,
+                nextAction: '继续用线段图把故事题里的数量关系画出来。'
+              }
+            ],
             mistakeReviewPlan: [
               {
                 levelTitle: '糖果减法小店',
@@ -221,6 +232,10 @@ describe('ParentDashboard', () => {
     expect(screen.getByText('掌握度 72% · 巩固中')).toBeInTheDocument();
     expect(screen.getByText('每天完成 1 次图像列式练习')).toBeInTheDocument();
     expect(screen.getByText('用苹果图再做 1 组看图列式')).toBeInTheDocument();
+    expect(screen.getByText('思维模型成长')).toBeInTheDocument();
+    expect(screen.getByText('线段图模型')).toBeInTheDocument();
+    expect(screen.getByText('数量关系 · 2 / 3 关')).toBeInTheDocument();
+    expect(screen.getByText('继续用线段图把故事题里的数量关系画出来。')).toBeInTheDocument();
     expect(screen.getByText('错题复习闭环')).toBeInTheDocument();
     expect(screen.getByText('糖果减法小店')).toBeInTheDocument();
     expect(screen.getByText('错题 3 次 · 20 以内退位减法')).toBeInTheDocument();
@@ -307,6 +322,7 @@ describe('ParentDashboard', () => {
               nextMilestone: '再完成 4 关，进入一年级巩固阶段'
             },
             knowledgeMap: [],
+            thinkingModelProgress: [],
             mistakeReviewPlan: []
           }}
         />

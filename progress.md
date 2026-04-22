@@ -375,3 +375,14 @@
   - 前端测试：`npm test -- --run`，24 个测试文件、99 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成跨年级成熟化：思维模型成长报告：
+  - 后端 `ParentDashboardResponse` 新增 `thinkingModelProgress`，按当前学段课程识别数组模型、线段图模型、面积模型、分数条模型、数轴模型和百格图模型
+  - 模型识别复用 `level_steps.knowledge_point_code`、`knowledge_point_title` 和 `activityConfigJson.mathModel`，不新增数据库表
+  - 前端家长中心新增“思维模型成长”卡片，展示模型类型、完成进度、进度条和下一步建议
+- 思维模型成长报告 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/parent-dashboard.test.tsx` 找不到“思维模型成长”；`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=PersistenceBackedGameContentServiceTest#shouldExposeNumberShapeThinkingCurriculumForYearTwoAndThreeMath test` 缺少 `thinkingModelProgress`
+  - GREEN：上述两个定向测试通过
+- 思维模型成长报告阶段验证通过：
+  - 前端测试：`npm test -- --run`，24 个测试文件、99 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

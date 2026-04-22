@@ -225,6 +225,27 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
           </div>
         </article>
 
+        <article className="panel-card thinking-model-panel">
+          <p className="eyebrow">思维模型成长</p>
+          <div className="thinking-model-list">
+            {(dashboard.thinkingModelProgress ?? []).length > 0 ? dashboard.thinkingModelProgress.map((item) => (
+              <article className="thinking-model-card" key={item.modelCode}>
+                <div className="thinking-model-card-header">
+                  <h3>{item.modelTitle}</h3>
+                  <span>{item.progressPercent}%</span>
+                </div>
+                <p>{item.modelTypeLabel} · {item.completedLevels} / {item.totalLevels} 关</p>
+                <div className="knowledge-mastery-bar">
+                  <span style={{ width: `${item.progressPercent}%` }} />
+                </div>
+                <strong>{item.nextAction}</strong>
+              </article>
+            )) : (
+              <p>当前阶段还没有足够的数学模型记录，完成数形结合关卡后会自动生成。</p>
+            )}
+          </div>
+        </article>
+
         <article className="panel-card mistake-loop-panel">
           <p className="eyebrow">错题复习闭环</p>
           <div className="mistake-review-list">

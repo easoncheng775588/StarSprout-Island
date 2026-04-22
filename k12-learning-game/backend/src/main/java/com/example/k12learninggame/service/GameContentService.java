@@ -53,6 +53,7 @@ import com.example.k12learninggame.dto.ParentActiveChildUpdateRequest;
 import com.example.k12learninggame.dto.ParentSettingsUpdateRequest;
 import com.example.k12learninggame.dto.ParentSubjectInsightDto;
 import com.example.k12learninggame.dto.ParentSubjectProgressDto;
+import com.example.k12learninggame.dto.ParentThinkingModelProgressDto;
 import com.example.k12learninggame.dto.ParentTodaySummaryDto;
 import com.example.k12learninggame.dto.ParentWeakPointActionDto;
 import com.example.k12learninggame.dto.ParentWeeklyReportDto;
@@ -84,6 +85,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -671,6 +674,7 @@ public class GameContentService {
                 buildSiblingComparisons(child),
                 buildStageReport(child),
                 buildKnowledgeMap(child, completions),
+                buildThinkingModelProgress(child),
                 buildMistakeReviewPlan(child, completions)
         );
     }
@@ -1190,6 +1194,87 @@ public class GameContentService {
         }
 
         return "陪孩子先讲清“" + knowledgePointTitle + "”哪里卡住，再完成一组短练习。";
+    }
+
+    private List<ParentThinkingModelProgressDto> buildThinkingModelProgress(ChildProfileEntity child) {
+        Set<String> completedLevelCodes = getCompletedLevelCodesForCurrentStage(child);
+        Map<String, ThinkingModelAccumulator> accumulators = new LinkedHashMap<>();
+
+        for (LevelEntity level : getAllStageLevels(child)) {
+            for (ThinkingModelDefinition definition : resolveThinkingModelsForLevel(level)) {
+                ThinkingModelAccumulator accumulator = accumulators.computeIfAbsent(
+                        definition.modelCode(),
+                        ignored -> new ThinkingModelAccumulator(definition)
+                );
+                accumulator.totalLevelCodes().add(level.getCode());
+                if (completedLevelCodes.contains(level.getCode())) {
+                    accumulator.completedLevelCodes().add(level.getCode());
+                }
+            }
+        }
+
+        return accumulators.values().stream()
+                .map(accumulator -> {
+                    int totalLevels = accumulator.totalLevelCodes().size();
+                    int completedLevels = accumulator.completedLevelCodes().size();
+                    int progressPercent = totalLevels == 0 ? 0 : Math.min((completedLevels * 100) / totalLevels, 100);
+                    ThinkingModelDefinition definition = accumulator.definition();
+
+                    return new ParentThinkingModelProgressDto(
+                            definition.modelCode(),
+                            definition.modelTitle(),
+                            definition.modelTypeLabel(),
+                            completedLevels,
+                            totalLevels,
+                            progressPercent,
+                            buildThinkingModelNextAction(definition, completedLevels, totalLevels)
+                    );
+                })
+                .toList();
+    }
+
+    private List<ThinkingModelDefinition> resolveThinkingModelsForLevel(LevelEntity level) {
+        String signal = (level.getCode() + " " + level.getSummaryTitle() + " " + level.getDetailTitle() + " " + level.getDescription() + " "
+                + level.getSteps().stream()
+                .map(step -> String.join(" ",
+                        Optional.ofNullable(step.getKnowledgePointCode()).orElse(""),
+                        Optional.ofNullable(step.getKnowledgePointTitle()).orElse(""),
+                        Optional.ofNullable(step.getActivityConfigJson()).orElse("")
+                ))
+                .collect(Collectors.joining(" "))).toLowerCase();
+        List<ThinkingModelDefinition> definitions = new ArrayList<>();
+
+        if (signal.contains("array") || signal.contains("数组")) {
+            definitions.add(new ThinkingModelDefinition("array-model", "数组模型", "乘法结构"));
+        }
+        if (signal.contains("bar-model") || signal.contains("线段图")) {
+            definitions.add(new ThinkingModelDefinition("bar-model", "线段图模型", "数量关系"));
+        }
+        if (signal.contains("area-model") || signal.contains("面积模型")) {
+            definitions.add(new ThinkingModelDefinition("area-model", "面积模型", "图形运算"));
+        }
+        if (signal.contains("fraction-bar") || signal.contains("fraction-bars") || signal.contains("分数条")) {
+            definitions.add(new ThinkingModelDefinition("fraction-bar", "分数条模型", "分数理解"));
+        }
+        if (signal.contains("number-line") || signal.contains("数轴")) {
+            definitions.add(new ThinkingModelDefinition("number-line", "数轴模型", "数感迁移"));
+        }
+        if (signal.contains("hundred-chart") || signal.contains("hundredths-grid") || signal.contains("百格图") || signal.contains("百分位")) {
+            definitions.add(new ThinkingModelDefinition("grid-model", "百格图模型", "位值观察"));
+        }
+
+        return definitions;
+    }
+
+    private String buildThinkingModelNextAction(ThinkingModelDefinition definition, int completedLevels, int totalLevels) {
+        if (completedLevels >= totalLevels && totalLevels > 0) {
+            return "这个模型已经走完当前阶段，可以尝试让孩子自己讲一遍解题过程。";
+        }
+        if (completedLevels > 0) {
+            return "继续用“" + definition.modelTitle() + "”说清题目关系，把模型画出来再作答。";
+        }
+
+        return "先挑战 1 个“" + definition.modelTitle() + "”关卡，让孩子看见题目背后的结构。";
     }
 
     private List<KnowledgePointDraft> knowledgePointsForLevel(LevelEntity level) {
@@ -2051,6 +2136,19 @@ public class GameContentService {
             String targetLevelCode,
             LocalDateTime latestCompletedAt
     ) {
+    }
+
+    private record ThinkingModelDefinition(String modelCode, String modelTitle, String modelTypeLabel) {
+    }
+
+    private record ThinkingModelAccumulator(
+            ThinkingModelDefinition definition,
+            Set<String> totalLevelCodes,
+            Set<String> completedLevelCodes
+    ) {
+        private ThinkingModelAccumulator(ThinkingModelDefinition definition) {
+            this(definition, new LinkedHashSet<>(), new LinkedHashSet<>());
+        }
     }
 
     private record MistakeReviewCardDraft(

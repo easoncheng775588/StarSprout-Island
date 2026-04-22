@@ -238,10 +238,22 @@ class PersistenceBackedGameContentServiceTest {
                 .filteredOn(insight -> insight.subjectCode().equals("math"))
                 .singleElement()
                 .satisfies(insight -> assertThat(insight.totalLevels()).isEqualTo(8));
+        assertThat(yearTwoDashboard.thinkingModelProgress())
+                .extracting(model -> model.modelCode(), model -> model.modelTitle())
+                .contains(
+                        org.assertj.core.groups.Tuple.tuple("array-model", "数组模型"),
+                        org.assertj.core.groups.Tuple.tuple("bar-model", "线段图模型")
+                );
         assertThat(yearThreeDashboard.subjectInsights())
                 .filteredOn(insight -> insight.subjectCode().equals("math"))
                 .singleElement()
                 .satisfies(insight -> assertThat(insight.totalLevels()).isEqualTo(8));
+        assertThat(yearThreeDashboard.thinkingModelProgress())
+                .extracting(model -> model.modelCode(), model -> model.modelTitle())
+                .contains(
+                        org.assertj.core.groups.Tuple.tuple("area-model", "面积模型"),
+                        org.assertj.core.groups.Tuple.tuple("fraction-bar", "分数条模型")
+                );
     }
 
     @Test

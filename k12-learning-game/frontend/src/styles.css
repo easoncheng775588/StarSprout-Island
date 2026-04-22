@@ -2841,12 +2841,14 @@ body::before {
 }
 
 .knowledge-map-panel,
+.thinking-model-panel,
 .mistake-loop-panel {
   position: relative;
   overflow: hidden;
 }
 
 .knowledge-map-panel::before,
+.thinking-model-panel::before,
 .mistake-loop-panel::before {
   content: '';
   position: absolute;
@@ -2860,6 +2862,7 @@ body::before {
 }
 
 .knowledge-map-grid,
+.thinking-model-list,
 .mistake-review-list {
   position: relative;
   z-index: 1;
@@ -2873,6 +2876,7 @@ body::before {
 }
 
 .knowledge-node,
+.thinking-model-card,
 .mistake-review-card {
   padding: 1.8rem;
   border-radius: 2.2rem;
@@ -2895,11 +2899,13 @@ body::before {
 }
 
 .knowledge-node h3,
+.thinking-model-card h3,
 .mistake-review-card h3 {
   margin: 0 0 0.8rem;
 }
 
 .knowledge-node p,
+.thinking-model-card p,
 .mistake-review-card p {
   margin: 0 0 1.2rem;
   color: rgba(33, 48, 77, 0.72);
@@ -2907,10 +2913,28 @@ body::before {
 }
 
 .knowledge-node strong,
+.thinking-model-card strong,
 .mistake-review-card span {
   display: block;
   color: rgba(33, 48, 77, 0.72);
   line-height: 1.6;
+}
+
+.thinking-model-card-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.thinking-model-card-header span {
+  display: inline-flex;
+  padding: 0.7rem 1rem;
+  border-radius: 99.9rem;
+  background: rgba(255, 212, 107, 0.28);
+  color: #b25a2f;
+  font-size: 1.344rem;
+  font-weight: 900;
 }
 
 .knowledge-mastery-bar {
