@@ -215,3 +215,13 @@
   - 前端测试：`npm test -- --run`，18 个测试文件、80 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成第二批英语岛听说扩展：
+  - 新增 3 个幼小衔接英语关卡：字母音 D 到 F、生活物品听辨、问候对话跟读
+  - 字母音练习从 A/B/C 延伸到 D/E/F，强化字母音和例词绑定
+  - 单词听辨从 apple 延伸到 milk/bag/sun，继续训练“先听音，再选卡”
+  - 短句跟读新增 Hello! / How are you? / I am fine. 问候对话
+  - 后端英语地图、关卡详情、知识点标题、题型配置和前端兜底数据已同步
+- 本轮验证通过：
+  - 前端测试：`npm test -- --run`，18 个测试文件、83 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

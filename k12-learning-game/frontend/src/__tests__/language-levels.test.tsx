@@ -115,6 +115,36 @@ function mockLevelResponse(levelCode: string) {
         { id: 'step-1', type: 'sentence-read', prompt: '按顺序跟读三句日常短句' }
       ],
       reward: { stars: 2, badgeName: '日常表达星' }
+    },
+    'english-letter-sounds-002': {
+      code: 'english-letter-sounds-002',
+      title: '字母音 D 到 F',
+      subjectTitle: '英语岛',
+      description: '继续把 D、E、F 的字母音和例词一起读出来。',
+      steps: [
+        { id: 'step-1', type: 'follow-read', prompt: '跟读 D、E、F 的字母音和例词' }
+      ],
+      reward: { stars: 2, badgeName: '字母音续航星' }
+    },
+    'english-word-sounds-002': {
+      code: 'english-word-sounds-002',
+      title: '生活物品听辨',
+      subjectTitle: '英语岛',
+      description: '听一听 milk、bag、sun，选出对应的生活单词。',
+      steps: [
+        { id: 'step-1', type: 'listen-choice', prompt: '听老师读 milk，选出正确单词' }
+      ],
+      reward: { stars: 2, badgeName: '生活听辨星' }
+    },
+    'english-dialogue-001': {
+      code: 'english-dialogue-001',
+      title: '问候对话跟读',
+      subjectTitle: '英语岛',
+      description: '把见面问候的小对话读顺，敢开口说第一句。',
+      steps: [
+        { id: 'step-1', type: 'sentence-read', prompt: '跟读三句问候小对话' }
+      ],
+      reward: { stars: 2, badgeName: '问候表达星' }
     }
   };
 
@@ -163,7 +193,10 @@ describe('Language level interactions', () => {
           'english-words-001',
           'english-letter-sounds-001',
           'english-word-sounds-001',
-          'english-daily-sentences-001'
+          'english-daily-sentences-001',
+          'english-letter-sounds-002',
+          'english-word-sounds-002',
+          'english-dialogue-001'
         ]) {
           if (url.endsWith(`/api/levels/${levelCode}`) && !init?.method) {
             return {
@@ -469,5 +502,59 @@ describe('Language level interactions', () => {
       text: 'Good morning. I like apples. Thank you.',
       lang: 'en-US'
     });
+  });
+
+  test('renders a second english letter sound follow-read practice', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/english-letter-sounds-002']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('继续听 D、E、F 的字母音，把声音放进单词里。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '字母卡片 D /d/ dog' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '字母卡片 F /f/ fish' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '字母卡片 D /d/ dog' }));
+
+    expect(screen.getByText('D /d/ · dog')).toBeInTheDocument();
+    expect(speakMock.mock.calls[0]?.[0]).toMatchObject({
+      text: 'D, /d/, dog',
+      lang: 'en-US'
+    });
+  });
+
+  test('renders a second english daily word listening practice', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={['/levels/english-word-sounds-002']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole('button', { name: '播放生活单词' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '单词卡片 milk' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '单词卡片 bag' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '播放生活单词' }));
+    expect(screen.getByText('老师正在读：milk')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '单词卡片 milk' }));
+    expect(screen.getByText('听对了，milk 是牛奶，结尾轻轻收住')).toBeInTheDocument();
+  });
+
+  test('renders english greeting dialogue shadowing practice', async () => {
+    render(
+      <MemoryRouter initialEntries={['/levels/english-dialogue-001']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole('button', { name: '句子卡片 Hello!' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '句子卡片 How are you?' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '句子卡片 I am fine.' })).toBeInTheDocument();
   });
 });

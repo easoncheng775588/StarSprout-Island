@@ -814,6 +814,17 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       ]
     }
   },
+  'english-letter-sounds-002': {
+    'step-1': {
+      kind: 'follow-read',
+      instruction: '继续听 D、E、F 的字母音，把声音放进单词里。',
+      letters: [
+        { label: 'D', phonetic: '/d/', exampleWord: 'dog', emoji: '🐶', audioText: 'D, /d/, dog' },
+        { label: 'E', phonetic: '/e/', exampleWord: 'egg', emoji: '🥚', audioText: 'E, /e/, egg' },
+        { label: 'F', phonetic: '/f/', exampleWord: 'fish', emoji: '🐟', audioText: 'F, /f/, fish' }
+      ]
+    }
+  },
   'english-phonics-001': {
     'step-1': {
       kind: 'listen-choice',
@@ -903,6 +914,21 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '再听一遍，apple 的开头音像短短的 /a/'
     }
   },
+  'english-word-sounds-002': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: '听生活里常见的单词，找出你听到的那一张卡。',
+      audioPrompt: 'milk',
+      audioText: 'milk',
+      lang: 'en-US',
+      playButtonLabel: '播放生活单词',
+      choiceAriaLabelPrefix: '单词卡片',
+      choices: ['milk', 'bag', 'sun'],
+      correctChoice: 'milk',
+      successFeedback: '听对了，milk 是牛奶，结尾轻轻收住',
+      failureFeedback: '再听一遍，milk 里有短短的 i 音'
+    }
+  },
   'english-story-001': {
     'step-1': {
       kind: 'sentence-read',
@@ -961,6 +987,18 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { text: 'Thank you.', emoji: '🎁', scene: '收到帮助说谢谢' }
       ],
       successFeedback: '日常短句都读完啦，今天可以试着用一句'
+    }
+  },
+  'english-dialogue-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '像两位小朋友打招呼一样，按顺序跟读问候句。',
+      sentences: [
+        { text: 'Hello!', emoji: '👋', scene: '见面先说 hello' },
+        { text: 'How are you?', emoji: '🙂', scene: '问问对方今天怎么样' },
+        { text: 'I am fine.', emoji: '🌟', scene: '开心回答我很好' }
+      ],
+      successFeedback: '问候对话读顺啦，下次见面可以试着说 Hello'
     }
   },
   'math-grade1-numbers-001': {
