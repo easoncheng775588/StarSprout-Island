@@ -221,7 +221,9 @@ class PersistenceBackedGameContentServiceTest {
                 .extracting(level -> level.code())
                 .contains(
                         "math-grade2-array-001",
-                        "math-grade2-bar-model-001"
+                        "math-grade2-bar-model-001",
+                        "math-grade2-division-001",
+                        "math-grade2-statistics-001"
                 );
         assertThat(yearThreeMathMap.chapters())
                 .flatExtracting(chapter -> chapter.levels())
@@ -233,7 +235,7 @@ class PersistenceBackedGameContentServiceTest {
         assertThat(yearTwoDashboard.subjectInsights())
                 .filteredOn(insight -> insight.subjectCode().equals("math"))
                 .singleElement()
-                .satisfies(insight -> assertThat(insight.totalLevels()).isEqualTo(6));
+                .satisfies(insight -> assertThat(insight.totalLevels()).isEqualTo(8));
         assertThat(yearThreeDashboard.subjectInsights())
                 .filteredOn(insight -> insight.subjectCode().equals("math"))
                 .singleElement()
@@ -264,7 +266,7 @@ class PersistenceBackedGameContentServiceTest {
                 .singleElement()
                 .satisfies(insight -> {
                     assertThat(insight.completedLevels()).isZero();
-                    assertThat(insight.totalLevels()).isEqualTo(4);
+                    assertThat(insight.totalLevels()).isEqualTo(6);
                     assertThat(insight.nextLevelTitle()).isEqualTo("自然拼读进阶");
                 });
     }

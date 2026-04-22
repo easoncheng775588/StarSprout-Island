@@ -263,3 +263,17 @@
   - 前端测试：`npm test -- --run`，20 个测试文件、90 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成二年级成熟化一期：
+  - 数学新增 2 关：除法平均分、统计图读数
+  - 语文新增 2 关：标点语气站、中心句小雷达
+  - 英语新增 2 关：食物单词听辨、动物对话跟读
+  - 新关卡继续复用 `story-choice`、`character-choice`、`listen-choice`、`sentence-read`，不新增数据库表
+  - 后端同步 `activityConfigJson`、知识点 code/title 和题库变体数
+  - 前端地图、关卡兜底配置和自动化测试已同步
+- 二年级定向验证通过：
+  - 前端测试：`npm test -- --run src/__tests__/grade2-maturity.test.tsx`，1 个测试文件、2 项测试通过
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=ApiSmokeTest#shouldFilterCurriculumBySecondGradeStage,ApiSmokeTest#shouldReturnExpandedGradeTwoMaturityLevelDetails test`
+- 二年级阶段全量验证通过：
+  - 前端测试：`npm test -- --run`，21 个测试文件、92 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

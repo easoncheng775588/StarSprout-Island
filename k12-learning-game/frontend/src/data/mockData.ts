@@ -87,7 +87,9 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         levels: [
           { code: 'math-grade2-multiply-001', title: '表内乘法起步', status: 'recommended' },
           { code: 'math-grade2-array-001', title: '乘法数组花园', status: 'available' },
-          { code: 'math-grade2-length-001', title: '长度单位比一比', status: 'available' }
+          { code: 'math-grade2-length-001', title: '长度单位比一比', status: 'available' },
+          { code: 'math-grade2-division-001', title: '除法平均分', status: 'available' },
+          { code: 'math-grade2-statistics-001', title: '统计图读数', status: 'available' }
         ]
       },
       {
@@ -219,7 +221,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '学会搭配词语、理清句子顺序，让表达更流畅。',
         levels: [
           { code: 'chinese-grade2-phrase-001', title: '词语搭配', status: 'recommended' },
-          { code: 'chinese-grade2-order-001', title: '句子排序', status: 'available' }
+          { code: 'chinese-grade2-order-001', title: '句子排序', status: 'available' },
+          { code: 'chinese-grade2-punctuation-001', title: '标点语气站', status: 'available' }
         ]
       },
       {
@@ -229,7 +232,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '从看图表达走到朗读理解，把二年级阅读基础搭起来。',
         levels: [
           { code: 'chinese-grade2-picture-001', title: '看图表达', status: 'available' },
-          { code: 'chinese-grade2-reading-001', title: '朗读理解', status: 'available' }
+          { code: 'chinese-grade2-reading-001', title: '朗读理解', status: 'available' },
+          { code: 'chinese-grade2-main-idea-001', title: '中心句小雷达', status: 'available' }
         ]
       },
       {
@@ -361,7 +365,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '继续认识字母组合和基础句型，把英语听懂一点、读顺一点。',
         levels: [
           { code: 'english-grade2-phonics-001', title: '自然拼读进阶', status: 'recommended' },
-          { code: 'english-grade2-sentence-001', title: '句型理解', status: 'available' }
+          { code: 'english-grade2-sentence-001', title: '句型理解', status: 'available' },
+          { code: 'english-grade2-food-listening-001', title: '食物单词听辨', status: 'available' }
         ]
       },
       {
@@ -371,7 +376,8 @@ export const subjectMaps: Record<SubjectCode, SubjectMapData> = {
         subtitle: '从日常对话走进简单绘本，让英语表达更像真实场景。',
         levels: [
           { code: 'english-grade2-dialogue-001', title: '日常对话', status: 'available' },
-          { code: 'english-grade2-story-001', title: '绘本理解', status: 'available' }
+          { code: 'english-grade2-story-001', title: '绘本理解', status: 'available' },
+          { code: 'english-grade2-animal-dialogue-001', title: '动物对话跟读', status: 'available' }
         ]
       },
       {

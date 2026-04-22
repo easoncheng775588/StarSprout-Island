@@ -1460,6 +1460,34 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       failureFeedback: '从 7 点往后数两格：8 点、9 点'
     }
   },
+  'math-grade2-division-001': {
+    'step-1': {
+      kind: 'story-choice',
+      instruction: '12 个苹果平均分给 3 个小朋友，每人几个？',
+      emoji: '🍎',
+      characterLabel: '平均分餐桌',
+      detailLines: ['先把 12 个苹果分成 3 份。', '每份一样多，就是平均分。'],
+      choices: [3, 4, 5],
+      correctChoice: 4,
+      successFeedback: '答对了，12 平均分成 3 份，每份 4 个',
+      failureFeedback: '可以 3 个小朋友轮流每人拿 1 个，数数每人最后有几个。'
+    }
+  },
+  'math-grade2-statistics-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '看水果统计图，哪种水果最多？',
+      choices: [
+        { label: '苹果', hint: '5 个' },
+        { label: '香蕉', hint: '8 个' },
+        { label: '梨', hint: '6 个' }
+      ],
+      correctChoice: '香蕉',
+      successFeedback: '答对了，香蕉有 8 个，是最多的',
+      detailLines: ['读统计图时先看每一类有几个。', '再比较数量大小。'],
+      failureFeedback: '先比较 5、8、6，哪个数最大？'
+    }
+  },
   'chinese-grade2-phrase-001': {
     'step-1': {
       kind: 'character-choice',
@@ -1518,6 +1546,36 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
       successFeedback: '短文朗读完成，继续保持这样的节奏'
     }
   },
+  'chinese-grade2-punctuation-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '“你今天开心吗”后面应该加什么标点？',
+      choices: [
+        { label: '？', hint: '问号' },
+        { label: '。', hint: '句号' },
+        { label: '！', hint: '感叹号' }
+      ],
+      correctChoice: '？',
+      successFeedback: '答对了，这是在提问，要用问号',
+      detailLines: ['看到“吗”，通常表示问题。'],
+      failureFeedback: '这句话是在问别人，要选能表示提问的标点。'
+    }
+  },
+  'chinese-grade2-main-idea-001': {
+    'step-1': {
+      kind: 'character-choice',
+      instruction: '读短段，找出中心句。',
+      choices: [
+        { label: '小松鼠很勤劳。', hint: '能概括整段意思' },
+        { label: '它摘了三个松果。', hint: '只是一个细节' },
+        { label: '树林里有风。', hint: '不是主要内容' }
+      ],
+      correctChoice: '小松鼠很勤劳。',
+      successFeedback: '答对了，这句话能概括整段主要意思',
+      detailLines: ['中心句常常能说出这一段主要讲什么。'],
+      failureFeedback: '找一找哪一句能把整段意思都说出来。'
+    }
+  },
   'english-grade2-phonics-001': {
     'step-1': {
       kind: 'listen-choice',
@@ -1565,6 +1623,33 @@ const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> =
         { text: 'They smile and start their trip.', emoji: '😊', scene: '他们笑着开始旅行' }
       ],
       successFeedback: '小绘本已经读完，做得真棒'
+    }
+  },
+  'english-grade2-food-listening-001': {
+    'step-1': {
+      kind: 'listen-choice',
+      instruction: 'Listen and choose: rice.',
+      audioPrompt: 'rice',
+      audioText: 'rice',
+      lang: 'en-US',
+      playButtonLabel: '播放食物单词',
+      choiceAriaLabelPrefix: '食物单词',
+      choices: ['rice', 'milk', 'cake'],
+      correctChoice: 'rice',
+      successFeedback: 'Good! rice is 米饭。',
+      failureFeedback: 'Listen again. rice starts with /r/.'
+    }
+  },
+  'english-grade2-animal-dialogue-001': {
+    'step-1': {
+      kind: 'sentence-read',
+      instruction: '围绕喜欢的动物，跟读简单问答。',
+      sentences: [
+        { text: 'Do you like cats?', emoji: '🐱', scene: '询问是否喜欢猫' },
+        { text: 'Yes, I do.', emoji: '😊', scene: '肯定回答' },
+        { text: 'Cats are cute.', emoji: '🐾', scene: '描述猫很可爱' }
+      ],
+      successFeedback: '动物对话跟读完成啦'
     }
   },
   'math-grade3-division-001': {

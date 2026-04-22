@@ -569,9 +569,25 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.chapters[0].levels[0].code").value("math-grade2-multiply-001"))
                 .andExpect(jsonPath("$.chapters[0].levels[1].code").value("math-grade2-array-001"))
                 .andExpect(jsonPath("$.chapters[0].levels[2].code").value("math-grade2-length-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[3].code").value("math-grade2-division-001"))
+                .andExpect(jsonPath("$.chapters[0].levels[4].code").value("math-grade2-statistics-001"))
                 .andExpect(jsonPath("$.chapters[1].code").value("math-grade2-life"))
                 .andExpect(jsonPath("$.chapters[1].levels[1].code").value("math-grade2-bar-model-001"))
                 .andExpect(jsonPath("$.chapters[1].levels[2].code").value("math-grade2-time-001"));
+
+        mockMvc.perform(get("/api/subjects/chinese/map").header("X-Child-Profile-Id", 3))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.chapters[0].code").value("chinese-grade2-words"))
+                .andExpect(jsonPath("$.chapters[0].levels[2].code").value("chinese-grade2-punctuation-001"))
+                .andExpect(jsonPath("$.chapters[1].code").value("chinese-grade2-reading"))
+                .andExpect(jsonPath("$.chapters[1].levels[2].code").value("chinese-grade2-main-idea-001"));
+
+        mockMvc.perform(get("/api/subjects/english/map").header("X-Child-Profile-Id", 3))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.chapters[0].code").value("english-grade2-phonics"))
+                .andExpect(jsonPath("$.chapters[0].levels[2].code").value("english-grade2-food-listening-001"))
+                .andExpect(jsonPath("$.chapters[1].code").value("english-grade2-story"))
+                .andExpect(jsonPath("$.chapters[1].levels[2].code").value("english-grade2-animal-dialogue-001"));
     }
 
     @Test
@@ -758,6 +774,57 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.steps[0].type").value("sentence-read"))
                 .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("一年级英语：课堂日常表达"))
                 .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("Open your book")));
+    }
+
+    @Test
+    void shouldReturnExpandedGradeTwoMaturityLevelDetails() throws Exception {
+        mockMvc.perform(get("/api/levels/math-grade2-division-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("math-grade2-division-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("story-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("二年级运算：平均分除法"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(8))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("平均分餐桌")));
+
+        mockMvc.perform(get("/api/levels/math-grade2-statistics-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("math-grade2-statistics-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("tap-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("二年级统计：读图比较"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(8))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("香蕉有 8 个")));
+
+        mockMvc.perform(get("/api/levels/chinese-grade2-punctuation-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("chinese-grade2-punctuation-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("tap-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("二年级表达：标点语气"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(8))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("问号")));
+
+        mockMvc.perform(get("/api/levels/chinese-grade2-main-idea-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("chinese-grade2-main-idea-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("tap-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("二年级阅读：中心句初步"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(6))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("小松鼠很勤劳")));
+
+        mockMvc.perform(get("/api/levels/english-grade2-food-listening-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("english-grade2-food-listening-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("listen-choice"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("二年级英语：食物词听辨"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(8))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("播放食物单词")));
+
+        mockMvc.perform(get("/api/levels/english-grade2-animal-dialogue-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("english-grade2-animal-dialogue-001"))
+                .andExpect(jsonPath("$.steps[0].type").value("sentence-read"))
+                .andExpect(jsonPath("$.steps[0].knowledgePointTitle").value("二年级英语：动物主题对话"))
+                .andExpect(jsonPath("$.steps[0].variantCount").value(6))
+                .andExpect(jsonPath("$.steps[0].activityConfigJson").value(org.hamcrest.Matchers.containsString("Do you like cats?")));
     }
 
     @Test
