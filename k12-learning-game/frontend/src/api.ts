@@ -257,6 +257,13 @@ export interface ParentDashboardData {
       averageAccuracyPercent: number;
       attemptCount: number;
     }>;
+    stageInsights: Array<{
+      stageLabel: string;
+      attemptCount: number;
+      averageAccuracyPercent: number;
+      statusLabel: string;
+      recommendation: string;
+    }>;
   };
   knowledgeMap: Array<{
     subjectTitle: string;
@@ -669,7 +676,8 @@ export function normalizeParentDashboardData(data: Partial<ParentDashboardData> 
       latestAccuracyPercent: data.fluencySummary?.latestAccuracyPercent ?? 0,
       latestRecordedAtLabel: data.fluencySummary?.latestRecordedAtLabel ?? '',
       encouragement: data.fluencySummary?.encouragement ?? '本周还没有开始数感快练，可以先用 1 分钟热热身。',
-      fluencyTrend
+      fluencyTrend,
+      stageInsights: data.fluencySummary?.stageInsights ?? []
     },
     knowledgeMap: data.knowledgeMap ?? [],
     thinkingModelProgress: data.thinkingModelProgress ?? [],

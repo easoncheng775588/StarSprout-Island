@@ -228,6 +228,14 @@ class PersistenceBackedGameContentServiceTest {
                         org.assertj.core.groups.Tuple.tuple(LocalDate.now().minusDays(1).getMonthValue() + "/" + LocalDate.now().minusDays(1).getDayOfMonth(), 0, 0),
                         org.assertj.core.groups.Tuple.tuple(LocalDate.now().getMonthValue() + "/" + LocalDate.now().getDayOfMonth(), 1, 100)
                 );
+        assertThat(dashboard.fluencySummary().stageInsights())
+                .extracting(item -> item.stageLabel(), item -> item.attemptCount(), item -> item.averageAccuracyPercent(), item -> item.statusLabel())
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple("幼小衔接", 1, 60, "建议回看"),
+                        org.assertj.core.groups.Tuple.tuple("一年级", 1, 80, "继续巩固"),
+                        org.assertj.core.groups.Tuple.tuple("二年级", 1, 100, "稳定发挥")
+                );
+        assertThat(dashboard.fluencySummary().stageInsights().get(0).recommendation()).contains("幼小衔接");
     }
 
     @Test

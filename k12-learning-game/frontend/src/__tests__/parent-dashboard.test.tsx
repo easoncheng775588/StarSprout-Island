@@ -156,6 +156,29 @@ describe('ParentDashboard', () => {
                 { dayLabel: '周五', averageAccuracyPercent: 92, attemptCount: 1 },
                 { dayLabel: '周六', averageAccuracyPercent: 96, attemptCount: 1 },
                 { dayLabel: '周日', averageAccuracyPercent: 0, attemptCount: 0 }
+              ],
+              stageInsights: [
+                {
+                  stageLabel: '幼小衔接',
+                  attemptCount: 1,
+                  averageAccuracyPercent: 68,
+                  statusLabel: '建议回看',
+                  recommendation: '建议先回到幼小衔接做慢练，边说思路边完成 1 组。'
+                },
+                {
+                  stageLabel: '一年级',
+                  attemptCount: 2,
+                  averageAccuracyPercent: 84,
+                  statusLabel: '继续巩固',
+                  recommendation: '建议继续完成一年级快练，先把正确率稳在 90% 左右。'
+                },
+                {
+                  stageLabel: '二年级',
+                  attemptCount: 1,
+                  averageAccuracyPercent: 100,
+                  statusLabel: '稳定发挥',
+                  recommendation: '可以继续保持二年级快练节奏，准备挑战更高一层。'
+                }
               ]
             },
             knowledgeMap: [
@@ -254,6 +277,12 @@ describe('ParentDashboard', () => {
     expect(screen.getByLabelText('周四 数感快练未练习')).toBeInTheDocument();
     expect(screen.getByText('周六')).toBeInTheDocument();
     expect(screen.getByText('96%')).toBeInTheDocument();
+    expect(screen.getByText('快练分层洞察')).toBeInTheDocument();
+    expect(screen.getAllByText('幼小衔接').length).toBeGreaterThan(0);
+    expect(screen.getByText('建议回看')).toBeInTheDocument();
+    expect(screen.getByText('建议先回到幼小衔接做慢练，边说思路边完成 1 组。')).toBeInTheDocument();
+    expect(screen.getByText('稳定发挥')).toBeInTheDocument();
+    expect(screen.getByText('可以继续保持二年级快练节奏，准备挑战更高一层。')).toBeInTheDocument();
     expect(screen.getByText('知识点掌握图谱')).toBeInTheDocument();
     expect(screen.getAllByText('20 以内加减法')).toHaveLength(2);
     expect(screen.getByText('掌握度 72% · 巩固中')).toBeInTheDocument();
@@ -355,7 +384,8 @@ describe('ParentDashboard', () => {
               latestAccuracyPercent: 0,
               latestRecordedAtLabel: '',
               encouragement: '本周还没有开始数感快练，可以先用 1 分钟热热身。',
-              fluencyTrend: []
+              fluencyTrend: [],
+              stageInsights: []
             },
             knowledgeMap: [],
             thinkingModelProgress: [],

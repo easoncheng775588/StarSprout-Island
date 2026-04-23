@@ -481,3 +481,12 @@
   - 前端全量测试：`npm test -- --run`，29 个测试文件、106 项测试通过
   - 前端构建：`npm run build`
   - 后端全量测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成成熟产品 P2：家长端快练分层洞察：
+  - 后端在 `fluencySummary` 下新增 `stageInsights`，按最近 7 天快练记录聚合不同学段的完成次数、平均正确率、状态标签和陪练建议
+  - 前端在“数感快练趋势”卡下新增“快练分层洞察”，让家长一眼看到哪一层稳定、哪一层适合回看
+  - 当前先落地学段维度，不新增表，也不强行推题型洞察，避免在现有快练模型上过度扩展
+- 家长端快练分层洞察验证：
+  - RED：`npm test -- --run src/__tests__/parent-dashboard.test.tsx` 找不到“快练分层洞察”
+  - RED：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=ApiSmokeTest,PersistenceBackedGameContentServiceTest test` 缺少 `stageInsights()`
+  - GREEN：上述前后端定向测试通过
+  - 全量验证：`npm test -- --run`、`npm run build`、`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

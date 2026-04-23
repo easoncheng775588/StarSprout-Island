@@ -3075,6 +3075,86 @@ body::before {
   gap: 1.2rem;
 }
 
+.fluency-stage-insights {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.4rem;
+  padding: 1.8rem;
+  border-radius: 2.4rem;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 0 0 0.1rem rgba(33, 48, 77, 0.06);
+}
+
+.fluency-stage-insights-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.fluency-stage-insights-header strong {
+  color: var(--ink);
+  font-size: 1.72rem;
+}
+
+.fluency-stage-insights-header span,
+.fluency-stage-insight-empty,
+.fluency-stage-insight-card p {
+  color: rgba(33, 48, 77, 0.66);
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+.fluency-stage-insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1.2rem;
+}
+
+.fluency-stage-insight-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.6rem;
+  border-radius: 2rem;
+  background: rgba(248, 251, 255, 0.9);
+  box-shadow:
+    0 1.2rem 2.4rem rgba(33, 48, 77, 0.06),
+    inset 0 0 0 0.1rem rgba(33, 48, 77, 0.05);
+}
+
+.fluency-stage-insight-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.fluency-stage-insight-header strong {
+  color: var(--ink);
+  font-size: 1.76rem;
+}
+
+.fluency-stage-insight-header span {
+  display: inline-flex;
+  padding: 0.6rem 1rem;
+  border-radius: 99.9rem;
+  background: rgba(89, 190, 168, 0.14);
+  color: #2a8d7b;
+  font-size: 1.28rem;
+  font-weight: 900;
+}
+
+.fluency-stage-insight-card p {
+  margin: 0;
+}
+
+.fluency-stage-insight-copy {
+  color: var(--ink);
+  line-height: 1.7;
+}
+
 .fluency-trend-point {
   display: grid;
   justify-items: center;

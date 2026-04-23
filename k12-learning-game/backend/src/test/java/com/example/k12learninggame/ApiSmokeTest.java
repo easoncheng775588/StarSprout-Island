@@ -1152,7 +1152,8 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.fluencySummary.fluencyTrend[0].attemptCount").value(0))
                 .andExpect(jsonPath("$.fluencySummary.fluencyTrend[0].averageAccuracyPercent").value(0))
                 .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].attemptCount").value(0))
-                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].averageAccuracyPercent").value(0));
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].averageAccuracyPercent").value(0))
+                .andExpect(jsonPath("$.fluencySummary.stageInsights.length()").value(0));
     }
 
     @Test
@@ -1197,7 +1198,15 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.fluencySummary.fluencyTrend[5].averageAccuracyPercent").value(0))
                 .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].attemptCount").value(2))
                 .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].averageAccuracyPercent").value(80))
-                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].dayLabel").isNotEmpty());
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].dayLabel").isNotEmpty())
+                .andExpect(jsonPath("$.fluencySummary.stageInsights.length()").value(2))
+                .andExpect(jsonPath("$.fluencySummary.stageInsights[0].stageLabel").value("一年级"))
+                .andExpect(jsonPath("$.fluencySummary.stageInsights[0].attemptCount").value(1))
+                .andExpect(jsonPath("$.fluencySummary.stageInsights[0].averageAccuracyPercent").value(60))
+                .andExpect(jsonPath("$.fluencySummary.stageInsights[0].statusLabel").value("建议回看"))
+                .andExpect(jsonPath("$.fluencySummary.stageInsights[0].recommendation").value(org.hamcrest.Matchers.containsString("一年级")))
+                .andExpect(jsonPath("$.fluencySummary.stageInsights[1].stageLabel").value("二年级"))
+                .andExpect(jsonPath("$.fluencySummary.stageInsights[1].statusLabel").value("稳定发挥"));
     }
 
     @Test

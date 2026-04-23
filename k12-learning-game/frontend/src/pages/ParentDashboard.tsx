@@ -39,6 +39,7 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
   }
 
   const hasFluencyTrendActivity = dashboard.fluencySummary.fluencyTrend.some((point) => point.attemptCount > 0);
+  const hasFluencyStageInsights = dashboard.fluencySummary.stageInsights.length > 0;
 
   async function handleSaveSettings() {
     setIsSaving(true);
@@ -253,6 +254,28 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
                 );
               })}
             </div>
+          </div>
+          <div className="fluency-stage-insights">
+            <div className="fluency-stage-insights-header">
+              <strong>快练分层洞察</strong>
+              <span>{hasFluencyStageInsights ? '把不同学段拆开看，更容易知道今晚该陪哪一层。' : '开始跨层快练后，这里会自动整理每一层的状态。'}</span>
+            </div>
+            {hasFluencyStageInsights ? (
+              <div className="fluency-stage-insight-grid">
+                {dashboard.fluencySummary.stageInsights.map((item) => (
+                  <article className="fluency-stage-insight-card" key={item.stageLabel}>
+                    <div className="fluency-stage-insight-header">
+                      <strong>{item.stageLabel}</strong>
+                      <span>{item.statusLabel}</span>
+                    </div>
+                    <p>近 7 天完成 {item.attemptCount} 次 · 平均正确率 {item.averageAccuracyPercent}%</p>
+                    <strong className="fluency-stage-insight-copy">{item.recommendation}</strong>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="fluency-stage-insight-empty">完成不同层级的快练后，这里会自动告诉你哪一层最稳、哪一层适合回看。</p>
+            )}
           </div>
         </article>
 

@@ -51,6 +51,7 @@ import com.example.k12learninggame.dto.MistakeReviewSubmitRequest;
 import com.example.k12learninggame.dto.MistakeReviewSubmitResponse;
 import com.example.k12learninggame.dto.ParentChildComparisonDto;
 import com.example.k12learninggame.dto.ParentDashboardResponse;
+import com.example.k12learninggame.dto.ParentFluencyStageInsightDto;
 import com.example.k12learninggame.dto.ParentFluencySummaryDto;
 import com.example.k12learninggame.dto.ParentFluencyTrendPointDto;
 import com.example.k12learninggame.dto.ParentSettingsDto;
@@ -923,7 +924,8 @@ public class GameContentService {
                 latestAttempt != null ? latestAttempt.getAccuracyPercent() : 0,
                 latestAttempt != null ? toRelativeDateTimeLabel(latestAttempt.getRecordedAt()) : "",
                 buildFluencyEncouragement(recentAttempts.size()),
-                buildFluencyTrend(recentAttempts, windowStart)
+                buildFluencyTrend(recentAttempts, windowStart),
+                buildFluencyStageInsights(recentAttempts)
         );
     }
 
@@ -957,6 +959,56 @@ public class GameContentService {
             return "本周还没有开始数感快练，可以先用 1 分钟热热身。";
         }
         return "本周已经完成 " + attemptCount + " 次快练，可以继续保持每天 1 次的节奏。";
+    }
+
+    private List<ParentFluencyStageInsightDto> buildFluencyStageInsights(List<FluencyAttemptEntity> recentAttempts) {
+        return recentAttempts.stream()
+                .collect(Collectors.groupingBy(
+                        FluencyAttemptEntity::getStageLabel,
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ))
+                .entrySet().stream()
+                .map(entry -> {
+                    int averageAccuracyPercent = (int) Math.round(entry.getValue().stream()
+                            .mapToInt(FluencyAttemptEntity::getAccuracyPercent)
+                            .average()
+                            .orElse(0));
+                    String statusLabel = fluencyStageStatusLabel(averageAccuracyPercent);
+
+                    return new ParentFluencyStageInsightDto(
+                            entry.getKey(),
+                            entry.getValue().size(),
+                            averageAccuracyPercent,
+                            statusLabel,
+                            fluencyStageRecommendation(entry.getKey(), statusLabel)
+                    );
+                })
+                .sorted(Comparator.comparingInt(item -> stageOrder(item.stageLabel())))
+                .toList();
+    }
+
+    private String fluencyStageStatusLabel(int averageAccuracyPercent) {
+        if (averageAccuracyPercent >= 90) {
+            return "稳定发挥";
+        }
+        if (averageAccuracyPercent >= 75) {
+            return "继续巩固";
+        }
+        return "建议回看";
+    }
+
+    private String fluencyStageRecommendation(String stageLabel, String statusLabel) {
+        return switch (statusLabel) {
+            case "稳定发挥" -> "可以继续保持" + stageLabel + "快练节奏，准备挑战更高一层。";
+            case "继续巩固" -> "建议继续完成" + stageLabel + "快练，先把正确率稳在 90% 左右。";
+            default -> "建议先回到" + stageLabel + "做慢练，边说思路边完成 1 组。";
+        };
+    }
+
+    private int stageOrder(String stageLabel) {
+        int index = CORE_STAGE_LABELS.indexOf(stageLabel);
+        return index >= 0 ? index : CORE_STAGE_LABELS.size();
     }
 
     private String resolveStageLabel(ChildProfileEntity child) {
