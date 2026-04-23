@@ -245,6 +245,14 @@ export interface ParentDashboardData {
     readinessLabel: string;
     nextMilestone: string;
   };
+  fluencySummary: {
+    attemptCount: number;
+    averageAccuracyPercent: number;
+    latestStageLabel: string;
+    latestAccuracyPercent: number;
+    latestRecordedAtLabel: string;
+    encouragement: string;
+  };
   knowledgeMap: Array<{
     subjectTitle: string;
     knowledgePointCode: string;
@@ -635,6 +643,14 @@ export function normalizeParentDashboardData(data: Partial<ParentDashboardData> 
       completionPercent: learningVitals.totalCompletedLevels > 0 ? 100 : 0,
       readinessLabel: '继续探索',
       nextMilestone: '完成更多关卡后会生成阶段建议。'
+    },
+    fluencySummary: data.fluencySummary ?? {
+      attemptCount: 0,
+      averageAccuracyPercent: 0,
+      latestStageLabel: '当前学段',
+      latestAccuracyPercent: 0,
+      latestRecordedAtLabel: '',
+      encouragement: '本周还没有开始数感快练，可以先用 1 分钟热热身。'
     },
     knowledgeMap: data.knowledgeMap ?? [],
     thinkingModelProgress: data.thinkingModelProgress ?? [],

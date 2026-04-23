@@ -1140,7 +1140,52 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.weeklyReport.earnedStars").value(9))
                 .andExpect(jsonPath("$.weeklyReport.averageAccuracyPercent").value(86))
                 .andExpect(jsonPath("$.weeklyReport.subjectHighlights[0]").value(org.hamcrest.Matchers.containsString("数学岛")))
-                .andExpect(jsonPath("$.weeklyReport.parentAction").value(org.hamcrest.Matchers.containsString("每天")));
+                .andExpect(jsonPath("$.weeklyReport.parentAction").value(org.hamcrest.Matchers.containsString("每天")))
+                .andExpect(jsonPath("$.fluencySummary.attemptCount").value(0))
+                .andExpect(jsonPath("$.fluencySummary.averageAccuracyPercent").value(0))
+                .andExpect(jsonPath("$.fluencySummary.latestStageLabel").value("幼小衔接"))
+                .andExpect(jsonPath("$.fluencySummary.latestAccuracyPercent").value(0))
+                .andExpect(jsonPath("$.fluencySummary.latestRecordedAtLabel").value(""))
+                .andExpect(jsonPath("$.fluencySummary.encouragement").value(org.hamcrest.Matchers.containsString("数感快练")));
+    }
+
+    @Test
+    @Transactional
+    void shouldIncludeFluencySummaryInParentDashboard() throws Exception {
+        mockMvc.perform(post("/api/fluency/attempts")
+                        .header("X-Child-Profile-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "stageLabel": "一年级",
+                                  "totalQuestions": 5,
+                                  "correctCount": 3,
+                                  "durationSeconds": 58
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/fluency/attempts")
+                        .header("X-Child-Profile-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "stageLabel": "二年级",
+                                  "totalQuestions": 5,
+                                  "correctCount": 5,
+                                  "durationSeconds": 49
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/parent/dashboard").header("X-Child-Profile-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fluencySummary.attemptCount").value(2))
+                .andExpect(jsonPath("$.fluencySummary.averageAccuracyPercent").value(80))
+                .andExpect(jsonPath("$.fluencySummary.latestStageLabel").value("二年级"))
+                .andExpect(jsonPath("$.fluencySummary.latestAccuracyPercent").value(100))
+                .andExpect(jsonPath("$.fluencySummary.latestRecordedAtLabel").isNotEmpty())
+                .andExpect(jsonPath("$.fluencySummary.encouragement").value(org.hamcrest.Matchers.containsString("2 次")));
     }
 
     @Test

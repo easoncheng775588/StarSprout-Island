@@ -463,3 +463,12 @@
   - GREEN：上述后端定向测试通过
   - RED：`npm test -- --run src/__tests__/fluency-practice.test.tsx` 找不到后端返回的快练记录文案
   - GREEN：上述前端定向测试通过
+- 已完成成熟产品 P1：家长端数感快练趋势卡：
+  - 后端 `GET /api/parent/dashboard` 新增 `fluencySummary`，返回近 7 天快练次数、平均正确率、最近一次学段/正确率/时间和鼓励文案
+  - 前端家长中心新增“数感快练趋势”卡，直接展示本周完成次数、平均正确率、最近一次快练和鼓励语
+  - 前端为旧接口缺字段场景补默认值，避免联调时因为后端版本差异导致页面空白
+- 家长端快练趋势 TDD/验证：
+  - RED：`npm test -- --run src/__tests__/parent-dashboard.test.tsx` 找不到“数感快练趋势”
+  - GREEN：上述前端定向测试通过
+  - 后端定向测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=ApiSmokeTest,PersistenceBackedGameContentServiceTest test`
+  - 全量验证：`npm test -- --run`、`npm run build`、`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

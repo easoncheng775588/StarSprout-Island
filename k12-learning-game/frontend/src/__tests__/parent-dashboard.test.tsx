@@ -141,6 +141,14 @@ describe('ParentDashboard', () => {
               readinessLabel: '主线起步中',
               nextMilestone: '再完成 4 关，进入一年级巩固阶段'
             },
+            fluencySummary: {
+              attemptCount: 4,
+              averageAccuracyPercent: 92,
+              latestStageLabel: '一年级',
+              latestAccuracyPercent: 100,
+              latestRecordedAtLabel: '今天 19:10',
+              encouragement: '本周已经完成 4 次快练，可以继续保持每天 1 次的节奏。'
+            },
             knowledgeMap: [
               {
                 knowledgePointCode: 'math.add-subtract.core',
@@ -227,6 +235,11 @@ describe('ParentDashboard', () => {
     expect(screen.getByText('一年级 · 主线起步中')).toBeInTheDocument();
     expect(screen.getByText('已完成 8 / 24 关')).toBeInTheDocument();
     expect(screen.getByText('再完成 4 关，进入一年级巩固阶段')).toBeInTheDocument();
+    expect(screen.getByText('数感快练趋势')).toBeInTheDocument();
+    expect(screen.getByText('本周完成 4 次快练')).toBeInTheDocument();
+    expect(screen.getByText('平均正确率 92%')).toBeInTheDocument();
+    expect(screen.getByText('最近一次：一年级 · 100% · 今天 19:10')).toBeInTheDocument();
+    expect(screen.getByText('本周已经完成 4 次快练，可以继续保持每天 1 次的节奏。')).toBeInTheDocument();
     expect(screen.getByText('知识点掌握图谱')).toBeInTheDocument();
     expect(screen.getAllByText('20 以内加减法')).toHaveLength(2);
     expect(screen.getByText('掌握度 72% · 巩固中')).toBeInTheDocument();
@@ -320,6 +333,14 @@ describe('ParentDashboard', () => {
               completionPercent: 33,
               readinessLabel: '主线起步中',
               nextMilestone: '再完成 4 关，进入一年级巩固阶段'
+            },
+            fluencySummary: {
+              attemptCount: 0,
+              averageAccuracyPercent: 0,
+              latestStageLabel: '一年级',
+              latestAccuracyPercent: 0,
+              latestRecordedAtLabel: '',
+              encouragement: '本周还没有开始数感快练，可以先用 1 分钟热热身。'
             },
             knowledgeMap: [],
             thinkingModelProgress: [],

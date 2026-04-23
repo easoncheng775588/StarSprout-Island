@@ -15,6 +15,7 @@ public record ParentDashboardResponse(
         List<RecommendedActionDto> recommendedActions,
         ParentSettingsDto settings,
         LearningVitalsDto learningVitals,
+        ParentFluencySummaryDto fluencySummary,
         List<ParentSubjectInsightDto> subjectInsights,
         List<RecentActivityDto> recentActivities,
         List<ParentChildComparisonDto> siblingComparisons,

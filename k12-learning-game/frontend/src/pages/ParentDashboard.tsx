@@ -206,6 +206,24 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
       )}
 
       <section className="dashboard-grid dashboard-grid-parent-insights">
+        <article className="panel-card fluency-trend-panel">
+          <div className="fluency-trend-header">
+            <div>
+              <p className="eyebrow">数感快练趋势</p>
+              <h2>本周完成 {dashboard.fluencySummary.attemptCount} 次快练</h2>
+            </div>
+            <div className="fluency-trend-pill">
+              <strong>平均正确率 {dashboard.fluencySummary.averageAccuracyPercent}%</strong>
+              <span>
+                {dashboard.fluencySummary.latestRecordedAtLabel
+                  ? `最近一次：${dashboard.fluencySummary.latestStageLabel} · ${dashboard.fluencySummary.latestAccuracyPercent}% · ${dashboard.fluencySummary.latestRecordedAtLabel}`
+                  : '最近一次：还没有开始练习'}
+              </span>
+            </div>
+          </div>
+          <p className="fluency-trend-copy">{dashboard.fluencySummary.encouragement}</p>
+        </article>
+
         <article className="panel-card knowledge-map-panel">
           <p className="eyebrow">知识点掌握图谱</p>
           <div className="knowledge-map-grid">

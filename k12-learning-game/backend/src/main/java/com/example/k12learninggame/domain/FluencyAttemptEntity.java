@@ -65,6 +65,10 @@ public class FluencyAttemptEntity {
         return stageLabel;
     }
 
+    public ChildProfileEntity getChildProfile() {
+        return childProfile;
+    }
+
     public int getTotalQuestions() {
         return totalQuestions;
     }

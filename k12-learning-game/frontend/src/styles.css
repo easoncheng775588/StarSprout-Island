@@ -2965,6 +2965,7 @@ body::before {
   grid-template-columns: minmax(0, 1.1fr) minmax(32rem, 0.9fr);
 }
 
+.fluency-trend-panel,
 .knowledge-map-panel,
 .thinking-model-panel,
 .mistake-loop-panel {
@@ -2972,6 +2973,7 @@ body::before {
   overflow: hidden;
 }
 
+.fluency-trend-panel::before,
 .knowledge-map-panel::before,
 .thinking-model-panel::before,
 .mistake-loop-panel::before {
@@ -2984,6 +2986,58 @@ body::before {
   top: -5.8rem;
   background: radial-gradient(circle, rgba(255, 212, 107, 0.3), transparent 68%);
   pointer-events: none;
+}
+
+.fluency-trend-panel {
+  display: grid;
+  gap: 1.6rem;
+  background:
+    radial-gradient(circle at 92% 18%, rgba(255, 212, 107, 0.28), transparent 28%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(229, 246, 255, 0.92));
+}
+
+.fluency-trend-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1.6rem;
+  align-items: start;
+}
+
+.fluency-trend-header h2,
+.fluency-trend-copy {
+  margin: 0;
+}
+
+.fluency-trend-pill {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.8rem;
+  min-width: min(100%, 28rem);
+  padding: 1.6rem;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 0 0 0.1rem rgba(33, 48, 77, 0.06);
+}
+
+.fluency-trend-pill strong {
+  color: var(--mint);
+  font-size: 1.92rem;
+}
+
+.fluency-trend-pill span,
+.fluency-trend-copy {
+  color: rgba(33, 48, 77, 0.74);
+  font-weight: 800;
+  line-height: 1.7;
+}
+
+.fluency-trend-copy {
+  position: relative;
+  z-index: 1;
+  font-size: 1.76rem;
 }
 
 .knowledge-map-grid,
@@ -3881,6 +3935,10 @@ body::before {
 
   .stage-report-card {
     grid-template-columns: 1fr;
+  }
+
+  .fluency-trend-header {
+    flex-direction: column;
   }
 
   .weekly-report-header,

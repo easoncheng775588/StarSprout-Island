@@ -1,11 +1,13 @@
 package com.example.k12learninggame;
 
 import com.example.k12learninggame.domain.LevelCompletionEntity;
+import com.example.k12learninggame.domain.FluencyAttemptEntity;
 import com.example.k12learninggame.dto.AuthLoginRequest;
 import com.example.k12learninggame.dto.CompleteLevelRequest;
 import com.example.k12learninggame.dto.HomeOverviewResponse;
 import com.example.k12learninggame.dto.SubjectCardDto;
 import com.example.k12learninggame.repository.ChildProfileRepository;
+import com.example.k12learninggame.repository.FluencyAttemptRepository;
 import com.example.k12learninggame.repository.LevelCompletionRepository;
 import com.example.k12learninggame.repository.SubjectRepository;
 import com.example.k12learninggame.service.GameContentService;
@@ -13,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +35,9 @@ class PersistenceBackedGameContentServiceTest {
 
     @Autowired
     private LevelCompletionRepository levelCompletionRepository;
+
+    @Autowired
+    private FluencyAttemptRepository fluencyAttemptRepository;
 
     @Test
     void shouldReadHomeOverviewFromDatabaseState() {
@@ -152,6 +160,62 @@ class PersistenceBackedGameContentServiceTest {
         assertThat(achievementsAfterFirstCompletion.unlockedBadges())
                 .extracting(badge -> badge.code())
                 .contains("weekly_champion");
+    }
+
+    @Test
+    @Transactional
+    void shouldBuildFluencySummaryUsingRecentAttemptsOnly() {
+        var child = childProfileRepository.findById(1L).orElseThrow();
+        fluencyAttemptRepository.save(new FluencyAttemptEntity(
+                child,
+                "幼小衔接",
+                5,
+                1,
+                62,
+                20,
+                LocalDate.now().minusDays(8),
+                LocalDateTime.now().minusDays(8)
+        ));
+        fluencyAttemptRepository.save(new FluencyAttemptEntity(
+                child,
+                "幼小衔接",
+                5,
+                3,
+                61,
+                60,
+                LocalDate.now().minusDays(6),
+                LocalDateTime.now().minusDays(6)
+        ));
+        fluencyAttemptRepository.save(new FluencyAttemptEntity(
+                child,
+                "一年级",
+                5,
+                4,
+                55,
+                80,
+                LocalDate.now().minusDays(2),
+                LocalDateTime.now().minusDays(2)
+        ));
+        fluencyAttemptRepository.save(new FluencyAttemptEntity(
+                child,
+                "二年级",
+                5,
+                5,
+                48,
+                100,
+                LocalDate.now(),
+                LocalDateTime.now()
+        ));
+
+        var dashboard = gameContentService.getParentDashboard(1L);
+
+        assertThat(dashboard.fluencySummary()).isNotNull();
+        assertThat(dashboard.fluencySummary().attemptCount()).isEqualTo(3);
+        assertThat(dashboard.fluencySummary().averageAccuracyPercent()).isEqualTo(80);
+        assertThat(dashboard.fluencySummary().latestStageLabel()).isEqualTo("二年级");
+        assertThat(dashboard.fluencySummary().latestAccuracyPercent()).isEqualTo(100);
+        assertThat(dashboard.fluencySummary().latestRecordedAtLabel()).contains("今天");
+        assertThat(dashboard.fluencySummary().encouragement()).contains("3 次");
     }
 
     @Test

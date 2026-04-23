@@ -51,6 +51,7 @@ import com.example.k12learninggame.dto.MistakeReviewSubmitRequest;
 import com.example.k12learninggame.dto.MistakeReviewSubmitResponse;
 import com.example.k12learninggame.dto.ParentChildComparisonDto;
 import com.example.k12learninggame.dto.ParentDashboardResponse;
+import com.example.k12learninggame.dto.ParentFluencySummaryDto;
 import com.example.k12learninggame.dto.ParentSettingsDto;
 import com.example.k12learninggame.dto.ParentActiveChildUpdateRequest;
 import com.example.k12learninggame.dto.ParentSettingsUpdateRequest;
@@ -113,6 +114,7 @@ public class GameContentService {
     private static final List<String> CORE_STAGE_LABELS = List.of("幼小衔接", "一年级", "二年级", "三年级", "四年级");
     private static final String DEFAULT_STAGE_LABEL = "幼小衔接";
     private static final Set<String> MAINLINE_SUBJECT_CODES = Set.of("math", "chinese", "english");
+    private static final int FLUENCY_SUMMARY_WINDOW_DAYS = 7;
 
     private final ChildProfileRepository childProfileRepository;
     private final SubjectRepository subjectRepository;
@@ -678,6 +680,7 @@ public class GameContentService {
                 findBestLearningPeriodLabel(completions),
                 countEffectiveLearningDays(child, 7)
         );
+        ParentFluencySummaryDto fluencySummary = buildFluencySummary(child);
 
         return new ParentDashboardResponse(
                 child.getNickname(),
@@ -706,6 +709,7 @@ public class GameContentService {
                         child.getParentSettings() != null && child.getParentSettings().isReminderEnabled()
                 ),
                 learningVitals,
+                fluencySummary,
                 buildSubjectInsights(child, completions),
                 completions.stream()
                         .limit(3)
@@ -893,6 +897,38 @@ public class GameContentService {
         return getChildCompletions(child).stream()
                 .map(item -> item.getLevel().getCode())
                 .collect(LinkedHashSet::new, Set::add, Set::addAll);
+    }
+
+    private ParentFluencySummaryDto buildFluencySummary(ChildProfileEntity child) {
+        List<FluencyAttemptEntity> childAttempts = fluencyAttemptRepository.findByChildProfile_IdOrderByRecordedAtDesc(child.getId());
+        LocalDate windowStart = LocalDate.now().minusDays(FLUENCY_SUMMARY_WINDOW_DAYS - 1L);
+        List<FluencyAttemptEntity> recentAttempts = childAttempts.stream()
+                .filter(item -> !item.getAttemptDate().isBefore(windowStart))
+                .toList();
+
+        FluencyAttemptEntity latestAttempt = childAttempts.stream().findFirst().orElse(null);
+        int averageAccuracyPercent = recentAttempts.isEmpty()
+                ? 0
+                : (int) Math.round(recentAttempts.stream()
+                .mapToInt(FluencyAttemptEntity::getAccuracyPercent)
+                .average()
+                .orElse(0));
+
+        return new ParentFluencySummaryDto(
+                recentAttempts.size(),
+                averageAccuracyPercent,
+                latestAttempt != null ? latestAttempt.getStageLabel() : resolveStageLabel(child),
+                latestAttempt != null ? latestAttempt.getAccuracyPercent() : 0,
+                latestAttempt != null ? toRelativeDateTimeLabel(latestAttempt.getRecordedAt()) : "",
+                buildFluencyEncouragement(recentAttempts.size())
+        );
+    }
+
+    private String buildFluencyEncouragement(int attemptCount) {
+        if (attemptCount == 0) {
+            return "本周还没有开始数感快练，可以先用 1 分钟热热身。";
+        }
+        return "本周已经完成 " + attemptCount + " 次快练，可以继续保持每天 1 次的节奏。";
     }
 
     private String resolveStageLabel(ChildProfileEntity child) {
@@ -1639,25 +1675,27 @@ public class GameContentService {
     }
 
     private RecentActivityDto toRecentActivityDto(LevelCompletionEntity completion) {
-        LocalDate completedDate = completion.getCompletedAt().toLocalDate();
-        String completedAtLabel;
-
-        if (completedDate.isEqual(LocalDate.now())) {
-            completedAtLabel = "今天 " + TIME_FORMATTER.format(completion.getCompletedAt());
-        } else if (completedDate.isEqual(LocalDate.now().minusDays(1))) {
-            completedAtLabel = "昨天 " + TIME_FORMATTER.format(completion.getCompletedAt());
-        } else {
-            completedAtLabel = completion.getCompletedAt().getMonthValue() + "月"
-                    + completion.getCompletedAt().getDayOfMonth() + "日 "
-                    + TIME_FORMATTER.format(completion.getCompletedAt());
-        }
-
         return new RecentActivityDto(
                 completion.getLevel().getChapter().getSubject().getTitle(),
                 completion.getLevel().getDetailTitle(),
-                completedAtLabel,
+                toRelativeDateTimeLabel(completion.getCompletedAt()),
                 completion.getLevel().getRewardStars()
         );
+    }
+
+    private String toRelativeDateTimeLabel(LocalDateTime recordedAt) {
+        LocalDate date = recordedAt.toLocalDate();
+
+        if (date.isEqual(LocalDate.now())) {
+            return "今天 " + TIME_FORMATTER.format(recordedAt);
+        }
+        if (date.isEqual(LocalDate.now().minusDays(1))) {
+            return "昨天 " + TIME_FORMATTER.format(recordedAt);
+        }
+
+        return recordedAt.getMonthValue() + "月"
+                + recordedAt.getDayOfMonth() + "日 "
+                + TIME_FORMATTER.format(recordedAt);
     }
 
     private int toRoundedMinutes(List<LevelCompletionEntity> completions) {
