@@ -296,6 +296,29 @@ class ApiSmokeTest {
 
     @Test
     @Transactional
+    void shouldRecordDailyFluencyAttempt() throws Exception {
+        mockMvc.perform(post("/api/fluency/attempts")
+                        .header("X-Child-Profile-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "stageLabel": "一年级",
+                                  "totalQuestions": 5,
+                                  "correctCount": 4,
+                                  "durationSeconds": 60
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.stageLabel").value("一年级"))
+                .andExpect(jsonPath("$.totalQuestions").value(5))
+                .andExpect(jsonPath("$.correctCount").value(4))
+                .andExpect(jsonPath("$.accuracyPercent").value(80))
+                .andExpect(jsonPath("$.todayAttemptCount").value(1))
+                .andExpect(jsonPath("$.encouragement").value("今天已完成 1 次数感快练，正确率 80%"));
+    }
+
+    @Test
+    @Transactional
     void shouldReturnMistakeReviewCenterWithTargetLevelOrExistingMistake() throws Exception {
         mockMvc.perform(patch("/api/parent/children/3")
                         .header("X-Parent-Account-Id", 1)

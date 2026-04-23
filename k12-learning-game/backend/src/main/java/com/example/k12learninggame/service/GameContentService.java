@@ -3,6 +3,7 @@ package com.example.k12learninggame.service;
 import com.example.k12learninggame.domain.ChapterEntity;
 import com.example.k12learninggame.domain.ChildProfileEntity;
 import com.example.k12learninggame.domain.DailyTaskClaimEntity;
+import com.example.k12learninggame.domain.FluencyAttemptEntity;
 import com.example.k12learninggame.domain.LeaderboardBoardEntity;
 import com.example.k12learninggame.domain.LevelCompletionEntity;
 import com.example.k12learninggame.domain.LevelEntity;
@@ -29,6 +30,8 @@ import com.example.k12learninggame.dto.DailyTaskClaimResponse;
 import com.example.k12learninggame.dto.DailyTaskDto;
 import com.example.k12learninggame.dto.CompleteLevelRequest;
 import com.example.k12learninggame.dto.CompleteLevelResponse;
+import com.example.k12learninggame.dto.FluencyAttemptRequest;
+import com.example.k12learninggame.dto.FluencyAttemptResponse;
 import com.example.k12learninggame.dto.GoalProgressDto;
 import com.example.k12learninggame.dto.HomeOverviewResponse;
 import com.example.k12learninggame.dto.LeaderboardRankDto;
@@ -69,6 +72,7 @@ import com.example.k12learninggame.dto.TrendPointDto;
 import com.example.k12learninggame.dto.WeakPointDto;
 import com.example.k12learninggame.repository.ChildProfileRepository;
 import com.example.k12learninggame.repository.DailyTaskClaimRepository;
+import com.example.k12learninggame.repository.FluencyAttemptRepository;
 import com.example.k12learninggame.repository.LeaderboardBoardRepository;
 import com.example.k12learninggame.repository.LevelCompletionRepository;
 import com.example.k12learninggame.repository.LevelRepository;
@@ -96,6 +100,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
@@ -117,6 +122,7 @@ public class GameContentService {
     private final ParentAccountRepository parentAccountRepository;
     private final ParentSettingsRepository parentSettingsRepository;
     private final DailyTaskClaimRepository dailyTaskClaimRepository;
+    private final FluencyAttemptRepository fluencyAttemptRepository;
     private final MistakeReviewAttemptRepository mistakeReviewAttemptRepository;
 
     public GameContentService(
@@ -128,6 +134,7 @@ public class GameContentService {
             ParentAccountRepository parentAccountRepository,
             ParentSettingsRepository parentSettingsRepository,
             DailyTaskClaimRepository dailyTaskClaimRepository,
+            FluencyAttemptRepository fluencyAttemptRepository,
             MistakeReviewAttemptRepository mistakeReviewAttemptRepository
     ) {
         this.childProfileRepository = childProfileRepository;
@@ -138,6 +145,7 @@ public class GameContentService {
         this.parentAccountRepository = parentAccountRepository;
         this.parentSettingsRepository = parentSettingsRepository;
         this.dailyTaskClaimRepository = dailyTaskClaimRepository;
+        this.fluencyAttemptRepository = fluencyAttemptRepository;
         this.mistakeReviewAttemptRepository = mistakeReviewAttemptRepository;
     }
 
@@ -420,6 +428,38 @@ public class GameContentService {
                 child.getTotalStars(),
                 "奖励已领取，小岛又亮了一点。",
                 getDailyTasks(child.getId())
+        );
+    }
+
+    @Transactional
+    public FluencyAttemptResponse recordFluencyAttempt(Long childProfileId, FluencyAttemptRequest request) {
+        if (request.correctCount() > request.totalQuestions()) {
+            throw new ResponseStatusException(BAD_REQUEST, "correctCount cannot exceed totalQuestions");
+        }
+
+        ChildProfileEntity child = getChild(childProfileId);
+        int accuracyPercent = (int) Math.round(request.correctCount() * 100.0 / request.totalQuestions());
+        LocalDate today = LocalDate.now();
+        fluencyAttemptRepository.save(new FluencyAttemptEntity(
+                child,
+                request.stageLabel(),
+                request.totalQuestions(),
+                request.correctCount(),
+                request.durationSeconds(),
+                accuracyPercent,
+                today,
+                LocalDateTime.now()
+        ));
+        long todayAttemptCount = fluencyAttemptRepository.countByChildProfile_IdAndAttemptDate(child.getId(), today);
+
+        return new FluencyAttemptResponse(
+                request.stageLabel(),
+                request.totalQuestions(),
+                request.correctCount(),
+                request.durationSeconds(),
+                accuracyPercent,
+                todayAttemptCount,
+                "今天已完成 " + todayAttemptCount + " 次数感快练，正确率 " + accuracyPercent + "%"
         );
     }
 

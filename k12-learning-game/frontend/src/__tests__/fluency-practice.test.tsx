@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { vi } from 'vitest';
 import { FluencyPracticePage } from '../pages/FluencyPracticePage';
 import { SessionProvider } from '../session';
 
@@ -30,10 +31,32 @@ describe('FluencyPracticePage', () => {
 
   afterEach(() => {
     window.localStorage.clear();
+    vi.unstubAllGlobals();
   });
 
-  test('runs a short stage-aware daily math fluency practice', async () => {
+  test('runs and records a short stage-aware daily math fluency practice', async () => {
     const user = userEvent.setup();
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+
+      if (url.endsWith('/api/fluency/attempts') && init?.method === 'POST') {
+        return {
+          ok: true,
+          json: async () => ({
+            stageLabel: '一年级',
+            totalQuestions: 5,
+            correctCount: 5,
+            durationSeconds: 60,
+            accuracyPercent: 100,
+            todayAttemptCount: 1,
+            encouragement: '今天已完成 1 次数感快练，正确率 100%'
+          })
+        } as Response;
+      }
+
+      throw new Error(`Unhandled fetch: ${url}`);
+    });
+    vi.stubGlobal('fetch', fetchMock);
 
     render(
       <MemoryRouter>
@@ -58,5 +81,13 @@ describe('FluencyPracticePage', () => {
     expect(screen.getByText('今日快练完成')).toBeInTheDocument();
     expect(screen.getByText('完成 5 题，答对 5 题')).toBeInTheDocument();
     expect(screen.getByText('小星星的数感速度正在变稳')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('今天已完成 1 次数感快练，正确率 100%')).toBeInTheDocument());
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/fluency/attempts',
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.stringContaining('"correctCount":5')
+      })
+    );
   });
 });

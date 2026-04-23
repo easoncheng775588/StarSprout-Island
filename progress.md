@@ -454,3 +454,12 @@
 - 每日快练 TDD 验证：
   - RED：`npm test -- --run src/__tests__/fluency-practice.test.tsx` 因缺少 `FluencyPracticePage` 失败
   - GREEN：`npm test -- --run src/__tests__/fluency-practice.test.tsx`，1 个测试文件、1 项测试通过
+- 已完成成熟产品 P1：每日快练结果持久化：
+  - 后端新增 `fluency_attempts` 实体与 Repository，记录孩子、学段、总题数、正确数、用时、正确率、日期和记录时间
+  - 新增 `POST /api/fluency/attempts`，提交快练成绩后返回正确率、今日快练次数和鼓励文案
+  - 前端快练完成后调用真实 API，并展示后端返回的今日快练记录反馈
+- 每日快练持久化 TDD 验证：
+  - RED：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=ApiSmokeTest#shouldRecordDailyFluencyAttempt test` 返回 404
+  - GREEN：上述后端定向测试通过
+  - RED：`npm test -- --run src/__tests__/fluency-practice.test.tsx` 找不到后端返回的快练记录文案
+  - GREEN：上述前端定向测试通过

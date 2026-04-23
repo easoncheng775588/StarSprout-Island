@@ -364,6 +364,19 @@ export interface DailyTaskClaimData {
   taskBoard: DailyTaskBoardData;
 }
 
+export interface FluencyAttemptPayload {
+  stageLabel: string;
+  totalQuestions: number;
+  correctCount: number;
+  durationSeconds: number;
+}
+
+export interface FluencyAttemptResultData extends FluencyAttemptPayload {
+  accuracyPercent: number;
+  todayAttemptCount: number;
+  encouragement: string;
+}
+
 export interface MistakeReviewCardData {
   levelCode: string;
   levelTitle: string;
@@ -729,6 +742,13 @@ export function getDailyTasks(): Promise<DailyTaskBoardData> {
 export function claimDailyTask(taskCode: string): Promise<DailyTaskClaimData> {
   return fetchJson<DailyTaskClaimData>(`/api/daily-tasks/${taskCode}/claim`, {
     method: 'POST'
+  });
+}
+
+export function recordFluencyAttempt(payload: FluencyAttemptPayload): Promise<FluencyAttemptResultData> {
+  return fetchJson<FluencyAttemptResultData>('/api/fluency/attempts', {
+    method: 'POST',
+    body: JSON.stringify(payload)
   });
 }
 

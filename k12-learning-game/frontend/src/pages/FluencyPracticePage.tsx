@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { recordFluencyAttempt } from '../api';
 import { PageTopBar } from '../components/PageTopBar';
 import { useSession } from '../session';
 
@@ -61,6 +62,7 @@ export function FluencyPracticePage() {
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnsweredCount] = useState(0);
   const [lastFeedback, setLastFeedback] = useState('先看题，再选答案，保持稳稳的节奏。');
+  const [recordFeedback, setRecordFeedback] = useState<string | null>(null);
   const isFinished = answeredCount >= questions.length;
   const currentQuestion = questions[Math.min(questionIndex, questions.length - 1)];
 
@@ -71,13 +73,24 @@ export function FluencyPracticePage() {
 
     const isCorrect = choice === currentQuestion.answer;
     const nextAnsweredCount = answeredCount + 1;
+    const nextCorrectCount = correctCount + (isCorrect ? 1 : 0);
     setAnsweredCount(nextAnsweredCount);
-    setCorrectCount((current) => current + (isCorrect ? 1 : 0));
+    setCorrectCount(nextCorrectCount);
     setLastFeedback(isCorrect ? '答对了，数感节奏很稳' : `差一点，正确答案是 ${currentQuestion.answer}`);
 
     if (nextAnsweredCount < questions.length) {
       setQuestionIndex((current) => current + 1);
+      return;
     }
+
+    void recordFluencyAttempt({
+      stageLabel,
+      totalQuestions: questions.length,
+      correctCount: nextCorrectCount,
+      durationSeconds: 60
+    })
+      .then((result) => setRecordFeedback(result.encouragement))
+      .catch(() => setRecordFeedback('快练结果暂时没有同步成功，稍后再试也可以。'));
   }
 
   return (
@@ -107,6 +120,7 @@ export function FluencyPracticePage() {
             <p className="eyebrow">今日快练完成</p>
             <h2>完成 {questions.length} 题，答对 {correctCount} 题</h2>
             <p>{childNickname}的数感速度正在变稳</p>
+            {recordFeedback ? <p>{recordFeedback}</p> : <p>正在同步今日快练记录...</p>}
             <Link className="cta-button" to="/daily-tasks">去看今日任务</Link>
           </div>
         ) : (

@@ -12,6 +12,8 @@ import com.example.k12learninggame.dto.ChildProfileDto;
 import com.example.k12learninggame.dto.ChildProfileUpsertRequest;
 import com.example.k12learninggame.dto.DailyTaskBoardResponse;
 import com.example.k12learninggame.dto.DailyTaskClaimResponse;
+import com.example.k12learninggame.dto.FluencyAttemptRequest;
+import com.example.k12learninggame.dto.FluencyAttemptResponse;
 import com.example.k12learninggame.dto.LeaderboardResponse;
 import com.example.k12learninggame.dto.LearningPathResponse;
 import com.example.k12learninggame.dto.LevelDetailResponse;
@@ -112,6 +114,14 @@ public class GameController {
             @RequestHeader(value = "X-Child-Profile-Id", required = false) Long childProfileId
     ) {
         return gameContentService.claimDailyTask(taskCode, childProfileId);
+    }
+
+    @PostMapping("/fluency/attempts")
+    public FluencyAttemptResponse recordFluencyAttempt(
+            @RequestHeader(value = "X-Child-Profile-Id", required = false) Long childProfileId,
+            @Valid @RequestBody FluencyAttemptRequest request
+    ) {
+        return gameContentService.recordFluencyAttempt(childProfileId, request);
     }
 
     @GetMapping("/mistakes/review")
