@@ -38,6 +38,8 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
     return <main className="screen"><p>正在整理孩子今天的学习报告...</p></main>;
   }
 
+  const hasFluencyTrendActivity = dashboard.fluencySummary.fluencyTrend.some((point) => point.attemptCount > 0);
+
   async function handleSaveSettings() {
     setIsSaving(true);
     try {
@@ -222,6 +224,36 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
             </div>
           </div>
           <p className="fluency-trend-copy">{dashboard.fluencySummary.encouragement}</p>
+          <div className="fluency-trend-chart" aria-label="数感快练 7 天趋势">
+            <div className="fluency-trend-chart-header">
+              <strong>7 天小趋势</strong>
+              <span>{hasFluencyTrendActivity ? '跟着每天的小进步，慢慢把数感练稳。' : '完成第一次快练后，这里会开始记录每天的变化。'}</span>
+            </div>
+            <div className="fluency-trend-points">
+              {dashboard.fluencySummary.fluencyTrend.map((point) => {
+                const pointActive = point.attemptCount > 0;
+                const pointHeight = pointActive ? `${Math.max(point.averageAccuracyPercent, 16)}%` : '1.6rem';
+                const pointLabel = pointActive
+                  ? `${point.dayLabel} 数感快练正确率 ${point.averageAccuracyPercent}%，完成 ${point.attemptCount} 次`
+                  : `${point.dayLabel} 数感快练未练习`;
+
+                return (
+                  <article
+                    aria-label={pointLabel}
+                    className={`fluency-trend-point${pointActive ? ' fluency-trend-point-active' : ''}`}
+                    key={point.dayLabel}
+                  >
+                    <span className="fluency-trend-value">{pointActive ? `${point.averageAccuracyPercent}%` : '待记录'}</span>
+                    <div className="fluency-trend-bar-track" aria-hidden="true">
+                      <span className="fluency-trend-bar-fill" style={{ height: pointHeight }} />
+                    </div>
+                    <strong>{point.dayLabel}</strong>
+                    <span className="fluency-trend-attempts">{pointActive ? `${point.attemptCount} 次` : '休息中'}</span>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
         </article>
 
         <article className="panel-card knowledge-map-panel">

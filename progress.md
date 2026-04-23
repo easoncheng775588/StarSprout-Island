@@ -472,3 +472,12 @@
   - GREEN：上述前端定向测试通过
   - 后端定向测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=ApiSmokeTest,PersistenceBackedGameContentServiceTest test`
   - 全量验证：`npm test -- --run`、`npm run build`、`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成成熟产品 P1：家长端数感快练 7 天趋势图：
+  - 后端新增 `ParentFluencyTrendPointDto`，`fluencySummary.fluencyTrend` 固定返回最近 7 天、按天补 0、顺序从最早一天到今天
+  - 前端“数感快练趋势”卡升级为 7 天小趋势图，展示每日正确率、练习次数和未练习状态
+  - 前端保留旧接口兜底：当 `fluencyTrend` 缺失时自动回退为 7 天空趋势，不影响页面渲染
+- 家长端 7 天快练趋势图验证：
+  - 前端定向测试：`npm test -- --run src/__tests__/parent-dashboard.test.tsx`
+  - 前端全量测试：`npm test -- --run`，29 个测试文件、106 项测试通过
+  - 前端构建：`npm run build`
+  - 后端全量测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

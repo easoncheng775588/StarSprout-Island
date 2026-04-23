@@ -216,6 +216,18 @@ class PersistenceBackedGameContentServiceTest {
         assertThat(dashboard.fluencySummary().latestAccuracyPercent()).isEqualTo(100);
         assertThat(dashboard.fluencySummary().latestRecordedAtLabel()).contains("今天");
         assertThat(dashboard.fluencySummary().encouragement()).contains("3 次");
+        assertThat(dashboard.fluencySummary().fluencyTrend()).hasSize(7);
+        assertThat(dashboard.fluencySummary().fluencyTrend())
+                .extracting(point -> point.dayLabel(), point -> point.attemptCount(), point -> point.averageAccuracyPercent())
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple(LocalDate.now().minusDays(6).getMonthValue() + "/" + LocalDate.now().minusDays(6).getDayOfMonth(), 1, 60),
+                        org.assertj.core.groups.Tuple.tuple(LocalDate.now().minusDays(5).getMonthValue() + "/" + LocalDate.now().minusDays(5).getDayOfMonth(), 0, 0),
+                        org.assertj.core.groups.Tuple.tuple(LocalDate.now().minusDays(4).getMonthValue() + "/" + LocalDate.now().minusDays(4).getDayOfMonth(), 0, 0),
+                        org.assertj.core.groups.Tuple.tuple(LocalDate.now().minusDays(3).getMonthValue() + "/" + LocalDate.now().minusDays(3).getDayOfMonth(), 0, 0),
+                        org.assertj.core.groups.Tuple.tuple(LocalDate.now().minusDays(2).getMonthValue() + "/" + LocalDate.now().minusDays(2).getDayOfMonth(), 1, 80),
+                        org.assertj.core.groups.Tuple.tuple(LocalDate.now().minusDays(1).getMonthValue() + "/" + LocalDate.now().minusDays(1).getDayOfMonth(), 0, 0),
+                        org.assertj.core.groups.Tuple.tuple(LocalDate.now().getMonthValue() + "/" + LocalDate.now().getDayOfMonth(), 1, 100)
+                );
     }
 
     @Test

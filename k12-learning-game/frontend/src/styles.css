@@ -3040,6 +3040,92 @@ body::before {
   font-size: 1.76rem;
 }
 
+.fluency-trend-chart {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.4rem;
+  padding: 1.8rem;
+  border-radius: 2.4rem;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 0 0 0.1rem rgba(33, 48, 77, 0.06);
+}
+
+.fluency-trend-chart-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.fluency-trend-chart-header strong {
+  color: var(--ink);
+  font-size: 1.72rem;
+}
+
+.fluency-trend-chart-header span {
+  color: rgba(33, 48, 77, 0.64);
+  font-weight: 700;
+}
+
+.fluency-trend-points {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.fluency-trend-point {
+  display: grid;
+  justify-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 0.8rem 1rem;
+  border-radius: 1.8rem;
+  background: rgba(248, 251, 255, 0.88);
+  box-shadow: inset 0 0 0 0.1rem rgba(33, 48, 77, 0.04);
+}
+
+.fluency-trend-point-active {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(236, 248, 255, 0.96));
+}
+
+.fluency-trend-value {
+  color: var(--ink);
+  font-size: 1.44rem;
+  font-weight: 800;
+}
+
+.fluency-trend-bar-track {
+  position: relative;
+  display: flex;
+  align-items: end;
+  width: 100%;
+  max-width: 3.6rem;
+  height: 8.8rem;
+  padding: 0.5rem;
+  border-radius: 999rem;
+  background: linear-gradient(180deg, rgba(198, 231, 255, 0.42), rgba(214, 224, 239, 0.18));
+}
+
+.fluency-trend-bar-fill {
+  display: block;
+  width: 100%;
+  border-radius: 999rem;
+  background: linear-gradient(180deg, #4ab6ff, #1fc58f);
+  box-shadow: 0 0.8rem 1.6rem rgba(31, 197, 143, 0.18);
+}
+
+.fluency-trend-point strong {
+  color: var(--ink);
+  font-size: 1.44rem;
+}
+
+.fluency-trend-attempts {
+  color: rgba(33, 48, 77, 0.62);
+  font-size: 1.28rem;
+  font-weight: 700;
+}
+
 .knowledge-map-grid,
 .thinking-model-list,
 .mistake-review-list {
@@ -3939,6 +4025,10 @@ body::before {
 
   .fluency-trend-header {
     flex-direction: column;
+  }
+
+  .fluency-trend-points {
+    grid-template-columns: repeat(auto-fit, minmax(7.2rem, 1fr));
   }
 
   .weekly-report-header,

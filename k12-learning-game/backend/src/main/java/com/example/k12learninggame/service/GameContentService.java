@@ -52,6 +52,7 @@ import com.example.k12learninggame.dto.MistakeReviewSubmitResponse;
 import com.example.k12learninggame.dto.ParentChildComparisonDto;
 import com.example.k12learninggame.dto.ParentDashboardResponse;
 import com.example.k12learninggame.dto.ParentFluencySummaryDto;
+import com.example.k12learninggame.dto.ParentFluencyTrendPointDto;
 import com.example.k12learninggame.dto.ParentSettingsDto;
 import com.example.k12learninggame.dto.ParentActiveChildUpdateRequest;
 import com.example.k12learninggame.dto.ParentSettingsUpdateRequest;
@@ -111,6 +112,7 @@ public class GameContentService {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter WEEK_REPORT_DATE_FORMATTER = DateTimeFormatter.ofPattern("MM月dd日");
+    private static final DateTimeFormatter FLUENCY_TREND_DAY_FORMATTER = DateTimeFormatter.ofPattern("M/d");
     private static final List<String> CORE_STAGE_LABELS = List.of("幼小衔接", "一年级", "二年级", "三年级", "四年级");
     private static final String DEFAULT_STAGE_LABEL = "幼小衔接";
     private static final Set<String> MAINLINE_SUBJECT_CODES = Set.of("math", "chinese", "english");
@@ -920,8 +922,34 @@ public class GameContentService {
                 latestAttempt != null ? latestAttempt.getStageLabel() : resolveStageLabel(child),
                 latestAttempt != null ? latestAttempt.getAccuracyPercent() : 0,
                 latestAttempt != null ? toRelativeDateTimeLabel(latestAttempt.getRecordedAt()) : "",
-                buildFluencyEncouragement(recentAttempts.size())
+                buildFluencyEncouragement(recentAttempts.size()),
+                buildFluencyTrend(recentAttempts, windowStart)
         );
+    }
+
+    private List<ParentFluencyTrendPointDto> buildFluencyTrend(
+            List<FluencyAttemptEntity> recentAttempts,
+            LocalDate windowStart
+    ) {
+        Map<LocalDate, List<FluencyAttemptEntity>> attemptsByDate = recentAttempts.stream()
+                .collect(Collectors.groupingBy(FluencyAttemptEntity::getAttemptDate));
+
+        return windowStart.datesUntil(windowStart.plusDays(FLUENCY_SUMMARY_WINDOW_DAYS))
+                .map(date -> {
+                    List<FluencyAttemptEntity> attempts = attemptsByDate.getOrDefault(date, List.of());
+                    int averageAccuracyPercent = attempts.isEmpty()
+                            ? 0
+                            : (int) Math.round(attempts.stream()
+                            .mapToInt(FluencyAttemptEntity::getAccuracyPercent)
+                            .average()
+                            .orElse(0));
+                    return new ParentFluencyTrendPointDto(
+                            date.format(FLUENCY_TREND_DAY_FORMATTER),
+                            attempts.size(),
+                            averageAccuracyPercent
+                    );
+                })
+                .toList();
     }
 
     private String buildFluencyEncouragement(int attemptCount) {

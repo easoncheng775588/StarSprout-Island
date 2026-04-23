@@ -1146,7 +1146,13 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.fluencySummary.latestStageLabel").value("幼小衔接"))
                 .andExpect(jsonPath("$.fluencySummary.latestAccuracyPercent").value(0))
                 .andExpect(jsonPath("$.fluencySummary.latestRecordedAtLabel").value(""))
-                .andExpect(jsonPath("$.fluencySummary.encouragement").value(org.hamcrest.Matchers.containsString("数感快练")));
+                .andExpect(jsonPath("$.fluencySummary.encouragement").value(org.hamcrest.Matchers.containsString("数感快练")))
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend.length()").value(7))
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[0].dayLabel").isNotEmpty())
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[0].attemptCount").value(0))
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[0].averageAccuracyPercent").value(0))
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].attemptCount").value(0))
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].averageAccuracyPercent").value(0));
     }
 
     @Test
@@ -1185,7 +1191,13 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.fluencySummary.latestStageLabel").value("二年级"))
                 .andExpect(jsonPath("$.fluencySummary.latestAccuracyPercent").value(100))
                 .andExpect(jsonPath("$.fluencySummary.latestRecordedAtLabel").isNotEmpty())
-                .andExpect(jsonPath("$.fluencySummary.encouragement").value(org.hamcrest.Matchers.containsString("2 次")));
+                .andExpect(jsonPath("$.fluencySummary.encouragement").value(org.hamcrest.Matchers.containsString("2 次")))
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend.length()").value(7))
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[5].attemptCount").value(0))
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[5].averageAccuracyPercent").value(0))
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].attemptCount").value(2))
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].averageAccuracyPercent").value(80))
+                .andExpect(jsonPath("$.fluencySummary.fluencyTrend[6].dayLabel").isNotEmpty());
     }
 
     @Test

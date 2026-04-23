@@ -147,7 +147,16 @@ describe('ParentDashboard', () => {
               latestStageLabel: '一年级',
               latestAccuracyPercent: 100,
               latestRecordedAtLabel: '今天 19:10',
-              encouragement: '本周已经完成 4 次快练，可以继续保持每天 1 次的节奏。'
+              encouragement: '本周已经完成 4 次快练，可以继续保持每天 1 次的节奏。',
+              fluencyTrend: [
+                { dayLabel: '周一', averageAccuracyPercent: 78, attemptCount: 1 },
+                { dayLabel: '周二', averageAccuracyPercent: 88, attemptCount: 1 },
+                { dayLabel: '周三', averageAccuracyPercent: 100, attemptCount: 1 },
+                { dayLabel: '周四', averageAccuracyPercent: 0, attemptCount: 0 },
+                { dayLabel: '周五', averageAccuracyPercent: 92, attemptCount: 1 },
+                { dayLabel: '周六', averageAccuracyPercent: 96, attemptCount: 1 },
+                { dayLabel: '周日', averageAccuracyPercent: 0, attemptCount: 0 }
+              ]
             },
             knowledgeMap: [
               {
@@ -240,6 +249,11 @@ describe('ParentDashboard', () => {
     expect(screen.getByText('平均正确率 92%')).toBeInTheDocument();
     expect(screen.getByText('最近一次：一年级 · 100% · 今天 19:10')).toBeInTheDocument();
     expect(screen.getByText('本周已经完成 4 次快练，可以继续保持每天 1 次的节奏。')).toBeInTheDocument();
+    expect(screen.getByText('7 天小趋势')).toBeInTheDocument();
+    expect(screen.getByLabelText('周三 数感快练正确率 100%，完成 1 次')).toBeInTheDocument();
+    expect(screen.getByLabelText('周四 数感快练未练习')).toBeInTheDocument();
+    expect(screen.getByText('周六')).toBeInTheDocument();
+    expect(screen.getByText('96%')).toBeInTheDocument();
     expect(screen.getByText('知识点掌握图谱')).toBeInTheDocument();
     expect(screen.getAllByText('20 以内加减法')).toHaveLength(2);
     expect(screen.getByText('掌握度 72% · 巩固中')).toBeInTheDocument();
@@ -340,7 +354,8 @@ describe('ParentDashboard', () => {
               latestStageLabel: '一年级',
               latestAccuracyPercent: 0,
               latestRecordedAtLabel: '',
-              encouragement: '本周还没有开始数感快练，可以先用 1 分钟热热身。'
+              encouragement: '本周还没有开始数感快练，可以先用 1 分钟热热身。',
+              fluencyTrend: []
             },
             knowledgeMap: [],
             thinkingModelProgress: [],

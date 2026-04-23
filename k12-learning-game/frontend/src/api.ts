@@ -252,6 +252,11 @@ export interface ParentDashboardData {
     latestAccuracyPercent: number;
     latestRecordedAtLabel: string;
     encouragement: string;
+    fluencyTrend: Array<{
+      dayLabel: string;
+      averageAccuracyPercent: number;
+      attemptCount: number;
+    }>;
   };
   knowledgeMap: Array<{
     subjectTitle: string;
@@ -500,6 +505,8 @@ export interface ParentSettingsPayload {
   reminderEnabled: boolean;
 }
 
+const defaultFluencyTrendLabels = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
 const defaultAchievementPreview = {
   unlockedCount: 0,
   totalCount: 10,
@@ -595,6 +602,17 @@ export function normalizeParentDashboardData(data: Partial<ParentDashboardData> 
     bestLearningPeriodLabel: '暂无记录',
     effectiveLearningDays: 0
   };
+  const fluencyTrend = Array.isArray(data.fluencySummary?.fluencyTrend) && data.fluencySummary.fluencyTrend.length > 0
+    ? data.fluencySummary.fluencyTrend.map((point, index) => ({
+      dayLabel: point.dayLabel || defaultFluencyTrendLabels[index] || `第${index + 1}天`,
+      averageAccuracyPercent: typeof point.averageAccuracyPercent === 'number' ? point.averageAccuracyPercent : 0,
+      attemptCount: typeof point.attemptCount === 'number' ? point.attemptCount : 0
+    }))
+    : defaultFluencyTrendLabels.map((dayLabel) => ({
+      dayLabel,
+      averageAccuracyPercent: 0,
+      attemptCount: 0
+    }));
 
   return {
     childNickname: data.childNickname,
@@ -644,13 +662,14 @@ export function normalizeParentDashboardData(data: Partial<ParentDashboardData> 
       readinessLabel: '继续探索',
       nextMilestone: '完成更多关卡后会生成阶段建议。'
     },
-    fluencySummary: data.fluencySummary ?? {
-      attemptCount: 0,
-      averageAccuracyPercent: 0,
-      latestStageLabel: '当前学段',
-      latestAccuracyPercent: 0,
-      latestRecordedAtLabel: '',
-      encouragement: '本周还没有开始数感快练，可以先用 1 分钟热热身。'
+    fluencySummary: {
+      attemptCount: data.fluencySummary?.attemptCount ?? 0,
+      averageAccuracyPercent: data.fluencySummary?.averageAccuracyPercent ?? 0,
+      latestStageLabel: data.fluencySummary?.latestStageLabel ?? '当前学段',
+      latestAccuracyPercent: data.fluencySummary?.latestAccuracyPercent ?? 0,
+      latestRecordedAtLabel: data.fluencySummary?.latestRecordedAtLabel ?? '',
+      encouragement: data.fluencySummary?.encouragement ?? '本周还没有开始数感快练，可以先用 1 分钟热热身。',
+      fluencyTrend
     },
     knowledgeMap: data.knowledgeMap ?? [],
     thinkingModelProgress: data.thinkingModelProgress ?? [],
