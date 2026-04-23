@@ -7,6 +7,7 @@ import { ParentDashboard } from './pages/ParentDashboard';
 import { AchievementsPage } from './pages/AchievementsPage';
 import { ContentConfigCatalog } from './pages/ContentConfigCatalog';
 import { DailyTasksPage } from './pages/DailyTasksPage';
+import { FluencyPracticePage } from './pages/FluencyPracticePage';
 import { LearningPathPage } from './pages/LearningPathPage';
 import { LoginPage } from './pages/LoginPage';
 import { MistakeReviewPage } from './pages/MistakeReviewPage';
@@ -37,6 +38,7 @@ function AppRoutes() {
       <Route path="/levels/:levelCode" element={<ProtectedRoute><LevelPlayer /></ProtectedRoute>} />
       <Route path="/parent" element={<ProtectedRoute><ParentDashboard /></ProtectedRoute>} />
       <Route path="/daily-tasks" element={<ProtectedRoute><DailyTasksPage /></ProtectedRoute>} />
+      <Route path="/fluency" element={<ProtectedRoute><FluencyPracticePage /></ProtectedRoute>} />
       <Route path="/assessment" element={<ProtectedRoute><PlacementAssessmentPage /></ProtectedRoute>} />
       <Route path="/mistakes" element={<ProtectedRoute><MistakeReviewPage /></ProtectedRoute>} />
       <Route path="/learning-path" element={<ProtectedRoute><LearningPathPage /></ProtectedRoute>} />

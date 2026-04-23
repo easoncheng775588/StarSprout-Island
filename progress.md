@@ -446,3 +446,11 @@
 - 阶段证书 TDD 验证：
   - RED：`npm test -- --run src/__tests__/achievements.test.tsx` 找不到“阶段证书”
   - GREEN：`npm test -- --run src/__tests__/achievements.test.tsx`，1 个测试文件、1 项测试通过
+- 已完成成熟产品 P0：每日 1 分钟数感快练：
+  - 新增 `/fluency` 路由和首页“1分钟快练”入口
+  - 新增 `FluencyPracticePage`，按当前孩子学段加载 5 道数感/计算短练题
+  - 快练过程提供即时反馈，完成后展示完成题数、答对题数和鼓励语
+  - 当前不新增数据库表，后续可把快练成绩接入每日任务、周报和能力趋势
+- 每日快练 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/fluency-practice.test.tsx` 因缺少 `FluencyPracticePage` 失败
+  - GREEN：`npm test -- --run src/__tests__/fluency-practice.test.tsx`，1 个测试文件、1 项测试通过
