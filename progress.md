@@ -397,3 +397,14 @@
   - 前端测试：`npm test -- --run`，24 个测试文件、99 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成关卡播放器组件化：数形结合模型面板：
+  - 新增 `MathModelBoard` 组件，集中渲染网格模型、数轴模型、线段图模型和分数条模型
+  - `LevelPlayer` 改为导入该组件和 `MathVisualModel` 类型，继续保留原有关卡配置与完成流程
+  - 新增组件级测试覆盖数轴、线段图和分数条的可访问标签与核心展示
+- 数形结合模型面板 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/math-model-board.test.tsx` 因缺少 `components/MathModelBoard` 失败
+  - GREEN：`npm test -- --run src/__tests__/math-model-board.test.tsx src/__tests__/number-shape-thinking.test.tsx`，2 个测试文件、6 项测试通过
+- 数形结合模型面板阶段验证通过：
+  - 前端测试：`npm test -- --run`，25 个测试文件、100 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
