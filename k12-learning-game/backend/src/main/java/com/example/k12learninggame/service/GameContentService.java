@@ -1703,6 +1703,7 @@ public class GameContentService {
                 createBadge("accuracy_guardian", "细心守护星", "平均准确率达到 90%", averageAccuracy, 90, "学习习惯", "收藏徽章"),
                 createBadge("focus_runner", "专注小马达", "累计学习 40 分钟", totalStudyMinutes, 40, "学习习惯", "收藏徽章")
         );
+        List<AchievementBadgeDto> modelBadges = buildThinkingModelBadges(child);
 
         List<AchievementBadgeDto> unlockedBadges = badges.stream().filter(AchievementBadgeDto::unlocked).toList();
         List<AchievementBadgeDto> inProgressBadges = badges.stream()
@@ -1712,13 +1713,28 @@ public class GameContentService {
 
         return new AchievementsResponse(
                 child.getNickname(),
-                unlockedBadges.size(),
-                badges.size(),
+                unlockedBadges.size() + (int) modelBadges.stream().filter(AchievementBadgeDto::unlocked).count(),
+                badges.size() + modelBadges.size(),
                 resolveStageLabel(child),
                 buildStageAchievementFamilies(child, completedLevelCodes, completions),
+                modelBadges,
                 unlockedBadges,
                 inProgressBadges
         );
+    }
+
+    private List<AchievementBadgeDto> buildThinkingModelBadges(ChildProfileEntity child) {
+        return buildThinkingModelProgress(child).stream()
+                .map(model -> createBadge(
+                        "model_" + model.modelCode(),
+                        model.modelTitle() + "星",
+                        "完成“" + model.modelTitle() + "”相关关卡",
+                        model.completedLevels(),
+                        Math.max(model.totalLevels(), 1),
+                        "思维模型",
+                        "模型徽章"
+                ))
+                .toList();
     }
 
     private List<AchievementStageFamilyDto> buildStageAchievementFamilies(

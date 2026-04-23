@@ -386,3 +386,14 @@
   - 前端测试：`npm test -- --run`，24 个测试文件、99 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成跨年级成熟化：思维模型成就徽章：
+  - 后端 `AchievementsResponse` 新增 `modelBadges`，按当前学段思维模型进度实时生成模型徽章
+  - 模型徽章复用现有 `AchievementBadgeDto`，不新增数据库表
+  - 前端成就墙新增“思维模型徽章”区域，展示模型徽章进度、进度条和鼓励文案
+- 思维模型成就徽章 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/achievements.test.tsx` 找不到“思维模型徽章”；`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=PersistenceBackedGameContentServiceTest#shouldExposeThinkingModelBadgesForCurrentStageAchievements test` 缺少 `modelBadges`
+  - GREEN：上述两个定向测试通过
+- 思维模型成就徽章阶段验证通过：
+  - 前端测试：`npm test -- --run`，24 个测试文件、99 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

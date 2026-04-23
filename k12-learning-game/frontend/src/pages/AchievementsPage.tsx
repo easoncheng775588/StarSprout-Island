@@ -77,6 +77,32 @@ export function AchievementsPage({ data }: AchievementsPageProps) {
         </div>
       </section>
 
+      <section className="panel-card model-achievement-panel">
+        <div className="panel-heading-row">
+          <div>
+            <p className="eyebrow">思维模型徽章</p>
+            <h2>把看不见的数学思路点亮</h2>
+          </div>
+          <p>数轴、线段图、面积模型和分数条会随着模型关卡进度逐步点亮。</p>
+        </div>
+        <div className="badge-grid">
+          {(achievements.modelBadges ?? []).length > 0 ? achievements.modelBadges.map((badge) => (
+            <article className={badge.unlocked ? 'badge-card badge-card-unlocked' : 'badge-card'} key={badge.code}>
+              <h3>{badge.title}</h3>
+              <p>{badge.category} · {badge.rarityLabel}</p>
+              <p>{badge.description}</p>
+              <span>{badge.progressText}</span>
+              <div className="badge-progress-track" aria-label={`${badge.title}进度`}>
+                <span style={{ width: `${badge.progressPercent}%` }} />
+              </div>
+              <p>{badge.encouragement}</p>
+            </article>
+          )) : (
+            <p>当前学段还没有模型徽章，完成数形结合关卡后会自动出现。</p>
+          )}
+        </div>
+      </section>
+
       <section className="dashboard-grid">
         <article className="panel-card">
           <p className="eyebrow">已解锁</p>

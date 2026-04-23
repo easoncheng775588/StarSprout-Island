@@ -56,6 +56,19 @@ describe('AchievementsPage', () => {
                 ]
               }
             ],
+            modelBadges: [
+              {
+                code: 'model_bar-model',
+                title: '线段图模型星',
+                description: '完成线段图模型关卡',
+                progressText: '2 / 3',
+                unlocked: false,
+                category: '思维模型',
+                rarityLabel: '模型徽章',
+                progressPercent: 67,
+                encouragement: '继续用线段图看清数量关系'
+              }
+            ],
             unlockedBadges: [
               {
                 code: 'math_starter',
@@ -115,6 +128,10 @@ describe('AchievementsPage', () => {
     expect(screen.getByText('一年级成长路线')).toBeInTheDocument();
     expect(screen.getByText('1 / 4 枚阶段徽章')).toBeInTheDocument();
     expect(screen.getByText('幼小衔接启航星')).toBeInTheDocument();
+    expect(screen.getByText('思维模型徽章')).toBeInTheDocument();
+    expect(screen.getByText('线段图模型星')).toBeInTheDocument();
+    expect(screen.getByText('2 / 3')).toBeInTheDocument();
+    expect(screen.getByText('继续用线段图看清数量关系')).toBeInTheDocument();
     expect(screen.getByText('数字小达人')).toBeInTheDocument();
     expect(screen.getByText('本周小冠军')).toBeInTheDocument();
     expect(screen.getByText('2 / 4')).toBeInTheDocument();

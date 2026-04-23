@@ -318,6 +318,7 @@ export interface AchievementsData {
   totalCount: number;
   currentStageLabel: string;
   stageFamilies: AchievementStageFamilyData[];
+  modelBadges: AchievementBadgeData[];
   unlockedBadges: AchievementBadgeData[];
   inProgressBadges: AchievementBadgeData[];
 }

@@ -8,6 +8,7 @@ public record AchievementsResponse(
         int totalCount,
         String currentStageLabel,
         List<AchievementStageFamilyDto> stageFamilies,
+        List<AchievementBadgeDto> modelBadges,
         List<AchievementBadgeDto> unlockedBadges,
         List<AchievementBadgeDto> inProgressBadges
 ) {

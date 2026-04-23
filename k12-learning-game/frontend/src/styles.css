@@ -3297,6 +3297,15 @@ body::before {
   margin-bottom: 2.4rem;
 }
 
+.model-achievement-panel {
+  display: grid;
+  gap: 1.8rem;
+  margin-bottom: 2.4rem;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(89, 190, 168, 0.18), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(239, 250, 255, 0.92));
+}
+
 .stage-family-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));

@@ -258,6 +258,23 @@ class PersistenceBackedGameContentServiceTest {
 
     @Test
     @Transactional
+    void shouldExposeThinkingModelBadgesForCurrentStageAchievements() {
+        var child = childProfileRepository.findById(2L).orElseThrow();
+        child.setStageLabel("二年级");
+        childProfileRepository.save(child);
+
+        var achievements = gameContentService.getAchievements(2L);
+
+        assertThat(achievements.modelBadges())
+                .extracting(badge -> badge.code(), badge -> badge.title(), badge -> badge.category(), badge -> badge.rarityLabel())
+                .contains(
+                        org.assertj.core.groups.Tuple.tuple("model_array-model", "数组模型星", "思维模型", "模型徽章"),
+                        org.assertj.core.groups.Tuple.tuple("model_bar-model", "线段图模型星", "思维模型", "模型徽章")
+                );
+    }
+
+    @Test
+    @Transactional
     void shouldUseStageSpecificCurriculumForYearTwoChildren() {
         var child = childProfileRepository.findById(3L).orElseThrow();
         child.setStageLabel("二年级");
