@@ -218,6 +218,23 @@
 - 已完成第二批英语岛听说扩展：
   - 新增 3 个幼小衔接英语关卡：字母音 D 到 F、生活物品听辨、问候对话跟读
   - 字母音练习从 A/B/C 延伸到 D/E/F，强化字母音和例词绑定
+
+## 2026-04-23
+
+- 已完成下一阶段 P0 第 1 项：题库配置中心可编辑 MVP
+  - 后端新增 `GET /api/content/configs/{levelCode}` 与 `PATCH /api/content/configs/{levelCode}`
+  - 新增 `ContentConfigDetailResponse`、`ContentConfigUpdateRequest`，支持题库配置详情查看与保存
+  - `GameContentService` 抽出配置快照逻辑，配置中心统一使用关卡展示名 `detailTitle`
+  - `LevelStepEntity` 新增配置更新方法，沿用现有 `level_steps` 表，不新增多余表结构
+  - 前端题库配置中心新增“打开配置详情”入口和配置详情页
+  - 详情页支持编辑知识点编码、知识点标题、题库变体数和活动配置 JSON，并展示保存成功反馈
+  - 配置详情页同步展示素材主题、音频质量、配置来源和健康检查结果
+  - 新增前端测试：`content-config-editor.test.tsx`
+  - 更新后端接口测试：覆盖配置详情读取、保存后回读和健康字段返回
+- 本轮验证通过：
+  - 前端测试：`npm test -- --run`，30 个测试文件、107 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
   - 单词听辨从 apple 延伸到 milk/bag/sun，继续训练“先听音，再选卡”
   - 短句跟读新增 Hello! / How are you? / I am fine. 问候对话
   - 后端英语地图、关卡详情、知识点标题、题型配置和前端兜底数据已同步

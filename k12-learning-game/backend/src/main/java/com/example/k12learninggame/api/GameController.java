@@ -8,6 +8,8 @@ import com.example.k12learninggame.dto.AuthLoginRequest;
 import com.example.k12learninggame.dto.AuthRegisterRequest;
 import com.example.k12learninggame.dto.AuthSessionResponse;
 import com.example.k12learninggame.dto.ContentConfigCatalogResponse;
+import com.example.k12learninggame.dto.ContentConfigDetailResponse;
+import com.example.k12learninggame.dto.ContentConfigUpdateRequest;
 import com.example.k12learninggame.dto.ChildProfileDto;
 import com.example.k12learninggame.dto.ChildProfileUpsertRequest;
 import com.example.k12learninggame.dto.DailyTaskBoardResponse;
@@ -150,6 +152,19 @@ public class GameController {
     @GetMapping("/content/configs")
     public ContentConfigCatalogResponse contentConfigs() {
         return gameContentService.getContentConfigCatalog();
+    }
+
+    @GetMapping("/content/configs/{levelCode}")
+    public ContentConfigDetailResponse contentConfigDetail(@PathVariable String levelCode) {
+        return gameContentService.getContentConfigDetail(levelCode);
+    }
+
+    @PatchMapping("/content/configs/{levelCode}")
+    public ContentConfigDetailResponse updateContentConfigDetail(
+            @PathVariable String levelCode,
+            @Valid @RequestBody ContentConfigUpdateRequest request
+    ) {
+        return gameContentService.updateContentConfig(levelCode, request);
     }
 
     @GetMapping("/parent/dashboard")

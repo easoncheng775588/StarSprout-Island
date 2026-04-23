@@ -20,7 +20,9 @@ import com.example.k12learninggame.dto.AuthLoginRequest;
 import com.example.k12learninggame.dto.AuthRegisterRequest;
 import com.example.k12learninggame.dto.AuthSessionResponse;
 import com.example.k12learninggame.dto.ContentConfigCatalogResponse;
+import com.example.k12learninggame.dto.ContentConfigDetailResponse;
 import com.example.k12learninggame.dto.ContentConfigItemDto;
+import com.example.k12learninggame.dto.ContentConfigUpdateRequest;
 import com.example.k12learninggame.dto.ChapterDto;
 import com.example.k12learninggame.dto.ChildProfileDto;
 import com.example.k12learninggame.dto.ChildProfileUpsertRequest;
@@ -603,6 +605,30 @@ public class GameContentService {
                 items.stream().mapToInt(ContentConfigItemDto::variantCount).sum(),
                 items
         );
+    }
+
+    public ContentConfigDetailResponse getContentConfigDetail(String levelCode) {
+        LevelEntity level = levelRepository.findById(levelCode)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Level not found"));
+
+        return toContentConfigDetail(level);
+    }
+
+    @Transactional
+    public ContentConfigDetailResponse updateContentConfig(String levelCode, ContentConfigUpdateRequest request) {
+        LevelEntity level = levelRepository.findById(levelCode)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Level not found"));
+        LevelStepEntity configStep = resolveContentConfigStep(level)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Level step not found"));
+
+        configStep.updateContentConfig(
+                request.knowledgePointCode().trim(),
+                request.knowledgePointTitle().trim(),
+                request.variantCount(),
+                request.activityConfigJson().trim()
+        );
+
+        return toContentConfigDetail(level);
     }
 
     public LevelDetailResponse getLevel(String levelCode) {
@@ -1619,15 +1645,47 @@ public class GameContentService {
     }
 
     private ContentConfigItemDto toContentConfigItem(LevelEntity level) {
-        LevelStepEntity configStep = level.getSteps().stream()
-                .sorted(Comparator.comparingInt(LevelStepEntity::getDisplayOrder))
-                .filter(step -> hasConfigSignal(step))
-                .findFirst()
-                .orElseGet(() -> level.getSteps().stream()
-                        .sorted(Comparator.comparingInt(LevelStepEntity::getDisplayOrder))
-                        .findFirst()
-                        .orElse(null));
+        ContentConfigSnapshot snapshot = buildContentConfigSnapshot(level);
 
+        return new ContentConfigItemDto(
+                level.getCode(),
+                resolveContentConfigLevelTitle(level),
+                level.getChapter().getSubject().getTitle(),
+                snapshot.knowledgePointCode(),
+                snapshot.knowledgePointTitle(),
+                snapshot.variantCount(),
+                snapshot.assetTheme(),
+                snapshot.audioQuality(),
+                snapshot.configSource(),
+                snapshot.healthStatus(),
+                snapshot.healthNotes()
+        );
+    }
+
+    private ContentConfigDetailResponse toContentConfigDetail(LevelEntity level) {
+        ContentConfigSnapshot snapshot = buildContentConfigSnapshot(level);
+        LevelStepEntity configStep = snapshot.step();
+
+        return new ContentConfigDetailResponse(
+                level.getCode(),
+                resolveContentConfigLevelTitle(level),
+                level.getChapter().getSubject().getTitle(),
+                configStep == null ? "step-1" : configStep.getStepCode(),
+                configStep == null ? level.getSummaryTitle() : configStep.getPrompt(),
+                snapshot.knowledgePointCode(),
+                snapshot.knowledgePointTitle(),
+                snapshot.variantCount(),
+                snapshot.activityConfigJson(),
+                snapshot.assetTheme(),
+                snapshot.audioQuality(),
+                snapshot.configSource(),
+                snapshot.healthStatus(),
+                snapshot.healthNotes()
+        );
+    }
+
+    private ContentConfigSnapshot buildContentConfigSnapshot(LevelEntity level) {
+        LevelStepEntity configStep = resolveContentConfigStep(level).orElse(null);
         String activityConfigJson = configStep == null ? null : configStep.getActivityConfigJson();
         String assetTheme = Optional.ofNullable(extractJsonStringValue(activityConfigJson, "assetTheme"))
                 .filter(value -> !value.isBlank())
@@ -1639,13 +1697,18 @@ public class GameContentService {
         int variantCount = configStep == null ? 0 : Optional.ofNullable(configStep.getVariantCount()).orElse(0);
         List<String> healthNotes = buildConfigHealthNotes(configStep, assetTheme, audioQuality, variantCount);
         String healthStatus = healthNotes.isEmpty() ? "healthy" : "warning";
+        String knowledgePointCode = configStep == null
+                ? level.getCode() + ".step-1"
+                : Optional.ofNullable(configStep.getKnowledgePointCode()).orElse(level.getCode() + "." + configStep.getStepCode());
+        String knowledgePointTitle = configStep == null
+                ? level.getSummaryTitle()
+                : Optional.ofNullable(configStep.getKnowledgePointTitle()).orElse(level.getSummaryTitle());
 
-        return new ContentConfigItemDto(
-                level.getCode(),
-                level.getSummaryTitle(),
-                level.getChapter().getSubject().getTitle(),
-                configStep == null ? level.getCode() + ".step-1" : Optional.ofNullable(configStep.getKnowledgePointCode()).orElse(level.getCode() + "." + configStep.getStepCode()),
-                configStep == null ? level.getSummaryTitle() : Optional.ofNullable(configStep.getKnowledgePointTitle()).orElse(level.getSummaryTitle()),
+        return new ContentConfigSnapshot(
+                configStep,
+                activityConfigJson == null ? "" : activityConfigJson,
+                knowledgePointCode,
+                knowledgePointTitle,
                 variantCount,
                 assetTheme,
                 audioQuality,
@@ -1653,6 +1716,22 @@ public class GameContentService {
                 healthStatus,
                 healthNotes.isEmpty() ? List.of("配置完整") : healthNotes
         );
+    }
+
+    private Optional<LevelStepEntity> resolveContentConfigStep(LevelEntity level) {
+        return level.getSteps().stream()
+                .sorted(Comparator.comparingInt(LevelStepEntity::getDisplayOrder))
+                .filter(this::hasConfigSignal)
+                .findFirst()
+                .or(() -> level.getSteps().stream()
+                        .sorted(Comparator.comparingInt(LevelStepEntity::getDisplayOrder))
+                        .findFirst());
+    }
+
+    private String resolveContentConfigLevelTitle(LevelEntity level) {
+        return Optional.ofNullable(level.getDetailTitle())
+                .filter(value -> !value.isBlank())
+                .orElse(level.getSummaryTitle());
     }
 
     private boolean hasConfigSignal(LevelStepEntity step) {
@@ -1731,6 +1810,20 @@ public class GameContentService {
         }
 
         return json.substring(valueStart, valueEnd);
+    }
+
+    private record ContentConfigSnapshot(
+            LevelStepEntity step,
+            String activityConfigJson,
+            String knowledgePointCode,
+            String knowledgePointTitle,
+            int variantCount,
+            String assetTheme,
+            String audioQuality,
+            String configSource,
+            String healthStatus,
+            List<String> healthNotes
+    ) {
     }
 
     private MistakeReviewDraft toMistakeReviewItem(List<LevelCompletionEntity> levelCompletions) {

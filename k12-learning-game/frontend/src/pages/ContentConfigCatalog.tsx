@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getContentConfigCatalog, normalizeContentConfigCatalogData, type ContentConfigCatalogData } from '../api';
 import { PageTopBar } from '../components/PageTopBar';
 import { useSession } from '../session';
@@ -62,6 +63,9 @@ export function ContentConfigCatalog({ data }: ContentConfigCatalogProps) {
                 <span key={note}>{note}</span>
               ))}
             </div>
+            <Link aria-label={`打开${item.levelTitle}配置详情`} className="config-detail-link" to={`/content-configs/${item.levelCode}`}>
+              打开{item.levelTitle}配置详情
+            </Link>
           </article>
         ))}
       </section>

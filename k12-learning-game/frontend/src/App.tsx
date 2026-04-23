@@ -6,6 +6,7 @@ import { LevelPlayer } from './pages/LevelPlayer';
 import { ParentDashboard } from './pages/ParentDashboard';
 import { AchievementsPage } from './pages/AchievementsPage';
 import { ContentConfigCatalog } from './pages/ContentConfigCatalog';
+import { ContentConfigDetailPage } from './pages/ContentConfigDetailPage';
 import { DailyTasksPage } from './pages/DailyTasksPage';
 import { FluencyPracticePage } from './pages/FluencyPracticePage';
 import { LearningPathPage } from './pages/LearningPathPage';
@@ -43,6 +44,7 @@ function AppRoutes() {
       <Route path="/mistakes" element={<ProtectedRoute><MistakeReviewPage /></ProtectedRoute>} />
       <Route path="/learning-path" element={<ProtectedRoute><LearningPathPage /></ProtectedRoute>} />
       <Route path="/content-configs" element={<ProtectedRoute><ContentConfigCatalog /></ProtectedRoute>} />
+      <Route path="/content-configs/:levelCode" element={<ProtectedRoute><ContentConfigDetailPage /></ProtectedRoute>} />
       <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
       <Route path="/achievements" element={<ProtectedRoute><AchievementsPage /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to={isAuthenticated ? '/' : '/login'} replace />} />

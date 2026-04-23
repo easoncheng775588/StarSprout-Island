@@ -73,4 +73,16 @@ public class LevelStepEntity {
     public Integer getVariantCount() {
         return variantCount;
     }
+
+    public void updateContentConfig(
+            String knowledgePointCode,
+            String knowledgePointTitle,
+            Integer variantCount,
+            String activityConfigJson
+    ) {
+        this.knowledgePointCode = knowledgePointCode;
+        this.knowledgePointTitle = knowledgePointTitle;
+        this.variantCount = variantCount;
+        this.activityConfigJson = activityConfigJson;
+    }
 }

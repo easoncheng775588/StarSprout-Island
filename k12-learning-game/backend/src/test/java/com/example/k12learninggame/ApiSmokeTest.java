@@ -477,6 +477,51 @@ class ApiSmokeTest {
     }
 
     @Test
+    void shouldReturnContentConfigDetail() throws Exception {
+        mockMvc.perform(get("/api/content/configs/math-grade4-decimal-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.levelCode").value("math-grade4-decimal-001"))
+                .andExpect(jsonPath("$.levelTitle").value("小数点灯塔"))
+                .andExpect(jsonPath("$.subjectTitle").value("数学岛"))
+                .andExpect(jsonPath("$.stepCode").isNotEmpty())
+                .andExpect(jsonPath("$.knowledgePointCode").isNotEmpty())
+                .andExpect(jsonPath("$.knowledgePointTitle").isNotEmpty())
+                .andExpect(jsonPath("$.variantCount").value(org.hamcrest.Matchers.greaterThan(0)))
+                .andExpect(jsonPath("$.activityConfigJson").value(org.hamcrest.Matchers.containsString("\"kind\"")))
+                .andExpect(jsonPath("$.healthStatus").isNotEmpty())
+                .andExpect(jsonPath("$.healthNotes.length()").value(org.hamcrest.Matchers.greaterThan(0)));
+    }
+
+    @Test
+    @Transactional
+    void shouldUpdateContentConfigDetail() throws Exception {
+        mockMvc.perform(patch("/api/content/configs/math-grade4-decimal-001")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "knowledgePointCode": "math.g4.decimal.updated",
+                                  "knowledgePointTitle": "小数初步：更新后的十分位",
+                                  "variantCount": 12,
+                                  "activityConfigJson": "{\\\"kind\\\":\\\"number-choice\\\",\\\"assetTheme\\\":\\\"海风小数站\\\",\\\"audioQuality\\\":\\\"录音素材优先\\\"}"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.levelCode").value("math-grade4-decimal-001"))
+                .andExpect(jsonPath("$.knowledgePointCode").value("math.g4.decimal.updated"))
+                .andExpect(jsonPath("$.knowledgePointTitle").value("小数初步：更新后的十分位"))
+                .andExpect(jsonPath("$.variantCount").value(12))
+                .andExpect(jsonPath("$.activityConfigJson").value(org.hamcrest.Matchers.containsString("海风小数站")))
+                .andExpect(jsonPath("$.assetTheme").value("海风小数站"))
+                .andExpect(jsonPath("$.audioQuality").value("录音素材优先"));
+
+        mockMvc.perform(get("/api/content/configs/math-grade4-decimal-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.knowledgePointCode").value("math.g4.decimal.updated"))
+                .andExpect(jsonPath("$.variantCount").value(12))
+                .andExpect(jsonPath("$.assetTheme").value("海风小数站"));
+    }
+
+    @Test
     @Transactional
     void shouldReturnStageReportKnowledgeMapAndMistakeReviewPlan() throws Exception {
         mockMvc.perform(patch("/api/parent/children/3")

@@ -3466,6 +3466,24 @@ body::before {
   font-weight: 800;
 }
 
+.config-detail-link {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 1.6rem;
+  padding: 1rem 1.4rem;
+  border-radius: 99.9rem;
+  background: rgba(89, 190, 168, 0.16);
+  color: #1f7c68;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.config-detail-link:hover,
+.config-detail-link:focus-visible {
+  background: rgba(89, 190, 168, 0.24);
+  outline: none;
+}
+
 .daily-task-grid,
 .mistake-pack-list,
 .learning-path-board,
@@ -3788,6 +3806,76 @@ body::before {
   line-height: 1;
 }
 
+.config-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(28rem, 36rem);
+  gap: 2.4rem;
+  align-items: start;
+  margin-top: 2.4rem;
+}
+
+.config-detail-shell,
+.config-detail-card,
+.config-insight-card {
+  display: grid;
+  gap: 1.6rem;
+}
+
+.config-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.6rem;
+}
+
+.config-field {
+  display: grid;
+  gap: 0.8rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.config-field input,
+.config-field textarea {
+  width: 100%;
+  border: 0.2rem solid rgba(33, 48, 77, 0.12);
+  border-radius: 1.8rem;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font: inherit;
+  padding: 1.2rem 1.4rem;
+}
+
+.config-field input:focus,
+.config-field textarea:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 0.3rem rgba(89, 190, 168, 0.18);
+  outline: none;
+}
+
+.config-field textarea {
+  min-height: 18rem;
+  resize: vertical;
+}
+
+.config-field-full {
+  grid-column: 1 / -1;
+}
+
+.config-detail-actions {
+  display: grid;
+  gap: 1rem;
+}
+
+.config-detail-summary {
+  display: grid;
+  gap: 1rem;
+}
+
+.config-detail-summary p {
+  margin: 0;
+  line-height: 1.7;
+}
+
 .success-feedback {
   color: #167463;
   font-weight: 900;
@@ -3805,6 +3893,14 @@ body::before {
 
   .placement-result-card {
     position: static;
+  }
+
+  .config-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .config-form-grid {
+    grid-template-columns: 1fr;
   }
 }
 

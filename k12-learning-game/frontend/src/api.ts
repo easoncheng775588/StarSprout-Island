@@ -480,6 +480,19 @@ export interface ContentConfigCatalogData {
   items: ContentConfigItemData[];
 }
 
+export interface ContentConfigDetailData extends ContentConfigItemData {
+  stepCode: string;
+  stepPrompt: string;
+  activityConfigJson: string;
+}
+
+export interface ContentConfigUpdatePayload {
+  knowledgePointCode: string;
+  knowledgePointTitle: string;
+  variantCount: number;
+  activityConfigJson: string;
+}
+
 export interface SessionChildProfile {
   id: number;
   nickname: string;
@@ -778,6 +791,28 @@ export function normalizeContentConfigCatalogData(data: Partial<ContentConfigCat
   };
 }
 
+export function normalizeContentConfigDetailData(data: Partial<ContentConfigDetailData> & Pick<ContentConfigDetailData, 'levelCode' | 'levelTitle' | 'subjectTitle'>): ContentConfigDetailData {
+  const healthNotes = getContentConfigHealthNotes(data);
+  const healthStatus = data.healthStatus ?? (healthNotes.some((note) => note.includes('待补') || note.includes('缺少')) ? 'warning' : 'healthy');
+
+  return {
+    levelCode: data.levelCode,
+    levelTitle: data.levelTitle,
+    subjectTitle: data.subjectTitle,
+    stepCode: data.stepCode ?? 'step-1',
+    stepPrompt: data.stepPrompt ?? data.levelTitle,
+    knowledgePointCode: data.knowledgePointCode ?? `${data.levelCode}.step-1`,
+    knowledgePointTitle: data.knowledgePointTitle ?? data.levelTitle,
+    variantCount: data.variantCount ?? 0,
+    activityConfigJson: data.activityConfigJson ?? '',
+    assetTheme: data.assetTheme ?? '待补素材主题',
+    audioQuality: data.audioQuality ?? '待补音频质量',
+    configSource: data.configSource ?? 'unknown',
+    healthStatus,
+    healthNotes
+  };
+}
+
 export async function getParentDashboard(): Promise<ParentDashboardData> {
   const data = await fetchJson<ParentDashboardData>('/api/parent/dashboard');
   return normalizeParentDashboardData(data);
@@ -841,6 +876,22 @@ export function getLearningPath(): Promise<LearningPathData> {
 export async function getContentConfigCatalog(): Promise<ContentConfigCatalogData> {
   const data = await fetchJson<ContentConfigCatalogData>('/api/content/configs');
   return normalizeContentConfigCatalogData(data);
+}
+
+export async function getContentConfigDetail(levelCode: string): Promise<ContentConfigDetailData> {
+  const data = await fetchJson<ContentConfigDetailData>(`/api/content/configs/${levelCode}`);
+  return normalizeContentConfigDetailData(data);
+}
+
+export async function updateContentConfig(
+  levelCode: string,
+  payload: ContentConfigUpdatePayload
+): Promise<ContentConfigDetailData> {
+  const data = await fetchJson<ContentConfigDetailData>(`/api/content/configs/${levelCode}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload)
+  });
+  return normalizeContentConfigDetailData(data);
 }
 
 export function getSessionChildren(): Promise<SessionChildrenApiResponse> {
