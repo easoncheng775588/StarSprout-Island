@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { recordFluencyAttempt } from '../api';
+import { getFluencyPractice, recordFluencyAttempt, type FluencyPracticeData } from '../api';
 import { PageTopBar } from '../components/PageTopBar';
 import { useSession } from '../session';
 
@@ -83,7 +83,16 @@ export function FluencyPracticePage() {
   const activeChild = session?.children.find((child) => child.id === session.childProfileId);
   const childNickname = activeChild?.nickname ?? session?.childNickname ?? '小朋友';
   const stageLabel = activeChild?.stageLabel ?? '幼小衔接';
-  const practiceSet = getFluencyPracticeSet(stageLabel);
+  const [practiceSet, setPracticeSet] = useState<FluencyPracticeData>(() => {
+    const localPracticeSet = getFluencyPracticeSet(stageLabel);
+
+    return {
+      stageLabel,
+      focusArea: localPracticeSet.focusArea,
+      focusAreaLabel: localPracticeSet.focusAreaLabel,
+      questions: localPracticeSet.questions
+    };
+  });
   const questions = practiceSet.questions;
   const [questionIndex, setQuestionIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
@@ -92,6 +101,44 @@ export function FluencyPracticePage() {
   const [recordFeedback, setRecordFeedback] = useState<string | null>(null);
   const isFinished = answeredCount >= questions.length;
   const currentQuestion = questions[Math.min(questionIndex, questions.length - 1)];
+
+  useEffect(() => {
+    const localPracticeSet = getFluencyPracticeSet(stageLabel);
+
+    setPracticeSet({
+      stageLabel,
+      focusArea: localPracticeSet.focusArea,
+      focusAreaLabel: localPracticeSet.focusAreaLabel,
+      questions: localPracticeSet.questions
+    });
+    setQuestionIndex(0);
+    setCorrectCount(0);
+    setAnsweredCount(0);
+    setLastFeedback('先看题，再选答案，保持稳稳的节奏。');
+    setRecordFeedback(null);
+
+    let cancelled = false;
+    getFluencyPractice()
+      .then((remotePracticeSet) => {
+        if (!cancelled) {
+          setPracticeSet(remotePracticeSet);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPracticeSet({
+            stageLabel,
+            focusArea: localPracticeSet.focusArea,
+            focusAreaLabel: localPracticeSet.focusAreaLabel,
+            questions: localPracticeSet.questions
+          });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [stageLabel, session?.childProfileId]);
 
   function handleAnswer(choice: number) {
     if (isFinished) {
@@ -111,7 +158,7 @@ export function FluencyPracticePage() {
     }
 
     void recordFluencyAttempt({
-      stageLabel,
+      stageLabel: practiceSet.stageLabel,
       focusArea: practiceSet.focusArea,
       totalQuestions: questions.length,
       correctCount: nextCorrectCount,

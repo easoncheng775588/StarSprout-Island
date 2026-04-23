@@ -1,10 +1,19 @@
 insert into parent_accounts (id, display_name, phone, password, default_child_profile_id)
 values (1, '星星妈妈', '13800000001', 'demo1234', 1);
 
+insert into parent_accounts (id, display_name, phone, password, default_child_profile_id)
+values (2, '银河家长', '13800000002', 'demo5678', 4);
+
 insert into child_profiles (id, nickname, streak_days, total_stars, title, stage_label, avatar_color, parent_account_id)
 values (1, '小星星', 7, 126, '晨光冒险家', '幼小衔接', '#ffcf70', 1),
        (2, '小火箭', 12, 188, '银河探险家', '幼小衔接', '#8ad1ff', 1),
        (3, '小海豚', 10, 172, '海湾领航员', '幼小衔接', '#8ee1b5', 1);
+
+insert into child_profiles (id, nickname, streak_days, total_stars, title, stage_label, avatar_color, parent_account_id)
+values (4, '小雨点', 9, 248, '百数小船长', '一年级', '#ffd166', 2),
+       (5, '小森林', 12, 316, '线段图建筑师', '二年级', '#7bd389', 2),
+       (6, '小极光', 15, 402, '分数航海员', '三年级', '#6ec6ff', 2),
+       (7, '小流星', 18, 468, '小数策略家', '四年级', '#c4a7ff', 2);
 
 insert into subjects (code, title, subtitle, accent_color, display_order)
 values ('math', '数学岛', '数感和规律正在闪闪发亮', '#ff8a5b', 1),
@@ -820,15 +829,41 @@ values (1, 3, 18, 5),
        (2, 2, 14, 4),
        (3, 1, 7, 2);
 
-insert into parent_settings (child_profile_id, leaderboard_enabled, daily_study_minutes, reminder_enabled)
-values (1, true, 20, false),
-       (2, true, 18, false),
-       (3, true, 15, false);
+insert into parent_today_summaries (child_profile_id, completed_levels, study_minutes, earned_stars)
+values (4, 2, 16, 6),
+       (5, 2, 18, 7),
+       (6, 3, 22, 9),
+       (7, 3, 24, 10);
+
+insert into parent_settings (child_profile_id, leaderboard_enabled, daily_study_minutes, reminder_enabled, practice_intensity)
+values (1, true, 20, false, 'standard'),
+       (2, true, 18, false, 'standard'),
+       (3, true, 15, false, 'standard');
+
+insert into parent_settings (child_profile_id, leaderboard_enabled, daily_study_minutes, reminder_enabled, practice_intensity)
+values (4, true, 20, true, 'standard'),
+       (5, true, 22, true, 'challenge'),
+       (6, true, 24, false, 'challenge'),
+       (7, true, 26, true, 'challenge');
 
 insert into subject_progress (id, progress_percent, display_order, child_profile_id, subject_code)
 values (1, 78, 1, 1, 'math'),
        (2, 64, 2, 1, 'chinese'),
        (3, 59, 3, 1, 'english');
+
+insert into subject_progress (id, progress_percent, display_order, child_profile_id, subject_code)
+values (4, 41, 1, 4, 'math'),
+       (5, 35, 2, 4, 'chinese'),
+       (6, 38, 3, 4, 'english'),
+       (7, 49, 1, 5, 'math'),
+       (8, 44, 2, 5, 'chinese'),
+       (9, 40, 3, 5, 'english'),
+       (10, 56, 1, 6, 'math'),
+       (11, 47, 2, 6, 'chinese'),
+       (12, 45, 3, 6, 'english'),
+       (13, 62, 1, 7, 'math'),
+       (14, 54, 2, 7, 'chinese'),
+       (15, 52, 3, 7, 'english');
 
 insert into weekly_trend_points (id, day_label, minutes, display_order, child_profile_id)
 values (1, '周一', 12, 1, 1),
@@ -839,9 +874,23 @@ values (1, '周一', 12, 1, 1),
        (6, '周六', 24, 6, 1),
        (7, '周日', 18, 7, 1);
 
+insert into weekly_trend_points (id, day_label, minutes, display_order, child_profile_id)
+values (8, '周一', 10, 1, 4),
+       (9, '周二', 14, 2, 4),
+       (10, '周三', 16, 3, 4),
+       (11, '周四', 12, 4, 4),
+       (12, '周五', 18, 5, 4),
+       (13, '周六', 20, 6, 4),
+       (14, '周日', 17, 7, 4);
+
 insert into weak_points (id, title, suggestion, display_order, child_profile_id)
 values (1, '20 以内减法需要多练习', '建议继续完成糖果加减和图像列式关卡。', 1, 1),
        (2, '英语单词跟读不稳定', '建议每天做 5 分钟单词跟读。', 2, 1);
+
+insert into weak_points (id, title, suggestion, display_order, child_profile_id)
+values (3, '百数认读还需要更稳一点', '建议先回看百格图认数，再补一组数轴跳跳桥。', 1, 4),
+       (4, '课堂对话跟读需要继续巩固', '建议把课堂小对话再慢速跟读 2 遍。', 2, 4),
+       (5, '小数比较容易粗心', '建议用小数百格图和比较关卡一起复习。', 1, 7);
 
 insert into leaderboard_boards (board_type, privacy_tip)
 values ('weekly_star', '排行榜默认匿名展示，家长可随时关闭参与。'),
@@ -888,3 +937,41 @@ values (1, 1, 'math-numbers-001', 2, 0, 420, 'perfect', dateadd('hour', -2, curr
        (16, 3, 'chinese-strokes-001', 1, 0, 260, 'perfect', dateadd('day', -4, current_timestamp())),
        (17, 3, 'english-letters-001', 1, 0, 240, 'perfect', dateadd('day', -5, current_timestamp())),
        (18, 3, 'english-words-001', 1, 0, 260, 'perfect', dateadd('day', -6, current_timestamp()));
+
+insert into level_completions (id, child_profile_id, level_code, correct_count, wrong_count, duration_seconds, result_message, completed_at)
+values (19, 4, 'math-grade1-numbers-001', 1, 0, 360, 'perfect', dateadd('day', -24, current_timestamp())),
+       (20, 4, 'math-grade1-hundredchart-001', 1, 1, 330, 'completed', dateadd('day', -18, current_timestamp())),
+       (21, 4, 'chinese-grade1-finals-001', 1, 0, 280, 'perfect', dateadd('day', -13, current_timestamp())),
+       (22, 4, 'english-grade1-phonics-001', 1, 0, 300, 'perfect', dateadd('day', -9, current_timestamp())),
+       (23, 4, 'math-grade1-money-001', 1, 0, 310, 'perfect', dateadd('day', -5, current_timestamp())),
+       (24, 4, 'english-grade1-dialogue-001', 1, 1, 340, 'completed', dateadd('day', -2, current_timestamp())),
+       (25, 5, 'math-grade2-multiply-001', 1, 0, 320, 'perfect', dateadd('day', -20, current_timestamp())),
+       (26, 5, 'math-grade2-division-001', 1, 1, 340, 'completed', dateadd('day', -12, current_timestamp())),
+       (27, 5, 'chinese-grade2-main-idea-001', 1, 0, 300, 'perfect', dateadd('day', -7, current_timestamp())),
+       (28, 5, 'english-grade2-animal-dialogue-001', 1, 0, 290, 'perfect', dateadd('day', -3, current_timestamp())),
+       (29, 6, 'math-grade3-division-001', 1, 0, 330, 'perfect', dateadd('day', -21, current_timestamp())),
+       (30, 6, 'math-grade3-area-model-001', 1, 0, 360, 'perfect', dateadd('day', -16, current_timestamp())),
+       (31, 6, 'chinese-grade3-main-idea-001', 1, 1, 320, 'completed', dateadd('day', -10, current_timestamp())),
+       (32, 6, 'english-grade3-question-001', 1, 0, 300, 'perfect', dateadd('day', -4, current_timestamp())),
+       (33, 7, 'math-grade4-decimal-001', 1, 0, 350, 'perfect', dateadd('day', -22, current_timestamp())),
+       (34, 7, 'math-grade4-decimal-compare-001', 1, 1, 330, 'completed', dateadd('day', -15, current_timestamp())),
+       (35, 7, 'math-grade4-parallel-001', 1, 0, 340, 'perfect', dateadd('day', -8, current_timestamp())),
+       (36, 7, 'chinese-grade4-central-clue-001', 1, 0, 320, 'perfect', dateadd('day', -6, current_timestamp())),
+       (37, 7, 'english-grade4-listening-judgment-001', 1, 1, 300, 'completed', dateadd('day', -3, current_timestamp())),
+       (38, 7, 'math-grade4-distance-001', 1, 0, 360, 'perfect', dateadd('day', -1, current_timestamp()));
+
+insert into fluency_attempts (id, child_profile_id, stage_label, focus_area, total_questions, correct_count, duration_seconds, accuracy_percent, attempt_date, recorded_at)
+values (1, 4, '一年级', 'addition-within-20', 5, 4, 58, 80, dateadd('day', -6, current_date), dateadd('day', -6, current_timestamp())),
+       (2, 4, '一年级', 'number-sense', 5, 5, 52, 100, dateadd('day', -5, current_date), dateadd('day', -5, current_timestamp())),
+       (3, 4, '一年级', 'addition-within-20', 5, 4, 56, 80, dateadd('day', -4, current_date), dateadd('day', -4, current_timestamp())),
+       (4, 4, '一年级', 'number-sense', 5, 3, 60, 60, dateadd('day', -3, current_date), dateadd('day', -3, current_timestamp())),
+       (5, 4, '一年级', 'addition-within-20', 5, 5, 49, 100, dateadd('day', -2, current_date), dateadd('day', -2, current_timestamp())),
+       (6, 4, '一年级', 'number-sense', 5, 4, 53, 80, dateadd('day', -1, current_date), dateadd('day', -1, current_timestamp())),
+       (7, 7, '四年级', 'decimal-number-sense', 5, 4, 61, 80, dateadd('day', -6, current_date), dateadd('day', -6, current_timestamp())),
+       (8, 7, '四年级', 'decimal-number-sense', 5, 5, 55, 100, dateadd('day', -3, current_date), dateadd('day', -3, current_timestamp())),
+       (9, 7, '四年级', 'decimal-number-sense', 5, 4, 57, 80, dateadd('day', -1, current_date), dateadd('day', -1, current_timestamp()));
+
+insert into mistake_review_attempts (id, child_profile_id, level_code, knowledge_point_code, correct_count, wrong_count, duration_seconds, mastered, mastery_status, reviewed_at)
+values (1, 4, 'math-grade1-hundredchart-001', 'math.g1.number-shape.hundred-chart', 2, 1, 180, false, '继续巩固', dateadd('day', -1, current_timestamp())),
+       (2, 4, 'english-grade1-dialogue-001', 'english.g1.speaking.classroom-dialogue', 3, 0, 170, true, '已掌握', dateadd('day', -1, dateadd('hour', -2, current_timestamp()))),
+       (3, 7, 'english-grade4-listening-judgment-001', 'english.g4.listening.tense-keyword', 2, 1, 210, false, '继续巩固', dateadd('day', -2, current_timestamp()));

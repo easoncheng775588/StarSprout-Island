@@ -80,13 +80,25 @@ function getPreferredVoice(lang: string) {
   return languageMatches[0];
 }
 
-export function playLearningAudio(request: AudioPlaybackRequest): AudioPlaybackResult {
-  const plan = createAudioPlaybackPlan(request);
+async function tryPlayRecordedAsset(plan: AudioPlaybackPlan): Promise<boolean> {
+  if (plan.source !== 'recorded-asset' || !plan.recordedAssetUrl || typeof Audio === 'undefined') {
+    return false;
+  }
 
-  if (plan.source === 'recorded-asset' && plan.recordedAssetUrl && typeof Audio !== 'undefined') {
+  try {
     const audio = new Audio(plan.recordedAssetUrl);
     audio.playbackRate = plan.playbackRate;
-    void audio.play();
+    await audio.play();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function playLearningAudio(request: AudioPlaybackRequest): Promise<AudioPlaybackResult> {
+  const plan = createAudioPlaybackPlan(request);
+
+  if (await tryPlayRecordedAsset(plan)) {
     return {
       played: true,
       voiceLabel: plan.teacherLabel,
@@ -117,6 +129,8 @@ export function playLearningAudio(request: AudioPlaybackRequest): AudioPlaybackR
   return {
     played: true,
     voiceLabel: preferredVoice ? `${preferredVoice.lang} · ${preferredVoice.name}` : plan.teacherLabel,
-    sourceLabel: plan.statusLabel
+    sourceLabel: plan.source === 'recorded-asset'
+      ? '录音素材暂时不可用，已切换浏览器语音'
+      : plan.statusLabel
   };
 }

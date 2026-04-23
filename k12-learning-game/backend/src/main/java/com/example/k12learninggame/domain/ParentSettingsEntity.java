@@ -21,6 +21,8 @@ public class ParentSettingsEntity {
 
     private boolean reminderEnabled;
 
+    private String practiceIntensity;
+
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "child_profile_id")
@@ -33,13 +35,15 @@ public class ParentSettingsEntity {
             ChildProfileEntity childProfile,
             boolean leaderboardEnabled,
             int dailyStudyMinutes,
-            boolean reminderEnabled
+            boolean reminderEnabled,
+            String practiceIntensity
     ) {
         this.childProfile = childProfile;
         this.childProfileId = childProfile.getId();
         this.leaderboardEnabled = leaderboardEnabled;
         this.dailyStudyMinutes = dailyStudyMinutes;
         this.reminderEnabled = reminderEnabled;
+        this.practiceIntensity = practiceIntensity;
     }
 
     public boolean isLeaderboardEnabled() {
@@ -54,9 +58,14 @@ public class ParentSettingsEntity {
         return reminderEnabled;
     }
 
-    public void update(boolean leaderboardEnabled, int dailyStudyMinutes, boolean reminderEnabled) {
+    public String getPracticeIntensity() {
+        return practiceIntensity;
+    }
+
+    public void update(boolean leaderboardEnabled, int dailyStudyMinutes, boolean reminderEnabled, String practiceIntensity) {
         this.leaderboardEnabled = leaderboardEnabled;
         this.dailyStudyMinutes = dailyStudyMinutes;
         this.reminderEnabled = reminderEnabled;
+        this.practiceIntensity = practiceIntensity;
     }
 }

@@ -198,6 +198,23 @@
   - 数学新增 3 关：图形分类屋、上下左右小地图、排队第几个
   - 语文新增 3 关：偏旁小树、声调小山坡、横竖撇捺练习
   - 英语新增 3 关：大小写找朋友、家庭单词屋、公园小绘本
+
+## 2026-04-23
+
+- 已完成下一阶段 P2 收口：
+  - 新增第二组演示账号 `13800000002 / demo5678`
+  - 补齐一年级到四年级 4 个孩子档案与多周主线学习记录
+  - 补齐快练 `fluency_attempts` 与复习 `mistake_review_attempts` 种子数据
+  - README 已同步两组演示账号与推荐演示路线
+- 已完成发布前质量兜底：
+  - 新增前端 `protected-routes-smoke.test.tsx`，覆盖首页、学科地图、关卡、家长中心、每日任务、快练、测评、错题本、学习路径、排行榜、成就墙和题库配置详情深链
+  - 后端 `ApiSmokeTest` 新增第二组演示账号登录与家长端加载验证
+  - 后端新增排行榜别名 smoke 与代表性 `401/409/400/404` 错误契约 smoke
+  - `PersistenceBackedGameContentServiceTest` 新增发布用种子数据与配置目录健康检查
+  - 新增发布前检查清单：`k12-learning-game/docs/plans/2026-04-23-release-readiness-checklist.md`
+- 定向验证通过：
+  - 前端测试：`npm test -- --run src/__tests__/protected-routes-smoke.test.tsx`
+  - 后端测试：`mvn -q -Dmaven.repo.local=/Users/easoncheng/Documents/New project/.cache/m2 -Dtest=ApiSmokeTest#shouldLoginMixedStageDemoAccountAndLoadDashboard,ApiSmokeTest#shouldReturnWeeklyLeaderboardAlias,ApiSmokeTest#shouldExposeRepresentativeErrorContracts,PersistenceBackedGameContentServiceTest#shouldKeepSeedLevelsAndConfiguredCatalogReadyForDemoRoutes test`
   - 后端 `data.sql`、前端地图/兜底详情、`LevelPlayer` 互动配置已同步
   - 新增前端测试：`preschool-content-expansion.test.tsx`
   - 更新后端 smoke test，覆盖新增地图节点与幼小衔接家长端总量
@@ -240,6 +257,19 @@
   - 后端英语地图、关卡详情、知识点标题、题型配置和前端兜底数据已同步
 - 本轮验证通过：
   - 前端测试：`npm test -- --run`，18 个测试文件、83 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成下一阶段 P0 第 2-3 项与 P1 第 4-7 项的主要落地：
+  - `Phase 52`：新增 `GET /api/fluency/practice`，快练题组后端化，前端优先读取后端题组并保留本地兜底
+  - `Phase 53`：错题复习中心、每日任务、家长陪练计划改为按知识点聚合，薄弱点闭环统一到知识点维度
+  - `Phase 54`：学习路径新增单元目标、章节完成度、单元小测 CTA
+  - `Phase 55`：家长中心新增 4 周阶段趋势、周环比摘要、陪练行动状态
+  - `Phase 56`：音频播放支持录音素材优先、失败自动回退浏览器 TTS；题库配置中心健康检查新增录音/TTS 状态识别
+  - `Phase 57`：家长设置新增练习强度偏好 `easy/standard/challenge`，首页与每日任务文案按强度联动；登录页新增演示账号提示
+  - `Phase 58`：奥数学科地图后端已支持返回 1-6 年级全图，奥数小课路线文案切换为“模型讲解 -> 例题探索 -> 变式挑战 -> 思维总结”
+  - `Phase 60`：README 已补充演示账号、当前能力与推荐演示路线
+- 本轮全量验证通过：
+  - 前端测试：`npm test -- --run`，30 个测试文件、109 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
 

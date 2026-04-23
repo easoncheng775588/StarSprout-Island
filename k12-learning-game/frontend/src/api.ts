@@ -180,6 +180,8 @@ export interface ParentDashboardData {
     subjectTitle: string;
     knowledgePointTitle: string;
     priorityLabel: string;
+    actionStatusLabel: string;
+    actionStatusDescription: string;
     focusReason: string;
     parentGuidance: string;
     practicePlan: string;
@@ -203,6 +205,7 @@ export interface ParentDashboardData {
     leaderboardEnabled: boolean;
     dailyStudyMinutes: number;
     reminderEnabled: boolean;
+    practiceIntensity: 'easy' | 'standard' | 'challenge';
   };
   learningVitals: {
     totalCompletedLevels: number;
@@ -244,6 +247,20 @@ export interface ParentDashboardData {
     completionPercent: number;
     readinessLabel: string;
     nextMilestone: string;
+  };
+  stageTrend: Array<{
+    weekLabel: string;
+    studyMinutes: number;
+    completedLevels: number;
+    averageAccuracyPercent: number;
+    fluencyAttemptCount: number;
+  }>;
+  weekOverWeek: {
+    studyMinutesDelta: number;
+    completedLevelsDelta: number;
+    accuracyDelta: number;
+    fluencyAttemptDelta: number;
+    summary: string;
   };
   fluencySummary: {
     attemptCount: number;
@@ -400,6 +417,19 @@ export interface FluencyAttemptPayload {
   durationSeconds: number;
 }
 
+export interface FluencyPracticeQuestionData {
+  prompt: string;
+  choices: number[];
+  answer: number;
+}
+
+export interface FluencyPracticeData {
+  stageLabel: string;
+  focusArea: string;
+  focusAreaLabel: string;
+  questions: FluencyPracticeQuestionData[];
+}
+
 export interface FluencyAttemptResultData extends FluencyAttemptPayload {
   accuracyPercent: number;
   todayAttemptCount: number;
@@ -407,6 +437,7 @@ export interface FluencyAttemptResultData extends FluencyAttemptPayload {
 }
 
 export interface MistakeReviewCardData {
+  knowledgePointCode?: string;
   levelCode: string;
   levelTitle: string;
   subjectTitle: string;
@@ -414,6 +445,7 @@ export interface MistakeReviewCardData {
   mistakeCount: number;
   masteryStatus: string;
   reviewPrompt: string;
+  targetLevelCode?: string;
   reviewSteps: string[];
 }
 
@@ -446,6 +478,13 @@ export interface LearningPathChapterData {
   subjectTitle: string;
   chapterTitle: string;
   chapterSubtitle: string;
+  unitGoal?: string;
+  completedLevelCount?: number;
+  totalLevelCount?: number;
+  completionPercent?: number;
+  checkpointStatus?: 'available' | 'completed';
+  checkpointLevelCode?: string | null;
+  checkpointCtaText?: string;
   levels: LearningPathLevelData[];
 }
 
@@ -532,9 +571,11 @@ export interface ParentSettingsPayload {
   leaderboardEnabled: boolean;
   dailyStudyMinutes: number;
   reminderEnabled: boolean;
+  practiceIntensity: 'easy' | 'standard' | 'challenge';
 }
 
 const defaultFluencyTrendLabels = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+const defaultStageTrendLabels = ['3周前', '2周前', '上周', '本周'];
 
 const defaultAchievementPreview = {
   unlockedCount: 0,
@@ -643,6 +684,21 @@ export function normalizeParentDashboardData(data: Partial<ParentDashboardData> 
       attemptCount: 0
     }));
   const weeklyReport = data.weeklyReport;
+  const stageTrend = Array.isArray(data.stageTrend) && data.stageTrend.length > 0
+    ? data.stageTrend.map((point, index) => ({
+      weekLabel: point.weekLabel || defaultStageTrendLabels[index] || `第${index + 1}周`,
+      studyMinutes: typeof point.studyMinutes === 'number' ? point.studyMinutes : 0,
+      completedLevels: typeof point.completedLevels === 'number' ? point.completedLevels : 0,
+      averageAccuracyPercent: typeof point.averageAccuracyPercent === 'number' ? point.averageAccuracyPercent : 0,
+      fluencyAttemptCount: typeof point.fluencyAttemptCount === 'number' ? point.fluencyAttemptCount : 0
+    }))
+    : defaultStageTrendLabels.map((weekLabel) => ({
+      weekLabel,
+      studyMinutes: 0,
+      completedLevels: 0,
+      averageAccuracyPercent: 0,
+      fluencyAttemptCount: 0
+    }));
   const defaultWeeklyReport = {
     title: `${data.childNickname} 的本周成长周报`,
     dateRangeLabel: '暂无周报周期',
@@ -678,7 +734,17 @@ export function normalizeParentDashboardData(data: Partial<ParentDashboardData> 
     subjectProgress: data.subjectProgress ?? [],
     weeklyTrend: data.weeklyTrend ?? [],
     weakPoints: data.weakPoints ?? [],
-    weakPointActionPlan: data.weakPointActionPlan ?? [],
+    weakPointActionPlan: (data.weakPointActionPlan ?? []).map((item) => ({
+      subjectTitle: item.subjectTitle,
+      knowledgePointTitle: item.knowledgePointTitle,
+      priorityLabel: item.priorityLabel,
+      actionStatusLabel: item.actionStatusLabel ?? '待复习',
+      actionStatusDescription: item.actionStatusDescription ?? '还没有针对这个知识点完成复习，建议今晚先安排 1 组。',
+      focusReason: item.focusReason,
+      parentGuidance: item.parentGuidance,
+      practicePlan: item.practicePlan,
+      targetLevelCode: item.targetLevelCode
+    })),
     achievementSummary: data.achievementSummary ?? {
       unlockedCount: 0,
       nextMilestone: '完成更多关卡后会生成下一枚成就目标。'
@@ -689,10 +755,11 @@ export function normalizeParentDashboardData(data: Partial<ParentDashboardData> 
       completionPercent: 0
     },
     recommendedActions: data.recommendedActions ?? [],
-    settings: data.settings ?? {
-      leaderboardEnabled: true,
-      dailyStudyMinutes: 20,
-      reminderEnabled: false
+    settings: {
+      leaderboardEnabled: data.settings?.leaderboardEnabled ?? true,
+      dailyStudyMinutes: data.settings?.dailyStudyMinutes ?? 20,
+      reminderEnabled: data.settings?.reminderEnabled ?? false,
+      practiceIntensity: data.settings?.practiceIntensity ?? 'standard'
     },
     learningVitals,
     subjectInsights: data.subjectInsights ?? [],
@@ -705,6 +772,14 @@ export function normalizeParentDashboardData(data: Partial<ParentDashboardData> 
       completionPercent: learningVitals.totalCompletedLevels > 0 ? 100 : 0,
       readinessLabel: '继续探索',
       nextMilestone: '完成更多关卡后会生成阶段建议。'
+    },
+    stageTrend,
+    weekOverWeek: data.weekOverWeek ?? {
+      studyMinutesDelta: 0,
+      completedLevelsDelta: 0,
+      accuracyDelta: 0,
+      fluencyAttemptDelta: 0,
+      summary: '最近两周还在继续积累学习数据。'
     },
     fluencySummary: {
       attemptCount: data.fluencySummary?.attemptCount ?? 0,
@@ -853,6 +928,10 @@ export function recordFluencyAttempt(payload: FluencyAttemptPayload): Promise<Fl
     method: 'POST',
     body: JSON.stringify(payload)
   });
+}
+
+export function getFluencyPractice(): Promise<FluencyPracticeData> {
+  return fetchJson<FluencyPracticeData>('/api/fluency/practice');
 }
 
 export function getMistakeReviewCenter(): Promise<MistakeReviewCenterData> {

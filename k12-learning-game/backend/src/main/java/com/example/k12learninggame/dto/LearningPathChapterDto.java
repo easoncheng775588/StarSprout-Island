@@ -7,6 +7,13 @@ public record LearningPathChapterDto(
         String subjectTitle,
         String chapterTitle,
         String chapterSubtitle,
+        String unitGoal,
+        int completedLevelCount,
+        int totalLevelCount,
+        int completionPercent,
+        String checkpointStatus,
+        String checkpointLevelCode,
+        String checkpointCtaText,
         List<LearningPathLevelDto> levels
 ) {
 }

@@ -34,6 +34,8 @@ import com.example.k12learninggame.dto.CompleteLevelRequest;
 import com.example.k12learninggame.dto.CompleteLevelResponse;
 import com.example.k12learninggame.dto.FluencyAttemptRequest;
 import com.example.k12learninggame.dto.FluencyAttemptResponse;
+import com.example.k12learninggame.dto.FluencyPracticeQuestionDto;
+import com.example.k12learninggame.dto.FluencyPracticeResponse;
 import com.example.k12learninggame.dto.GoalProgressDto;
 import com.example.k12learninggame.dto.HomeOverviewResponse;
 import com.example.k12learninggame.dto.LeaderboardRankDto;
@@ -60,11 +62,13 @@ import com.example.k12learninggame.dto.ParentFluencyTypeInsightDto;
 import com.example.k12learninggame.dto.ParentSettingsDto;
 import com.example.k12learninggame.dto.ParentActiveChildUpdateRequest;
 import com.example.k12learninggame.dto.ParentSettingsUpdateRequest;
+import com.example.k12learninggame.dto.ParentStageTrendPointDto;
 import com.example.k12learninggame.dto.ParentSubjectInsightDto;
 import com.example.k12learninggame.dto.ParentSubjectProgressDto;
 import com.example.k12learninggame.dto.ParentThinkingModelProgressDto;
 import com.example.k12learninggame.dto.ParentTodaySummaryDto;
 import com.example.k12learninggame.dto.ParentWeakPointActionDto;
+import com.example.k12learninggame.dto.ParentWeekOverWeekDto;
 import com.example.k12learninggame.dto.ParentWeeklyReportDto;
 import com.example.k12learninggame.dto.RecommendedActionDto;
 import com.example.k12learninggame.dto.RecentActivityDto;
@@ -90,6 +94,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -273,8 +278,8 @@ public class GameContentService {
                 ),
                 "启航岛",
                 nextLevel != null
-                        ? "继续挑战 " + nextLevel.getSummaryTitle() + "，把今天的学习星轨再点亮一格。"
-                        : "今天已经完成主线任务，回顾一下最喜欢的关卡吧。",
+                        ? homeTodayTaskText(nextLevel.getSummaryTitle(), practiceIntensityForChild(child))
+                        : completedHomeTaskText(practiceIntensityForChild(child)),
                 nextLevel != null ? nextLevel.getCode() : null,
                 nextLevel != null ? nextLevel.getSummaryTitle() : null
         );
@@ -326,36 +331,35 @@ public class GameContentService {
 
         DailyTaskDto mainLineTask = new DailyTaskDto(
                 "mainline-next-level",
-                "主线下一关",
+                mainlineTaskTitle(practiceIntensityForChild(child)),
                 nextLevel != null
-                        ? "继续挑战“" + nextLevel.getSummaryTitle() + "”，把学习路线往前推进一站。"
-                        : "当前学段主线已完成，可以回头巩固一下最喜欢的关卡。",
+                        ? mainlineTaskDescription(nextLevel.getSummaryTitle(), practiceIntensityForChild(child))
+                        : completedMainlineTaskDescription(practiceIntensityForChild(child)),
                 "mainline",
                 mainLineTaskCompleted,
-                mainLineTaskCompleted ? "已推进" : "待推进",
+                mainlineTaskStatusLabel(mainLineTaskCompleted, practiceIntensityForChild(child)),
                 nextLevelCode,
                 nextLevel != null ? "完成后可再得 " + nextLevel.getRewardStars() + " 颗星" : "巩固也有小奖励",
                 claimedTaskCodes.contains("mainline-next-level"),
                 mainLineTaskCompleted && !claimedTaskCodes.contains("mainline-next-level")
         );
 
-        LevelEntity mostRelevantMistakeLevel = completions.stream()
-                .filter(item -> completedLevelCodes.contains(item.getLevel().getCode()))
-                .filter(item -> item.getWrongCount() > 0)
-                .map(LevelCompletionEntity::getLevel)
+        KnowledgePointReviewDraft topKnowledgePointReview = buildKnowledgePointReviewDrafts(child, completions).stream()
                 .findFirst()
-                .orElse(nextLevel);
+                .orElse(null);
         boolean mistakeTaskCompleted = todayMistakes == 0;
         DailyTaskDto mistakeReviewTask = new DailyTaskDto(
                 "mistake-review",
-                "错题复习",
-                todayMistakes > 0
+                topKnowledgePointReview != null ? "复习“" + topKnowledgePointReview.knowledgePointTitle() + "”" : "错题复习",
+                topKnowledgePointReview != null
+                        ? "今天优先回看“" + topKnowledgePointReview.knowledgePointTitle() + "”，把相关错题点讲清楚。"
+                        : todayMistakes > 0
                         ? "今天有 " + todayMistakes + " 道错题，先把它们再过一遍。"
                         : "今天暂时没有新的错题，保持这个状态也很棒。",
                 "review",
                 mistakeTaskCompleted,
-                mistakeTaskCompleted ? "错题已清空" : "建议回顾",
-                mostRelevantMistakeLevel != null ? mostRelevantMistakeLevel.getCode() : null,
+                mistakeTaskCompleted ? "错题已清空" : topKnowledgePointReview != null ? reviewTaskStatusLabel(practiceIntensityForChild(child)) : "建议回顾",
+                topKnowledgePointReview != null ? topKnowledgePointReview.targetLevelCode() : nextLevelCode,
                 mistakeTaskCompleted ? "保持清零，继续前进" : "复习后可再加 1 颗星",
                 claimedTaskCodes.contains("mistake-review"),
                 mistakeTaskCompleted && !claimedTaskCodes.contains("mistake-review")
@@ -473,25 +477,24 @@ public class GameContentService {
         );
     }
 
+    public FluencyPracticeResponse getFluencyPractice(Long childProfileId) {
+        ChildProfileEntity child = getChild(childProfileId);
+        return fluencyPracticeForStage(resolveStageLabel(child));
+    }
+
     public MistakeReviewCenterResponse getMistakeReviewCenter(Long childProfileId) {
         ChildProfileEntity child = getChild(childProfileId);
         List<LevelCompletionEntity> completions = getChildCompletions(child);
-        Map<String, MistakeReviewAttemptEntity> latestReviewsByLevelCode = getLatestMistakeReviewsByLevelCode(child);
-        Set<String> stageLevelCodes = getStageLevelCodes(child);
-        Map<String, List<LevelCompletionEntity>> completionsByLevelCode = completions.stream()
-                .filter(item -> stageLevelCodes.contains(item.getLevel().getCode()))
-                .filter(item -> item.getWrongCount() > 0)
-                .filter(item -> !isMasteredByLatestReview(item.getLevel().getCode(), latestReviewsByLevelCode))
-                .collect(Collectors.groupingBy(item -> item.getLevel().getCode()));
+        List<KnowledgePointReviewDraft> reviewDrafts = buildKnowledgePointReviewDrafts(child, completions);
 
-        List<MistakeReviewCardDto> items = completionsByLevelCode.values().stream()
-                .map(this::toMistakeReviewCard)
+        List<MistakeReviewCardDto> items = reviewDrafts.stream()
                 .sorted(Comparator
-                        .comparingInt(MistakeReviewCardDraft::mistakeCount)
+                        .comparingInt(KnowledgePointReviewDraft::mistakeCount)
                         .reversed()
-                        .thenComparing(MistakeReviewCardDraft::latestCompletedAt, Comparator.reverseOrder()))
+                        .thenComparing(KnowledgePointReviewDraft::latestCompletedAt, Comparator.reverseOrder()))
                 .limit(6)
                 .map(draft -> new MistakeReviewCardDto(
+                        draft.knowledgePointCode(),
                         draft.levelCode(),
                         draft.levelTitle(),
                         draft.subjectTitle(),
@@ -499,15 +502,15 @@ public class GameContentService {
                         draft.mistakeCount(),
                         draft.masteryStatus(),
                         draft.reviewPrompt(),
+                        draft.targetLevelCode(),
                         draft.reviewSteps()
                 ))
                 .toList();
 
-        int totalMistakes = completionsByLevelCode.values().stream()
-                .mapToInt(levelCompletions -> levelCompletions.stream().mapToInt(LevelCompletionEntity::getWrongCount).sum())
+        int totalMistakes = reviewDrafts.stream()
+                .mapToInt(KnowledgePointReviewDraft::mistakeCount)
                 .sum();
-        int readyToMasterCount = (int) completionsByLevelCode.values().stream()
-                .map(this::toMistakeReviewCard)
+        int readyToMasterCount = (int) reviewDrafts.stream()
                 .filter(item -> "接近掌握".equals(item.masteryStatus()))
                 .count();
 
@@ -524,6 +527,7 @@ public class GameContentService {
         mistakeReviewAttemptRepository.save(new MistakeReviewAttemptEntity(
                 child,
                 level,
+                primaryKnowledgePointForLevel(level).code(),
                 request.correctCount(),
                 request.wrongCount(),
                 request.durationSeconds(),
@@ -559,15 +563,7 @@ public class GameContentService {
 
         List<LearningPathChapterDto> chapters = getMainlineSubjects().stream()
                 .flatMap(subject -> getStageChapters(subject, child).stream()
-                        .map(chapter -> new LearningPathChapterDto(
-                                subject.getCode(),
-                                subject.getTitle(),
-                                chapter.getTitle(),
-                                chapter.getSubtitle(),
-                                chapter.getLevels().stream()
-                                        .map(level -> toLearningPathLevel(level, completedLevelCodes, firstIncompleteCode))
-                                        .toList()
-                        )))
+                        .map(chapter -> toLearningPathChapter(subject, chapter, completedLevelCodes, firstIncompleteCode)))
                 .toList();
 
         return new LearningPathResponse(
@@ -713,6 +709,8 @@ public class GameContentService {
                 countEffectiveLearningDays(child, 7)
         );
         ParentFluencySummaryDto fluencySummary = buildFluencySummary(child);
+        List<ParentStageTrendPointDto> stageTrend = buildStageTrend(child, completions);
+        ParentWeekOverWeekDto weekOverWeek = buildWeekOverWeek(stageTrend);
 
         return new ParentDashboardResponse(
                 child.getNickname(),
@@ -738,7 +736,8 @@ public class GameContentService {
                 new ParentSettingsDto(
                         child.getParentSettings() == null || child.getParentSettings().isLeaderboardEnabled(),
                         goalMinutes,
-                        child.getParentSettings() != null && child.getParentSettings().isReminderEnabled()
+                        child.getParentSettings() != null && child.getParentSettings().isReminderEnabled(),
+                        practiceIntensityForChild(child)
                 ),
                 learningVitals,
                 fluencySummary,
@@ -749,6 +748,8 @@ public class GameContentService {
                         .toList(),
                 buildSiblingComparisons(child),
                 buildStageReport(child),
+                stageTrend,
+                weekOverWeek,
                 buildKnowledgeMap(child, completions),
                 buildThinkingModelProgress(child),
                 buildMistakeReviewPlan(child, completions)
@@ -821,19 +822,22 @@ public class GameContentService {
                         child,
                         request.leaderboardEnabled(),
                         request.dailyStudyMinutes(),
-                        request.reminderEnabled()
+                        request.reminderEnabled(),
+                        normalizePracticeIntensity(request.practiceIntensity())
                 ));
         settings.update(
                 request.leaderboardEnabled(),
                 request.dailyStudyMinutes(),
-                request.reminderEnabled()
+                request.reminderEnabled(),
+                normalizePracticeIntensity(request.practiceIntensity())
         );
         parentSettingsRepository.save(settings);
 
         return new ParentSettingsDto(
                 settings.isLeaderboardEnabled(),
                 settings.getDailyStudyMinutes(),
-                settings.isReminderEnabled()
+                settings.isReminderEnabled(),
+                normalizePracticeIntensity(settings.getPracticeIntensity())
         );
     }
 
@@ -909,18 +913,18 @@ public class GameContentService {
         };
     }
 
-    private Map<String, MistakeReviewAttemptEntity> getLatestMistakeReviewsByLevelCode(ChildProfileEntity child) {
+    private Map<String, MistakeReviewAttemptEntity> getLatestMistakeReviewsByKnowledgePointCode(ChildProfileEntity child) {
         return mistakeReviewAttemptRepository.findAll().stream()
                 .filter(item -> item.getChildProfile().getId().equals(child.getId()))
                 .collect(Collectors.toMap(
-                        item -> item.getLevel().getCode(),
+                        MistakeReviewAttemptEntity::getKnowledgePointCode,
                         Function.identity(),
                         (left, right) -> left.getReviewedAt().isAfter(right.getReviewedAt()) ? left : right
                 ));
     }
 
-    private boolean isMasteredByLatestReview(String levelCode, Map<String, MistakeReviewAttemptEntity> latestReviewsByLevelCode) {
-        return Optional.ofNullable(latestReviewsByLevelCode.get(levelCode))
+    private boolean isMasteredByLatestReview(String knowledgePointCode, Map<String, MistakeReviewAttemptEntity> latestReviewsByKnowledgePointCode) {
+        return Optional.ofNullable(latestReviewsByKnowledgePointCode.get(knowledgePointCode))
                 .map(MistakeReviewAttemptEntity::isMastered)
                 .orElse(false);
     }
@@ -984,11 +988,187 @@ public class GameContentService {
                 .toList();
     }
 
+    private List<ParentStageTrendPointDto> buildStageTrend(ChildProfileEntity child, List<LevelCompletionEntity> completions) {
+        LocalDate currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
+        List<FluencyAttemptEntity> fluencyAttempts = fluencyAttemptRepository.findByChildProfile_IdOrderByRecordedAtDesc(child.getId());
+        List<ParentStageTrendPointDto> trend = new ArrayList<>();
+
+        for (int weeksAgo = 3; weeksAgo >= 0; weeksAgo--) {
+            LocalDate weekStart = currentWeekStart.minusWeeks(weeksAgo);
+            LocalDate weekEnd = weekStart.plusDays(6);
+            List<LevelCompletionEntity> weekCompletions = completions.stream()
+                    .filter(item -> {
+                        LocalDate completedDate = item.getCompletedAt().toLocalDate();
+                        return !completedDate.isBefore(weekStart) && !completedDate.isAfter(weekEnd);
+                    })
+                    .toList();
+            List<FluencyAttemptEntity> weekFluencyAttempts = fluencyAttempts.stream()
+                    .filter(item -> !item.getAttemptDate().isBefore(weekStart) && !item.getAttemptDate().isAfter(weekEnd))
+                    .toList();
+
+            trend.add(new ParentStageTrendPointDto(
+                    stageTrendWeekLabel(weeksAgo),
+                    toRoundedMinutes(weekCompletions),
+                    weekCompletions.size(),
+                    calculateAverageAccuracyPercent(weekCompletions),
+                    weekFluencyAttempts.size()
+            ));
+        }
+
+        return trend;
+    }
+
+    private ParentWeekOverWeekDto buildWeekOverWeek(List<ParentStageTrendPointDto> stageTrend) {
+        ParentStageTrendPointDto currentWeek = stageTrend.isEmpty()
+                ? new ParentStageTrendPointDto("本周", 0, 0, 0, 0)
+                : stageTrend.get(stageTrend.size() - 1);
+        ParentStageTrendPointDto previousWeek = stageTrend.size() >= 2
+                ? stageTrend.get(stageTrend.size() - 2)
+                : new ParentStageTrendPointDto("上周", 0, 0, 0, 0);
+
+        int studyMinutesDelta = currentWeek.studyMinutes() - previousWeek.studyMinutes();
+        int completedLevelsDelta = currentWeek.completedLevels() - previousWeek.completedLevels();
+        int accuracyDelta = currentWeek.averageAccuracyPercent() - previousWeek.averageAccuracyPercent();
+        int fluencyAttemptDelta = currentWeek.fluencyAttemptCount() - previousWeek.fluencyAttemptCount();
+
+        return new ParentWeekOverWeekDto(
+                studyMinutesDelta,
+                completedLevelsDelta,
+                accuracyDelta,
+                fluencyAttemptDelta,
+                buildWeekOverWeekSummary(studyMinutesDelta, completedLevelsDelta, accuracyDelta, fluencyAttemptDelta)
+        );
+    }
+
+    private String stageTrendWeekLabel(int weeksAgo) {
+        return switch (weeksAgo) {
+            case 0 -> "本周";
+            case 1 -> "上周";
+            default -> weeksAgo + "周前";
+        };
+    }
+
+    private String buildWeekOverWeekSummary(
+            int studyMinutesDelta,
+            int completedLevelsDelta,
+            int accuracyDelta,
+            int fluencyAttemptDelta
+    ) {
+        if (studyMinutesDelta == 0 && completedLevelsDelta == 0 && accuracyDelta == 0 && fluencyAttemptDelta == 0) {
+            return "本周和上周节奏接近，继续保持现在的稳定推进。";
+        }
+
+        List<String> parts = new ArrayList<>();
+        if (studyMinutesDelta != 0) {
+            parts.add("多学 " + Math.abs(studyMinutesDelta) + " 分钟".replace("多学", studyMinutesDelta > 0 ? "多学" : "少学"));
+        }
+        if (completedLevelsDelta != 0) {
+            parts.add("多完成 " + Math.abs(completedLevelsDelta) + " 关".replace("多完成", completedLevelsDelta > 0 ? "多完成" : "少完成"));
+        }
+        if (accuracyDelta > 0) {
+            parts.add("准确率提升 " + accuracyDelta + "%");
+        } else if (accuracyDelta < 0) {
+            parts.add("准确率下降 " + Math.abs(accuracyDelta) + "%");
+        }
+        if (fluencyAttemptDelta > 0) {
+            parts.add("数感快练多了 " + fluencyAttemptDelta + " 次");
+        } else if (fluencyAttemptDelta < 0) {
+            parts.add("数感快练少了 " + Math.abs(fluencyAttemptDelta) + " 次");
+        }
+
+        if (parts.isEmpty()) {
+            return "最近两周还在继续积累学习数据。";
+        }
+
+        return "本周比上周" + String.join("，", parts) + "。";
+    }
+
     private String buildFluencyEncouragement(int attemptCount) {
         if (attemptCount == 0) {
             return "本周还没有开始数感快练，可以先用 1 分钟热热身。";
         }
         return "本周已经完成 " + attemptCount + " 次快练，可以继续保持每天 1 次的节奏。";
+    }
+
+    private FluencyPracticeResponse fluencyPracticeForStage(String stageLabel) {
+        return switch (stageLabel) {
+            case "一年级" -> new FluencyPracticeResponse(
+                    "一年级",
+                    "addition-within-20",
+                    "20 以内加减",
+                    List.of(
+                            fluencyQuestion("3 + 4 = ?", List.of(6, 7, 8), 7),
+                            fluencyQuestion("9 - 2 = ?", List.of(6, 7, 8), 7),
+                            fluencyQuestion("8 + 4 = ?", List.of(11, 12, 13), 12),
+                            fluencyQuestion("15 - 7 = ?", List.of(6, 8, 9), 8),
+                            fluencyQuestion("6 + 9 = ?", List.of(14, 15, 16), 15)
+                    )
+            );
+            case "二年级" -> new FluencyPracticeResponse(
+                    "二年级",
+                    "multiplication-division",
+                    "乘除数感",
+                    List.of(
+                            fluencyQuestion("3 × 4 = ?", List.of(10, 12, 14), 12),
+                            fluencyQuestion("18 ÷ 3 = ?", List.of(5, 6, 7), 6),
+                            fluencyQuestion("25 + 17 = ?", List.of(40, 42, 44), 42),
+                            fluencyQuestion("36 - 19 = ?", List.of(16, 17, 18), 17),
+                            fluencyQuestion("5 × 6 = ?", List.of(28, 30, 32), 30)
+                    )
+            );
+            case "三年级" -> new FluencyPracticeResponse(
+                    "三年级",
+                    "multi-step-arithmetic",
+                    "多步运算",
+                    List.of(
+                            fluencyQuestion("48 ÷ 6 = ?", List.of(7, 8, 9), 8),
+                            fluencyQuestion("125 + 75 = ?", List.of(180, 200, 220), 200),
+                            fluencyQuestion("9 × 7 = ?", List.of(56, 63, 72), 63),
+                            fluencyQuestion("84 - 29 = ?", List.of(55, 56, 57), 55),
+                            fluencyQuestion("6 × 8 = ?", List.of(46, 48, 54), 48)
+                    )
+            );
+            case "四年级" -> new FluencyPracticeResponse(
+                    "四年级",
+                    "decimal-number-sense",
+                    "小数数感",
+                    List.of(
+                            fluencyQuestion("0.4 + 0.3 = ?", List.of("0.6", "0.7", "0.8"), "0.7"),
+                            fluencyQuestion("25 × 4 = ?", List.of(80, 100, 120), 100),
+                            fluencyQuestion("120 ÷ 5 = ?", List.of(20, 24, 26), 24),
+                            fluencyQuestion("3.5 - 1.2 = ?", List.of("2.1", "2.3", "2.5"), "2.3"),
+                            fluencyQuestion("16 × 6 = ?", List.of(86, 96, 106), 96)
+                    )
+            );
+            default -> new FluencyPracticeResponse(
+                    DEFAULT_STAGE_LABEL,
+                    "number-sense",
+                    "数感启蒙",
+                    List.of(
+                            fluencyQuestion("2 + 3 = ?", List.of(4, 5, 6), 5),
+                            fluencyQuestion("6 - 1 = ?", List.of(4, 5, 7), 5),
+                            fluencyQuestion("4 + 4 = ?", List.of(7, 8, 9), 8),
+                            fluencyQuestion("10 - 3 = ?", List.of(6, 7, 8), 7),
+                            fluencyQuestion("5 + 2 = ?", List.of(6, 7, 9), 7)
+                    )
+            );
+        };
+    }
+
+    private FluencyPracticeQuestionDto fluencyQuestion(String prompt, List<Integer> choices, int answer) {
+        return new FluencyPracticeQuestionDto(
+                prompt,
+                choices.stream().map(BigDecimal::valueOf).toList(),
+                BigDecimal.valueOf(answer)
+        );
+    }
+
+    private FluencyPracticeQuestionDto fluencyQuestion(String prompt, List<String> choices, String answer) {
+        return new FluencyPracticeQuestionDto(
+                prompt,
+                choices.stream().map(BigDecimal::new).toList(),
+                new BigDecimal(answer)
+        );
     }
 
     private List<ParentFluencyStageInsightDto> buildFluencyStageInsights(List<FluencyAttemptEntity> recentAttempts) {
@@ -1102,6 +1282,76 @@ public class GameContentService {
         return index >= 0 ? index : CORE_STAGE_LABELS.size();
     }
 
+    private String practiceIntensityForChild(ChildProfileEntity child) {
+        return normalizePracticeIntensity(child.getParentSettings() == null ? null : child.getParentSettings().getPracticeIntensity());
+    }
+
+    private String normalizePracticeIntensity(String practiceIntensity) {
+        return switch (practiceIntensity == null ? "" : practiceIntensity.trim()) {
+            case "easy", "challenge" -> practiceIntensity.trim();
+            default -> "standard";
+        };
+    }
+
+    private String homeTodayTaskText(String nextLevelTitle, String practiceIntensity) {
+        return switch (practiceIntensity) {
+            case "easy" -> "今天轻松推进“" + nextLevelTitle + "”，先完成 1 小步就很棒。";
+            case "challenge" -> "继续挑战 " + nextLevelTitle + "，把今天的学习星轨再点亮一格。";
+            default -> "继续挑战 " + nextLevelTitle + "，把今天的学习星轨再点亮一格。";
+        };
+    }
+
+    private String completedHomeTaskText(String practiceIntensity) {
+        return switch (practiceIntensity) {
+            case "easy" -> "今天主线已经完成了，回顾一下最喜欢的一关就很好。";
+            case "challenge" -> "今天已经完成主线任务，可以再挑 1 个喜欢的关卡加深印象。";
+            default -> "今天已经完成主线任务，回顾一下最喜欢的关卡吧。";
+        };
+    }
+
+    private String mainlineTaskTitle(String practiceIntensity) {
+        return switch (practiceIntensity) {
+            case "easy" -> "轻松推进主线";
+            case "challenge" -> "挑战主线下一关";
+            default -> "主线下一关";
+        };
+    }
+
+    private String mainlineTaskDescription(String nextLevelTitle, String practiceIntensity) {
+        return switch (practiceIntensity) {
+            case "easy" -> "先轻松完成“" + nextLevelTitle + "”，把今天的主线慢慢往前推。";
+            case "challenge" -> "继续挑战“" + nextLevelTitle + "”，争取把主线节奏推进一整站。";
+            default -> "继续挑战“" + nextLevelTitle + "”，把学习路线往前推进一站。";
+        };
+    }
+
+    private String completedMainlineTaskDescription(String practiceIntensity) {
+        return switch (practiceIntensity) {
+            case "easy" -> "当前学段主线已完成，轻松回看 1 关也算完成今天的节奏。";
+            case "challenge" -> "当前学段主线已完成，可以加做 1 个喜欢的挑战关保持状态。";
+            default -> "当前学段主线已完成，可以回头巩固一下最喜欢的关卡。";
+        };
+    }
+
+    private String mainlineTaskStatusLabel(boolean completed, String practiceIntensity) {
+        if (completed) {
+            return "已推进";
+        }
+        return switch (practiceIntensity) {
+            case "easy" -> "轻松推进";
+            case "challenge" -> "勇敢挑战";
+            default -> "待推进";
+        };
+    }
+
+    private String reviewTaskStatusLabel(String practiceIntensity) {
+        return switch (practiceIntensity) {
+            case "easy" -> "轻松回看";
+            case "challenge" -> "重点攻克";
+            default -> "优先知识点复习";
+        };
+    }
+
     private String resolveStageLabel(ChildProfileEntity child) {
         return Optional.ofNullable(child.getStageLabel())
                 .filter(label -> !label.isBlank())
@@ -1119,6 +1369,11 @@ public class GameContentService {
     }
 
     private List<ChapterEntity> getStageChapters(SubjectEntity subject, String stageLabel) {
+        if ("olympiad".equals(subject.getCode())) {
+            return subject.getChapters().stream()
+                    .sorted(Comparator.comparingInt(ChapterEntity::getDisplayOrder))
+                    .toList();
+        }
         return subject.getChapters().stream()
                 .filter(chapter -> stageLabel.equals(resolveStageLabel(chapter)))
                 .toList();
@@ -1412,41 +1667,39 @@ public class GameContentService {
     }
 
     private List<MistakeReviewItemDto> buildMistakeReviewPlan(ChildProfileEntity child, List<LevelCompletionEntity> completions) {
-        Set<String> stageLevelCodes = getStageLevelCodes(child);
-
-        return completions.stream()
-                .filter(item -> stageLevelCodes.contains(item.getLevel().getCode()))
-                .filter(item -> item.getWrongCount() > 0)
-                .collect(Collectors.groupingBy(item -> item.getLevel().getCode()))
-                .values()
-                .stream()
-                .map(this::toMistakeReviewItem)
+        return buildKnowledgePointReviewDrafts(child, completions).stream()
                 .sorted(Comparator
-                        .comparingInt(MistakeReviewDraft::mistakeCount)
+                        .comparingInt(KnowledgePointReviewDraft::mistakeCount)
                         .reversed()
-                        .thenComparing(MistakeReviewDraft::latestCompletedAt, Comparator.reverseOrder()))
+                        .thenComparing(KnowledgePointReviewDraft::latestCompletedAt, Comparator.reverseOrder()))
                 .limit(5)
                 .map(draft -> new MistakeReviewItemDto(
+                        draft.knowledgePointCode(),
                         draft.levelTitle(),
                         draft.knowledgePointTitle(),
                         draft.mistakeCount(),
-                        draft.reviewAction(),
+                        draft.reviewPrompt(),
                         draft.targetLevelCode()
                 ))
                 .toList();
     }
 
     private List<ParentWeakPointActionDto> buildWeakPointActionPlan(ChildProfileEntity child, List<LevelCompletionEntity> completions) {
+        Map<String, MistakeReviewAttemptEntity> latestReviewsByKnowledgePointCode = getLatestMistakeReviewsByKnowledgePointCode(child);
         return buildMistakeReviewPlan(child, completions).stream()
                 .limit(3)
                 .map(item -> {
                     LevelEntity level = levelRepository.findById(item.targetLevelCode()).orElse(null);
                     String subjectTitle = level == null ? "学习小岛" : level.getChapter().getSubject().getTitle();
+                    MistakeReviewAttemptEntity latestReview = latestReviewsByKnowledgePointCode.get(item.knowledgePointCode());
 
                     return new ParentWeakPointActionDto(
                             subjectTitle,
+                            item.knowledgePointCode(),
                             item.knowledgePointTitle(),
                             "优先陪练",
+                            weakPointActionStatusLabel(latestReview),
+                            weakPointActionStatusDescription(latestReview),
                             "错题 " + item.mistakeCount() + " 次，建议先用孩子能看见、能说出的方式复盘。",
                             buildParentGuidance(subjectTitle, item.knowledgePointTitle()),
                             item.reviewAction(),
@@ -1454,6 +1707,26 @@ public class GameContentService {
                     );
                 })
                 .toList();
+    }
+
+    private String weakPointActionStatusLabel(MistakeReviewAttemptEntity latestReview) {
+        if (latestReview == null) {
+            return "待复习";
+        }
+        if (latestReview.isMastered()) {
+            return "已掌握";
+        }
+        return "已复习待巩固";
+    }
+
+    private String weakPointActionStatusDescription(MistakeReviewAttemptEntity latestReview) {
+        if (latestReview == null) {
+            return "还没有针对这个知识点完成复习，建议今晚先安排 1 组。";
+        }
+        if (latestReview.isMastered()) {
+            return "最近一次复习已经掌握，可以转成轻量回看，避免遗忘。";
+        }
+        return "最近已经复习过一次，建议继续做 1 组同类变式，把思路再说清楚。";
     }
 
     private String buildParentGuidance(String subjectTitle, String knowledgePointTitle) {
@@ -1601,35 +1874,57 @@ public class GameContentService {
         );
     }
 
-    private MistakeReviewCardDraft toMistakeReviewCard(List<LevelCompletionEntity> levelCompletions) {
-        LevelEntity level = levelCompletions.get(0).getLevel();
+    private List<KnowledgePointReviewDraft> buildKnowledgePointReviewDrafts(
+            ChildProfileEntity child,
+            List<LevelCompletionEntity> completions
+    ) {
+        Set<String> stageLevelCodes = getStageLevelCodes(child);
+        Map<String, MistakeReviewAttemptEntity> latestReviewsByKnowledgePointCode = getLatestMistakeReviewsByKnowledgePointCode(child);
+        Map<String, List<LevelCompletionEntity>> completionsByKnowledgePointCode = completions.stream()
+                .filter(item -> stageLevelCodes.contains(item.getLevel().getCode()))
+                .filter(item -> item.getWrongCount() > 0)
+                .collect(Collectors.groupingBy(item -> primaryKnowledgePointForLevel(item.getLevel()).code()));
+
+        return completionsByKnowledgePointCode.entrySet().stream()
+                .filter(entry -> !isMasteredByLatestReview(entry.getKey(), latestReviewsByKnowledgePointCode))
+                .map(entry -> toKnowledgePointReviewDraft(entry.getKey(), entry.getValue()))
+                .toList();
+    }
+
+    private KnowledgePointReviewDraft toKnowledgePointReviewDraft(String knowledgePointCode, List<LevelCompletionEntity> knowledgePointCompletions) {
+        LevelCompletionEntity latestCompletion = knowledgePointCompletions.stream()
+                .max(Comparator.comparing(LevelCompletionEntity::getCompletedAt))
+                .orElseThrow();
+        LevelEntity level = latestCompletion.getLevel();
+        KnowledgePointDraft knowledgePoint = primaryKnowledgePointForLevel(level);
         String subjectTitle = level.getChapter().getSubject().getTitle();
-        String knowledgePointTitle = knowledgePointsForLevel(level).stream()
-                .findFirst()
-                .map(KnowledgePointDraft::title)
-                .orElse(level.getSummaryTitle());
-        int mistakeCount = levelCompletions.stream().mapToInt(LevelCompletionEntity::getWrongCount).sum();
-        LocalDateTime latestCompletedAt = levelCompletions.stream()
-                .map(LevelCompletionEntity::getCompletedAt)
-                .max(LocalDateTime::compareTo)
-                .orElse(LocalDateTime.MIN);
+        int mistakeCount = knowledgePointCompletions.stream().mapToInt(LevelCompletionEntity::getWrongCount).sum();
+        LocalDateTime latestCompletedAt = latestCompletion.getCompletedAt();
         String masteryStatus = mistakeCount <= 2 ? "接近掌握" : "需要复习";
 
-        return new MistakeReviewCardDraft(
+        return new KnowledgePointReviewDraft(
+                knowledgePointCode,
                 level.getCode(),
                 level.getDetailTitle(),
                 subjectTitle,
-                knowledgePointTitle,
+                knowledgePoint.title(),
                 mistakeCount,
                 masteryStatus,
-                "先回看“" + knowledgePointTitle + "”的关键点，再把同类题完整做一遍。",
+                "先复习“" + knowledgePoint.title() + "”的关键点，再把同类题完整做一遍。",
+                level.getCode(),
                 List.of(
                         "先圈出错因，确认是读题、计算还是概念问题。",
-                        "重看“" + knowledgePointTitle + "”并做一次口头复述。",
+                        "重看“" + knowledgePoint.title() + "”并做一次口头复述。",
                         "完成 1 组同类变式，检验是否真正掌握。"
                 ),
                 latestCompletedAt
         );
+    }
+
+    private KnowledgePointDraft primaryKnowledgePointForLevel(LevelEntity level) {
+        return knowledgePointsForLevel(level).stream()
+                .findFirst()
+                .orElse(new KnowledgePointDraft(level.getCode() + ".core", level.getSummaryTitle(), 1));
     }
 
     private LearningPathLevelDto toLearningPathLevel(LevelEntity level, Set<String> completedLevelCodes, String firstIncompleteCode) {
@@ -1641,6 +1936,44 @@ public class GameContentService {
                 status,
                 locked,
                 locked ? "先完成前一站，再解锁这里" : null
+        );
+    }
+
+    private LearningPathChapterDto toLearningPathChapter(
+            SubjectEntity subject,
+            ChapterEntity chapter,
+            Set<String> completedLevelCodes,
+            String firstIncompleteCode
+    ) {
+        List<LearningPathLevelDto> levels = chapter.getLevels().stream()
+                .map(level -> toLearningPathLevel(level, completedLevelCodes, firstIncompleteCode))
+                .toList();
+        int completedLevelCount = (int) levels.stream()
+                .filter(level -> "completed".equals(level.status()))
+                .count();
+        int totalLevelCount = levels.size();
+        int completionPercent = totalLevelCount == 0 ? 0 : Math.min((completedLevelCount * 100) / totalLevelCount, 100);
+        LearningPathLevelDto checkpointLevel = levels.stream()
+                .filter(level -> "recommended".equals(level.status()) || "available".equals(level.status()))
+                .findFirst()
+                .orElseGet(() -> levels.stream().findFirst().orElse(null));
+        String checkpointStatus = completedLevelCount >= totalLevelCount && totalLevelCount > 0 ? "completed" : "available";
+        String checkpointLevelCode = checkpointLevel == null ? null : checkpointLevel.levelCode();
+        String checkpointCtaText = checkpointStatus.equals("completed") ? "回看单元小测" : "开始单元小测";
+
+        return new LearningPathChapterDto(
+                subject.getCode(),
+                subject.getTitle(),
+                chapter.getTitle(),
+                chapter.getSubtitle(),
+                chapter.getSubtitle(),
+                completedLevelCount,
+                totalLevelCount,
+                completionPercent,
+                checkpointStatus,
+                checkpointLevelCode,
+                checkpointCtaText,
+                levels
         );
     }
 
@@ -1687,15 +2020,18 @@ public class GameContentService {
     private ContentConfigSnapshot buildContentConfigSnapshot(LevelEntity level) {
         LevelStepEntity configStep = resolveContentConfigStep(level).orElse(null);
         String activityConfigJson = configStep == null ? null : configStep.getActivityConfigJson();
+        boolean hasRecordedAsset = hasRecordedAsset(activityConfigJson);
+        boolean hasAudioSignal = hasAudioSignal(activityConfigJson);
         String assetTheme = Optional.ofNullable(extractJsonStringValue(activityConfigJson, "assetTheme"))
                 .filter(value -> !value.isBlank())
                 .orElse("待补素材主题");
-        String audioQuality = Optional.ofNullable(extractJsonStringValue(activityConfigJson, "audioQuality"))
+        String configuredAudioQuality = Optional.ofNullable(extractJsonStringValue(activityConfigJson, "audioQuality"))
                 .filter(value -> !value.isBlank())
-                .orElse("待补音频质量");
+                .orElse(null);
+        String audioQuality = resolveAudioQuality(configuredAudioQuality, hasAudioSignal, hasRecordedAsset);
         String configSource = buildConfigSource(configStep, assetTheme, audioQuality);
         int variantCount = configStep == null ? 0 : Optional.ofNullable(configStep.getVariantCount()).orElse(0);
-        List<String> healthNotes = buildConfigHealthNotes(configStep, assetTheme, audioQuality, variantCount);
+        List<String> healthNotes = buildConfigHealthNotes(configStep, assetTheme, audioQuality, variantCount, activityConfigJson, hasRecordedAsset);
         String healthStatus = healthNotes.isEmpty() ? "healthy" : "warning";
         String knowledgePointCode = configStep == null
                 ? level.getCode() + ".step-1"
@@ -1763,7 +2099,14 @@ public class GameContentService {
         return "unknown";
     }
 
-    private List<String> buildConfigHealthNotes(LevelStepEntity step, String assetTheme, String audioQuality, int variantCount) {
+    private List<String> buildConfigHealthNotes(
+            LevelStepEntity step,
+            String assetTheme,
+            String audioQuality,
+            int variantCount,
+            String activityConfigJson,
+            boolean hasRecordedAsset
+    ) {
         java.util.ArrayList<String> notes = new java.util.ArrayList<>();
         if (step == null) {
             notes.add("缺少关卡步骤");
@@ -1788,8 +2131,39 @@ public class GameContentService {
         if ("待补音频质量".equals(audioQuality)) {
             notes.add("缺少音频质量标记");
         }
+        if (hasAudioSignal(activityConfigJson) && audioQuality.contains("录音") && !hasRecordedAsset) {
+            notes.add("标记为录音优先但未配置真实音频");
+        }
 
         return notes;
+    }
+
+    private boolean hasAudioSignal(String activityConfigJson) {
+        if (activityConfigJson == null || activityConfigJson.isBlank()) {
+            return false;
+        }
+        return activityConfigJson.contains("\"audioText\"")
+                || activityConfigJson.contains("\"audioPrompt\"")
+                || activityConfigJson.contains("\"sentences\"")
+                || activityConfigJson.contains("\"letters\"")
+                || activityConfigJson.contains("\"pairs\"");
+    }
+
+    private boolean hasRecordedAsset(String activityConfigJson) {
+        return activityConfigJson != null && activityConfigJson.contains("\"recordedAssetUrl\"");
+    }
+
+    private String resolveAudioQuality(String configuredAudioQuality, boolean hasAudioSignal, boolean hasRecordedAsset) {
+        if (hasRecordedAsset) {
+            return "录音素材优先";
+        }
+        if (configuredAudioQuality != null) {
+            return configuredAudioQuality;
+        }
+        if (hasAudioSignal) {
+            return "TTS 兜底";
+        }
+        return "待补音频质量";
     }
 
     private String extractJsonStringValue(String json, String key) {
@@ -1824,28 +2198,6 @@ public class GameContentService {
             String healthStatus,
             List<String> healthNotes
     ) {
-    }
-
-    private MistakeReviewDraft toMistakeReviewItem(List<LevelCompletionEntity> levelCompletions) {
-        LevelEntity level = levelCompletions.get(0).getLevel();
-        String knowledgePointTitle = knowledgePointsForLevel(level).stream()
-                .findFirst()
-                .map(KnowledgePointDraft::title)
-                .orElse(level.getSummaryTitle());
-        int mistakeCount = levelCompletions.stream().mapToInt(LevelCompletionEntity::getWrongCount).sum();
-        LocalDateTime latestCompletedAt = levelCompletions.stream()
-                .map(LevelCompletionEntity::getCompletedAt)
-                .max(LocalDateTime::compareTo)
-                .orElse(LocalDateTime.MIN);
-
-        return new MistakeReviewDraft(
-                level.getDetailTitle(),
-                knowledgePointTitle,
-                mistakeCount,
-                "复习“" + knowledgePointTitle + "”，先回看错因，再完成 1 组变式练习。",
-                level.getCode(),
-                latestCompletedAt
-        );
     }
 
     private String readinessLabel(int completionPercent) {
@@ -2489,16 +2841,6 @@ public class GameContentService {
     private record KnowledgePointDraft(String code, String title, int variantCount) {
     }
 
-    private record MistakeReviewDraft(
-            String levelTitle,
-            String knowledgePointTitle,
-            int mistakeCount,
-            String reviewAction,
-            String targetLevelCode,
-            LocalDateTime latestCompletedAt
-    ) {
-    }
-
     private record ThinkingModelDefinition(String modelCode, String modelTitle, String modelTypeLabel) {
     }
 
@@ -2512,7 +2854,8 @@ public class GameContentService {
         }
     }
 
-    private record MistakeReviewCardDraft(
+    private record KnowledgePointReviewDraft(
+            String knowledgePointCode,
             String levelCode,
             String levelTitle,
             String subjectTitle,
@@ -2520,6 +2863,7 @@ public class GameContentService {
             int mistakeCount,
             String masteryStatus,
             String reviewPrompt,
+            String targetLevelCode,
             List<String> reviewSteps,
             LocalDateTime latestCompletedAt
     ) {

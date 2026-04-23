@@ -18,7 +18,7 @@ describe('Legacy API compatibility', () => {
             achievementSummary: { unlockedCount: 4, nextMilestone: '下一枚最接近的是“细心守护星”' },
             goalProgress: { goalMinutes: 20, completedMinutes: 0, completionPercent: 0 },
             recommendedActions: [],
-            settings: { leaderboardEnabled: true, dailyStudyMinutes: 20, reminderEnabled: false },
+            settings: { leaderboardEnabled: true, dailyStudyMinutes: 20, reminderEnabled: false, practiceIntensity: 'standard' },
             learningVitals: {
               totalCompletedLevels: 5,
               averageAccuracyPercent: 86,

@@ -58,6 +58,19 @@ export function LearningPathPage({ data }: LearningPathPageProps) {
               <span className="engagement-pill">{chapter.subjectTitle}</span>
               <h2>{chapter.chapterTitle}</h2>
               <p>{chapter.chapterSubtitle}</p>
+              <p className="chapter-goal">单元目标：{chapter.unitGoal ?? chapter.chapterSubtitle}</p>
+              <strong className="chapter-progress-text">
+                章节进度 {chapter.completedLevelCount ?? chapter.levels.filter((level) => level.status === 'completed').length}
+                {' / '}
+                {chapter.totalLevelCount ?? chapter.levels.length}
+                {' · '}
+                {chapter.completionPercent ?? Math.round((chapter.levels.filter((level) => level.status === 'completed').length * 100) / Math.max(chapter.levels.length, 1))}%
+              </strong>
+              {chapter.checkpointLevelCode ? (
+                <Link className="cta-button cta-button-secondary chapter-checkpoint-link" to={`/levels/${chapter.checkpointLevelCode}`}>
+                  {chapter.checkpointCtaText ?? '开始单元小测'}
+                </Link>
+              ) : null}
             </div>
 
             <div className="learning-path-levels">

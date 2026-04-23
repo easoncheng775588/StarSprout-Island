@@ -69,6 +69,87 @@ class ApiSmokeTest {
     }
 
     @Test
+    void shouldLoginMixedStageDemoAccountAndLoadDashboard() throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "phone": "13800000002",
+                                  "password": "demo5678"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.parentAccountId").value(2))
+                .andExpect(jsonPath("$.parentDisplayName").value("银河家长"))
+                .andExpect(jsonPath("$.defaultChildId").value(4))
+                .andExpect(jsonPath("$.children.length()").value(4))
+                .andExpect(jsonPath("$.children[0].stageLabel").value("一年级"))
+                .andExpect(jsonPath("$.children[1].stageLabel").value("二年级"))
+                .andExpect(jsonPath("$.children[2].stageLabel").value("三年级"))
+                .andExpect(jsonPath("$.children[3].stageLabel").value("四年级"));
+
+        mockMvc.perform(get("/api/parent/dashboard").header("X-Child-Profile-Id", 4))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.childNickname").value("小雨点"))
+                .andExpect(jsonPath("$.stageTrend.length()").value(4))
+                .andExpect(jsonPath("$.fluencySummary.attemptCount").value(6))
+                .andExpect(jsonPath("$.fluencySummary.typeInsights.length()").value(2))
+                .andExpect(jsonPath("$.weakPointActionPlan.length()").value(1));
+    }
+
+    @Test
+    void shouldReturnWeeklyLeaderboardAlias() throws Exception {
+        mockMvc.perform(get("/api/leaderboard/weekly").header("X-Child-Profile-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.boardType").value("weekly_star"))
+                .andExpect(jsonPath("$.boardTitle").value("本周星星榜"));
+    }
+
+    @Test
+    void shouldExposeRepresentativeErrorContracts() throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "phone": "13800000001",
+                                  "password": "wrong-password"
+                                }
+                                """))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "displayName": "重复账号",
+                                  "phone": "13800000001",
+                                  "password": "demo1234"
+                                }
+                                """))
+                .andExpect(status().isConflict());
+
+        mockMvc.perform(post("/api/fluency/attempts")
+                        .header("X-Child-Profile-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "stageLabel": "幼小衔接",
+                                  "focusArea": "number-sense",
+                                  "totalQuestions": 5,
+                                  "correctCount": 6,
+                                  "durationSeconds": 60
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(get("/api/content/configs/not-a-real-level"))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/api/leaderboard/not-a-real-board").header("X-Child-Profile-Id", 1))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     @Transactional
     void shouldRegisterParentAccountAndAllowLogin() throws Exception {
         mockMvc.perform(post("/api/auth/register")
@@ -246,6 +327,18 @@ class ApiSmokeTest {
     }
 
     @Test
+    void shouldReturnOlympiadSubjectMapAcrossGrades() throws Exception {
+        mockMvc.perform(get("/api/subjects/olympiad/map").header("X-Child-Profile-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.subject.code").value("olympiad"))
+                .andExpect(jsonPath("$.chapters.length()").value(6))
+                .andExpect(jsonPath("$.chapters[0].title").value("一年级奥数星图"))
+                .andExpect(jsonPath("$.chapters[0].levels[0].code").value("olympiad-g1-pattern-001"))
+                .andExpect(jsonPath("$.chapters[5].title").value("六年级奥数星图"))
+                .andExpect(jsonPath("$.chapters[5].levels[1].code").value("olympiad-g6-logic-001"));
+    }
+
+    @Test
     void shouldReturnBackendDrivenActivityConfigForRepresentativeLevel() throws Exception {
         mockMvc.perform(get("/api/levels/math-grade4-decimal-001"))
                 .andExpect(status().isOk())
@@ -321,6 +414,33 @@ class ApiSmokeTest {
 
     @Test
     @Transactional
+    void shouldReturnStageAwareFluencyPracticeSet() throws Exception {
+        mockMvc.perform(patch("/api/parent/children/3")
+                        .header("X-Parent-Account-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nickname": "小海豚",
+                                  "title": "海湾领航员",
+                                  "stageLabel": "四年级",
+                                  "avatarColor": "#8ee1b5"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/fluency/practice").header("X-Child-Profile-Id", 3))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.stageLabel").value("四年级"))
+                .andExpect(jsonPath("$.focusArea").value("decimal-number-sense"))
+                .andExpect(jsonPath("$.focusAreaLabel").value("小数数感"))
+                .andExpect(jsonPath("$.questions.length()").value(5))
+                .andExpect(jsonPath("$.questions[0].prompt").value("0.4 + 0.3 = ?"))
+                .andExpect(jsonPath("$.questions[0].answer").value(0.7))
+                .andExpect(jsonPath("$.questions[0].choices[1]").value(0.7));
+    }
+
+    @Test
+    @Transactional
     void shouldReturnMistakeReviewCenterWithTargetLevelOrExistingMistake() throws Exception {
         mockMvc.perform(patch("/api/parent/children/3")
                         .header("X-Parent-Account-Id", 1)
@@ -352,12 +472,101 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.childNickname").value("小海豚"))
                 .andExpect(jsonPath("$.totalMistakes").value(org.hamcrest.Matchers.greaterThan(0)))
                 .andExpect(jsonPath("$.readyToMasterCount").value(org.hamcrest.Matchers.greaterThanOrEqualTo(1)))
+                .andExpect(jsonPath("$.items[0].knowledgePointCode").isNotEmpty())
                 .andExpect(jsonPath("$.items[0].levelCode").value(org.hamcrest.Matchers.anyOf(
                         org.hamcrest.Matchers.is("math-grade4-decimal-001"),
                         org.hamcrest.Matchers.is("math-numbers-002")
                 )))
                 .andExpect(jsonPath("$.items[0].masteryStatus").value("接近掌握"))
                 .andExpect(jsonPath("$.items[0].reviewSteps.length()").value(org.hamcrest.Matchers.greaterThan(0)));
+    }
+
+    @Test
+    @Transactional
+    void shouldAggregateMistakeReviewByKnowledgePointAcrossLevels() throws Exception {
+        mockMvc.perform(patch("/api/parent/children/3")
+                        .header("X-Parent-Account-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nickname": "小海豚",
+                                  "title": "海湾领航员",
+                                  "stageLabel": "四年级",
+                                  "avatarColor": "#8ee1b5"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(patch("/api/content/configs/math-grade4-decimal-001")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "knowledgePointCode": "math.g4.decimal.bundle",
+                                  "knowledgePointTitle": "小数概念联合复习",
+                                  "variantCount": 6,
+                                  "activityConfigJson": "{\\\"kind\\\":\\\"number-choice\\\",\\\"assetTheme\\\":\\\"小数灯塔\\\",\\\"audioQuality\\\":\\\"高质量儿童 TTS\\\"}"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(patch("/api/content/configs/math-grade4-decimal-compare-001")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "knowledgePointCode": "math.g4.decimal.bundle",
+                                  "knowledgePointTitle": "小数概念联合复习",
+                                  "variantCount": 6,
+                                  "activityConfigJson": "{\\\"kind\\\":\\\"number-choice\\\",\\\"assetTheme\\\":\\\"小数灯塔\\\",\\\"audioQuality\\\":\\\"高质量儿童 TTS\\\"}"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/levels/math-grade4-decimal-001/complete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "childProfileId": 3,
+                                  "correctCount": 0,
+                                  "wrongCount": 2,
+                                  "durationSeconds": 180
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/levels/math-grade4-decimal-compare-001/complete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "childProfileId": 3,
+                                  "correctCount": 0,
+                                  "wrongCount": 1,
+                                  "durationSeconds": 180
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/mistakes/review").header("X-Child-Profile-Id", 3))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items.length()").value(1))
+                .andExpect(jsonPath("$.items[0].knowledgePointCode").value("math.g4.decimal.bundle"))
+                .andExpect(jsonPath("$.items[0].knowledgePointTitle").value("小数概念联合复习"))
+                .andExpect(jsonPath("$.items[0].mistakeCount").value(3))
+                .andExpect(jsonPath("$.items[0].targetLevelCode").isNotEmpty());
+
+        mockMvc.perform(get("/api/daily-tasks").header("X-Child-Profile-Id", 3))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tasks[?(@.code=='mistake-review')].title")
+                        .value(org.hamcrest.Matchers.hasItem("复习“小数概念联合复习”")))
+                .andExpect(jsonPath("$.tasks[?(@.code=='mistake-review')].statusLabel")
+                        .value(org.hamcrest.Matchers.hasItem("优先知识点复习")));
+
+        mockMvc.perform(get("/api/parent/dashboard").header("X-Child-Profile-Id", 3))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mistakeReviewPlan[0].knowledgePointCode").value("math.g4.decimal.bundle"))
+                .andExpect(jsonPath("$.mistakeReviewPlan[0].knowledgePointTitle").value("小数概念联合复习"))
+                .andExpect(jsonPath("$.mistakeReviewPlan[0].mistakeCount").value(3))
+                .andExpect(jsonPath("$.weakPointActionPlan[0].knowledgePointCode").value("math.g4.decimal.bundle"))
+                .andExpect(jsonPath("$.weakPointActionPlan[0].knowledgePointTitle").value("小数概念联合复习"));
     }
 
     @Test
@@ -436,6 +645,13 @@ class ApiSmokeTest {
 
         mockMvc.perform(get("/api/learning-path").header("X-Child-Profile-Id", 3))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.chapters[0].unitGoal").value(org.hamcrest.Matchers.containsString("小数")))
+                .andExpect(jsonPath("$.chapters[0].completedLevelCount").value(1))
+                .andExpect(jsonPath("$.chapters[0].totalLevelCount").value(6))
+                .andExpect(jsonPath("$.chapters[0].completionPercent").value(16))
+                .andExpect(jsonPath("$.chapters[0].checkpointStatus").value("available"))
+                .andExpect(jsonPath("$.chapters[0].checkpointLevelCode").value("math-grade4-decimal-compare-001"))
+                .andExpect(jsonPath("$.chapters[0].checkpointCtaText").value("开始单元小测"))
                 .andExpect(jsonPath("$.stageLabel").value("四年级"))
                 .andExpect(jsonPath("$.chapters[0].levels[0].status").value("completed"))
                 .andExpect(jsonPath("$.chapters[0].levels[1].status").value("recommended"))
@@ -1188,6 +1404,14 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.weeklyReport.averageAccuracyPercent").value(86))
                 .andExpect(jsonPath("$.weeklyReport.subjectHighlights[0]").value(org.hamcrest.Matchers.containsString("数学岛")))
                 .andExpect(jsonPath("$.weeklyReport.parentAction").value(org.hamcrest.Matchers.containsString("每天")))
+                .andExpect(jsonPath("$.stageTrend.length()").value(4))
+                .andExpect(jsonPath("$.stageTrend[0].weekLabel").isNotEmpty())
+                .andExpect(jsonPath("$.stageTrend[3].weekLabel").value("本周"))
+                .andExpect(jsonPath("$.weekOverWeek.summary").isNotEmpty())
+                .andExpect(jsonPath("$.weekOverWeek.studyMinutesDelta").exists())
+                .andExpect(jsonPath("$.weekOverWeek.completedLevelsDelta").exists())
+                .andExpect(jsonPath("$.weakPointActionPlan[0].actionStatusLabel").isNotEmpty())
+                .andExpect(jsonPath("$.weakPointActionPlan[0].actionStatusDescription").isNotEmpty())
                 .andExpect(jsonPath("$.fluencySummary.attemptCount").value(0))
                 .andExpect(jsonPath("$.fluencySummary.averageAccuracyPercent").value(0))
                 .andExpect(jsonPath("$.fluencySummary.latestStageLabel").value("幼小衔接"))
@@ -1265,6 +1489,8 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.fluencySummary.typeInsights[0].recommendation").value(org.hamcrest.Matchers.containsString("20 以内加减")))
                 .andExpect(jsonPath("$.fluencySummary.typeInsights[1].focusArea").value("multiplication-division"))
                 .andExpect(jsonPath("$.fluencySummary.typeInsights[1].focusAreaLabel").value("乘除数感"))
+                .andExpect(jsonPath("$.stageTrend[3].fluencyAttemptCount").value(2))
+                .andExpect(jsonPath("$.weekOverWeek.fluencyAttemptDelta").value(org.hamcrest.Matchers.greaterThanOrEqualTo(0)))
                 .andExpect(jsonPath("$.weeklyReport.subjectHighlights[3]").value(org.hamcrest.Matchers.containsString("数感快练")));
     }
 
@@ -1278,19 +1504,22 @@ class ApiSmokeTest {
                                 {
                                   "leaderboardEnabled": false,
                                   "dailyStudyMinutes": 25,
-                                  "reminderEnabled": true
+                                  "reminderEnabled": true,
+                                  "practiceIntensity": "challenge"
                                 }
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.leaderboardEnabled").value(false))
                 .andExpect(jsonPath("$.dailyStudyMinutes").value(25))
-                .andExpect(jsonPath("$.reminderEnabled").value(true));
+                .andExpect(jsonPath("$.reminderEnabled").value(true))
+                .andExpect(jsonPath("$.practiceIntensity").value("challenge"));
 
         mockMvc.perform(get("/api/parent/dashboard").header("X-Child-Profile-Id", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.settings.leaderboardEnabled").value(false))
                 .andExpect(jsonPath("$.settings.dailyStudyMinutes").value(25))
-                .andExpect(jsonPath("$.settings.reminderEnabled").value(true));
+                .andExpect(jsonPath("$.settings.reminderEnabled").value(true))
+                .andExpect(jsonPath("$.settings.practiceIntensity").value("challenge"));
 
         mockMvc.perform(get("/api/leaderboard/weekly_star").header("X-Child-Profile-Id", 1))
                 .andExpect(status().isOk())
@@ -1298,6 +1527,35 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.nextTargetText").value("当前孩子未参与榜单展示"))
                 .andExpect(jsonPath("$.myRank.rank").value(0))
                 .andExpect(jsonPath("$.myRank.trendLabel").value("未参与排行榜"));
+    }
+
+    @Test
+    @Transactional
+    void shouldAdjustHomeAndDailyTaskCopyByPracticeIntensity() throws Exception {
+        mockMvc.perform(patch("/api/parent/settings")
+                        .header("X-Child-Profile-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "leaderboardEnabled": true,
+                                  "dailyStudyMinutes": 20,
+                                  "reminderEnabled": false,
+                                  "practiceIntensity": "easy"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/home/overview").header("X-Child-Profile-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.todayTask").value(org.hamcrest.Matchers.containsString("轻松推进")));
+
+        mockMvc.perform(get("/api/daily-tasks").header("X-Child-Profile-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tasks[0].title").value("轻松推进主线"))
+                .andExpect(jsonPath("$.tasks[0].statusLabel").value(org.hamcrest.Matchers.anyOf(
+                        org.hamcrest.Matchers.is("已推进"),
+                        org.hamcrest.Matchers.is("轻松推进")
+                )));
     }
 
     @Test

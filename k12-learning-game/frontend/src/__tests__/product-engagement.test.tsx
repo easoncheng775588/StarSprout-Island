@@ -309,6 +309,7 @@ describe('Product engagement surfaces', () => {
             readyToMasterCount: 1,
             items: [
               {
+                knowledgePointCode: 'math.g1.subtraction.borrow',
                 levelCode: 'math-subtraction-002',
                 levelTitle: '糖果减法小店',
                 subjectTitle: '数学岛',
@@ -316,6 +317,7 @@ describe('Product engagement surfaces', () => {
                 mistakeCount: 3,
                 masteryStatus: '需要复习',
                 reviewPrompt: '先用糖果图复盘错因，再完成 1 组变式。',
+                targetLevelCode: 'math-subtraction-002',
                 reviewSteps: ['看错题原因', '再做同类题', '答对后回到主线']
               }
             ]
@@ -326,10 +328,10 @@ describe('Product engagement surfaces', () => {
 
     expect(screen.getByRole('heading', { name: '错题本' })).toBeInTheDocument();
     expect(screen.getByText('共 4 个错题点')).toBeInTheDocument();
-    expect(screen.getByText('糖果减法小店')).toBeInTheDocument();
-    expect(screen.getByText('20 以内退位减法 · 错 3 次')).toBeInTheDocument();
+    expect(screen.getByText('20 以内退位减法')).toBeInTheDocument();
+    expect(screen.getByText('推荐关卡：糖果减法小店 · 错 3 次')).toBeInTheDocument();
     expect(screen.getByText('看错题原因')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '开始复习糖果减法小店' })).toHaveAttribute('href', '/levels/math-subtraction-002');
+    expect(screen.getByRole('link', { name: '开始复习20 以内退位减法' })).toHaveAttribute('href', '/levels/math-subtraction-002');
   });
 
   test('mistake review page submits a review result and clears mastered item', async () => {
@@ -369,6 +371,7 @@ describe('Product engagement surfaces', () => {
             readyToMasterCount: 1,
             items: [
               {
+                knowledgePointCode: 'math.g1.subtraction.borrow',
                 levelCode: 'math-subtraction-002',
                 levelTitle: '糖果减法小店',
                 subjectTitle: '数学岛',
@@ -376,6 +379,7 @@ describe('Product engagement surfaces', () => {
                 mistakeCount: 3,
                 masteryStatus: '需要复习',
                 reviewPrompt: '先用糖果图复盘错因，再完成 1 组变式。',
+                targetLevelCode: 'math-subtraction-002',
                 reviewSteps: ['看错题原因', '再做同类题', '答对后回到主线']
               }
             ]
@@ -384,7 +388,7 @@ describe('Product engagement surfaces', () => {
       </MemoryRouter>
     );
 
-    await user.click(screen.getByRole('button', { name: '我已复习，会做了糖果减法小店' }));
+    await user.click(screen.getByRole('button', { name: '我已复习，会做了20 以内退位减法' }));
 
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining('/api/mistakes/review/math-subtraction-002/submit'),
@@ -412,6 +416,13 @@ describe('Product engagement surfaces', () => {
                 subjectTitle: '数学岛',
                 chapterTitle: '百数启航站',
                 chapterSubtitle: '认识更大的数',
+                unitGoal: '认识更大的数',
+                completedLevelCount: 1,
+                totalLevelCount: 3,
+                completionPercent: 33,
+                checkpointStatus: 'available',
+                checkpointLevelCode: 'math-grade1-addition-001',
+                checkpointCtaText: '开始单元小测',
                 levels: [
                   {
                     levelCode: 'math-grade1-numbers-001',
@@ -444,6 +455,9 @@ describe('Product engagement surfaces', () => {
 
     expect(screen.getByRole('heading', { name: '一年级学习路径' })).toBeInTheDocument();
     expect(screen.getByText('已完成 2 / 12 关')).toBeInTheDocument();
+    expect(screen.getByText('单元目标：认识更大的数')).toBeInTheDocument();
+    expect(screen.getByText('章节进度 1 / 3 · 33%')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '开始单元小测' })).toHaveAttribute('href', '/levels/math-grade1-addition-001');
     expect(screen.getByText('推荐下一站')).toBeInTheDocument();
     expect(screen.getByText('先完成前一站，再解锁这里')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '挑战20 以内进位加法' })).toHaveAttribute('href', '/levels/math-grade1-addition-001');

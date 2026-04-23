@@ -93,6 +93,7 @@ type StepActivityConfig = ActivityConfigMetadata & (
       instruction: string;
       audioPrompt: string;
       audioText?: string;
+      recordedAssetUrl?: string;
       lang?: string;
       playButtonLabel?: string;
       choiceAriaLabelPrefix?: string;
@@ -104,12 +105,12 @@ type StepActivityConfig = ActivityConfigMetadata & (
   | {
       kind: 'follow-read';
       instruction: string;
-      letters: Array<{ label: string; phonetic: string; exampleWord: string; emoji: string; audioText?: string }>;
+      letters: Array<{ label: string; phonetic: string; exampleWord: string; emoji: string; audioText?: string; recordedAssetUrl?: string }>;
     }
   | {
       kind: 'word-match';
       instruction: string;
-      pairs: Array<{ word: string; pictureLabel: string; emoji: string; phonetic: string }>;
+      pairs: Array<{ word: string; pictureLabel: string; emoji: string; phonetic: string; recordedAssetUrl?: string }>;
     }
   | {
       kind: 'stroke-order';
@@ -123,7 +124,7 @@ type StepActivityConfig = ActivityConfigMetadata & (
   | {
       kind: 'sentence-read';
       instruction: string;
-      sentences: Array<{ text: string; emoji: string; scene: string; audioText?: string }>;
+      sentences: Array<{ text: string; emoji: string; scene: string; audioText?: string; recordedAssetUrl?: string }>;
       successFeedback: string;
     }
   | {
@@ -2404,8 +2405,8 @@ export function LevelPlayer() {
     return parseBackendActivityConfig(step.activityConfigJson) ?? levelActivityConfigs[currentLevel!.code]?.[step.id];
   }
 
-  function playNarration(text: string, lang: string) {
-    const result = playLearningAudio({ text, lang, speedMode: audioSpeedMode });
+  async function playNarration(text: string, lang: string, recordedAssetUrl?: string) {
+    const result = await playLearningAudio({ text, lang, speedMode: audioSpeedMode, recordedAssetUrl });
     setAudioTeacherLabel(result.voiceLabel);
     setAudioSourceLabel(result.sourceLabel);
     return result.played;
@@ -2547,9 +2548,9 @@ export function LevelPlayer() {
     }));
   }
 
-  function handlePlayAudio(stepId: string, config: Extract<StepActivityConfig, { kind: 'listen-choice' }>) {
+  async function handlePlayAudio(stepId: string, config: Extract<StepActivityConfig, { kind: 'listen-choice' }>) {
     const audioText = config.audioText ?? config.audioPrompt;
-    const played = playNarration(audioText, config.lang ?? 'zh-CN');
+    const played = await playNarration(audioText, config.lang ?? 'zh-CN', config.recordedAssetUrl);
 
     setStepProgress((current) => ({
       ...current,
@@ -2584,12 +2585,12 @@ export function LevelPlayer() {
     }));
   }
 
-  function handleFollowRead(
+  async function handleFollowRead(
     stepId: string,
     letter: Extract<StepActivityConfig, { kind: 'follow-read' }>['letters'][number],
     totalCount: number
   ) {
-    const played = playNarration(letter.audioText ?? letter.label, 'en-US');
+    const played = await playNarration(letter.audioText ?? letter.label, 'en-US', letter.recordedAssetUrl);
     setStepProgress((current) => {
       const completedItems = current[stepId]?.completedItems ?? [];
       const nextCompletedItems = completedItems.includes(letter.label) ? completedItems : [...completedItems, letter.label];
@@ -2599,6 +2600,7 @@ export function LevelPlayer() {
         [stepId]: {
           ...current[stepId],
           completedItems: nextCompletedItems,
+          audioPlayed: true,
           completed: nextCompletedItems.length === totalCount,
           feedback:
             nextCompletedItems.length === totalCount
@@ -2612,7 +2614,7 @@ export function LevelPlayer() {
   }
 
   function handleWordSelected(stepId: string, pair: Extract<StepActivityConfig, { kind: 'word-match' }>['pairs'][number]) {
-    playNarration(pair.word, 'en-US');
+    void playNarration(pair.word, 'en-US', pair.recordedAssetUrl);
     setStepProgress((current) => ({
       ...current,
       [stepId]: {
@@ -2643,7 +2645,7 @@ export function LevelPlayer() {
       const nextCompletedItems = isCorrect ? [...completedItems, pair.word] : completedItems;
 
       if (isCorrect) {
-        playNarration(pair.word, 'en-US');
+        void playNarration(pair.word, 'en-US', pair.recordedAssetUrl);
       }
 
       return {
@@ -2708,13 +2710,13 @@ export function LevelPlayer() {
     });
   }
 
-  function handleSentenceRead(
+  async function handleSentenceRead(
     stepId: string,
     sentence: Extract<StepActivityConfig, { kind: 'sentence-read' }>['sentences'][number],
     totalCount: number,
     successFeedback: string
   ) {
-    playNarration(sentence.audioText ?? sentence.text, 'en-US');
+    await playNarration(sentence.audioText ?? sentence.text, 'en-US', sentence.recordedAssetUrl);
 
     setStepProgress((current) => {
       const completedItems = current[stepId]?.completedItems ?? [];
@@ -2728,6 +2730,7 @@ export function LevelPlayer() {
         [stepId]: {
           ...current[stepId],
           completedItems: nextCompletedItems,
+          audioPlayed: true,
           completed,
           feedback: completed ? successFeedback : `已跟读 ${nextCompletedItems.length} / ${totalCount} 句`
         }
@@ -2735,11 +2738,11 @@ export function LevelPlayer() {
     });
   }
 
-  function handleReadStoryAll(
+  async function handleReadStoryAll(
     stepId: string,
     config: Extract<StepActivityConfig, { kind: 'sentence-read' }>
   ) {
-    const played = playNarration(
+    const played = await playNarration(
       config.sentences.map((sentence) => sentence.audioText ?? sentence.text).join(' '),
       'en-US'
     );
@@ -2750,6 +2753,7 @@ export function LevelPlayer() {
         ...current[stepId],
         completed: current[stepId]?.completed ?? false,
         completedItems: current[stepId]?.completedItems ?? [],
+        audioPlayed: true,
         feedback: played ? '老师先把整段小绘本读了一遍，轮到你来一句一句跟读啦' : '当前设备不能整段领读，可以继续点句子卡练习'
       }
     }));
@@ -2798,13 +2802,14 @@ export function LevelPlayer() {
         </div>
 
         {showLessonFlow ? (
-          <LessonFlowPanel
-            completedStepCount={completedStepCount}
-            hasExplainer={Boolean(animatedExplainer)}
-            isRewardVisible={Boolean(completionResult)}
-            isStepPracticeComplete={allStepsCompleted}
-            stepCount={currentLevel.steps.length}
-          />
+        <LessonFlowPanel
+          completedStepCount={completedStepCount}
+          hasExplainer={Boolean(animatedExplainer)}
+          isRewardVisible={Boolean(completionResult)}
+          isStepPracticeComplete={allStepsCompleted}
+          stepCount={currentLevel.steps.length}
+          subjectCode={subjectCode}
+        />
         ) : null}
 
         {animatedExplainer ? (
@@ -3138,8 +3143,8 @@ export function LevelPlayer() {
                       audioTeacherLabel={audioTeacherLabel}
                       onModeChange={setAudioSpeedMode}
                     />
-                    <button className="audio-button" onClick={() => handlePlayAudio(step.id, config)} type="button">
-                      {config.playButtonLabel ?? '播放拼音读音'}
+                    <button className="audio-button" onClick={() => void handlePlayAudio(step.id, config)} type="button">
+                      {progress?.audioPlayed ? `重新播放${config.playButtonLabel ?? '拼音读音'}` : config.playButtonLabel ?? '播放拼音读音'}
                     </button>
                     <div className="bubble-row">
                       {config.choices.map((choice) => {
@@ -3180,7 +3185,7 @@ export function LevelPlayer() {
                             aria-label={`字母卡片 ${letter.label} ${letter.phonetic} ${letter.exampleWord}`}
                             className={`letter-card ${isRead ? 'letter-card-read' : ''}`}
                             key={letter.label}
-                            onClick={() => handleFollowRead(step.id, letter, config.letters.length)}
+                            onClick={() => void handleFollowRead(step.id, letter, config.letters.length)}
                             type="button"
                           >
                             <strong>{letter.label}</strong>
@@ -3275,8 +3280,8 @@ export function LevelPlayer() {
                       audioTeacherLabel={audioTeacherLabel}
                       onModeChange={setAudioSpeedMode}
                     />
-                    <button className="audio-button audio-button-secondary" onClick={() => handleReadStoryAll(step.id, config)} type="button">
-                      老师先整段领读
+                    <button className="audio-button audio-button-secondary" onClick={() => void handleReadStoryAll(step.id, config)} type="button">
+                      {progress?.audioPlayed ? '重新播放整段领读' : '老师先整段领读'}
                     </button>
                     <div className="story-card-row">
                       {config.sentences.map((sentence) => {
@@ -3287,7 +3292,7 @@ export function LevelPlayer() {
                             aria-label={`句子卡片 ${sentence.text}`}
                             className={`story-card ${isRead ? 'story-card-read' : ''}`}
                             key={sentence.text}
-                            onClick={() => handleSentenceRead(step.id, sentence, config.sentences.length, config.successFeedback)}
+                            onClick={() => void handleSentenceRead(step.id, sentence, config.sentences.length, config.successFeedback)}
                             type="button"
                           >
                             <span className="story-card-emoji">{sentence.emoji}</span>

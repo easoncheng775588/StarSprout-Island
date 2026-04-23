@@ -13,6 +13,7 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
   const [dailyStudyMinutes, setDailyStudyMinutes] = useState(data?.settings.dailyStudyMinutes ?? 20);
   const [leaderboardEnabled, setLeaderboardEnabled] = useState(data?.settings.leaderboardEnabled ?? true);
   const [reminderEnabled, setReminderEnabled] = useState(data?.settings.reminderEnabled ?? false);
+  const [practiceIntensity, setPracticeIntensity] = useState(data?.settings.practiceIntensity ?? 'standard');
   const [isSaving, setIsSaving] = useState(false);
   const { session } = useSession();
 
@@ -32,6 +33,7 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
     setDailyStudyMinutes(dashboard.settings.dailyStudyMinutes);
     setLeaderboardEnabled(dashboard.settings.leaderboardEnabled);
     setReminderEnabled(dashboard.settings.reminderEnabled);
+    setPracticeIntensity(dashboard.settings.practiceIntensity);
   }, [dashboard]);
 
   if (!dashboard) {
@@ -48,7 +50,8 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
       const nextSettings = await updateParentSettings({
         leaderboardEnabled,
         dailyStudyMinutes,
-        reminderEnabled
+        reminderEnabled,
+        practiceIntensity
       });
 
       setDashboard((current) => {
@@ -96,6 +99,7 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
           <h2>建议时长 {dashboard.settings.dailyStudyMinutes} 分钟</h2>
           <p>{dashboard.settings.leaderboardEnabled ? '排行榜已开启' : '排行榜已关闭'}</p>
           <p>{dashboard.settings.reminderEnabled ? '连续学习提醒已开启' : '连续学习提醒未开启'}</p>
+          <p>练习强度：{dashboard.settings.practiceIntensity === 'easy' ? '轻松' : dashboard.settings.practiceIntensity === 'challenge' ? '挑战' : '标准'}</p>
         </article>
 
         <article className="summary-card">
@@ -147,6 +151,10 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
             <p>{dashboard.weeklyReport.highlightText}</p>
           </article>
           <article>
+            <span className="node-step">本周变化</span>
+            <p>{dashboard.weekOverWeek.summary}</p>
+          </article>
+          <article>
             <span className="node-step">下周重点</span>
             <p>{dashboard.weeklyReport.growthFocus}</p>
           </article>
@@ -154,6 +162,12 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
             <span className="node-step">陪伴建议</span>
             <p>{dashboard.weeklyReport.parentAction}</p>
           </article>
+        </div>
+        <div className="weekly-report-subjects weekly-report-change-metrics">
+          <span>{dashboard.weekOverWeek.studyMinutesDelta >= 0 ? '+' : ''}{dashboard.weekOverWeek.studyMinutesDelta} 分钟</span>
+          <span>{dashboard.weekOverWeek.completedLevelsDelta >= 0 ? '+' : ''}{dashboard.weekOverWeek.completedLevelsDelta} 关</span>
+          <span>{dashboard.weekOverWeek.accuracyDelta >= 0 ? '+' : ''}{dashboard.weekOverWeek.accuracyDelta}% 准确率</span>
+          <span>{dashboard.weekOverWeek.fluencyAttemptDelta >= 0 ? '+' : ''}{dashboard.weekOverWeek.fluencyAttemptDelta} 次快练</span>
         </div>
         <div className="weekly-report-subjects">
           {dashboard.weeklyReport.subjectHighlights.map((item) => (
@@ -178,6 +192,28 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
           </div>
         </section>
       )}
+
+      <section className="panel-card stage-trend-panel">
+        <div className="panel-heading-row">
+          <div>
+            <p className="eyebrow">阶段趋势</p>
+            <h2>最近 4 周正在慢慢变稳</h2>
+          </div>
+          <p>{dashboard.weekOverWeek.summary}</p>
+        </div>
+        <div className="stage-trend-grid">
+          {dashboard.stageTrend.map((point) => (
+            <article className="stage-trend-card" key={point.weekLabel}>
+              <div className="stage-trend-card-header">
+                <strong>{point.weekLabel}</strong>
+                <span>{point.averageAccuracyPercent}% 准确率</span>
+              </div>
+              <p>学习 {point.studyMinutes} 分钟 · 完成 {point.completedLevels} 关</p>
+              <p>快练 {point.fluencyAttemptCount} 次</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       {dashboard.siblingComparisons.length > 0 && (
         <section className="panel-card sibling-comparison-panel">
@@ -421,6 +457,10 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
                 <strong>{item.subjectTitle}</strong>
               </div>
               <h3>{item.knowledgePointTitle}</h3>
+              <div className="weak-action-status-row">
+                <strong>{item.actionStatusLabel}</strong>
+                <span>{item.actionStatusDescription}</span>
+              </div>
               <p>{item.focusReason}</p>
               <div className="weak-action-guide">
                 <span>家长陪练话术</span>
@@ -471,6 +511,19 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
                 onChange={(event) => setReminderEnabled(event.target.checked)}
               />
               <span>开启连续学习提醒</span>
+            </label>
+
+            <label className="settings-field" htmlFor="practice-intensity">
+              <span>练习强度偏好</span>
+              <select
+                id="practice-intensity"
+                value={practiceIntensity}
+                onChange={(event) => setPracticeIntensity(event.target.value as 'easy' | 'standard' | 'challenge')}
+              >
+                <option value="easy">轻松</option>
+                <option value="standard">标准</option>
+                <option value="challenge">挑战</option>
+              </select>
             </label>
 
             <button

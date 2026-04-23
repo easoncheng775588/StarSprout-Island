@@ -188,6 +188,7 @@ export function LoginPage() {
         <p>
           继续今天的数学、语文和英语冒险，让每一次闯关都留下新的星星和徽章。
         </p>
+        <p className="login-demo-tip">演示账号：13800000001 / demo1234</p>
 
         <div className="login-child-tools">
           <button

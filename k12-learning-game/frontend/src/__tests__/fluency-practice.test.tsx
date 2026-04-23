@@ -39,6 +39,24 @@ describe('FluencyPracticePage', () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
 
+      if (url.endsWith('/api/fluency/practice') && !init?.method) {
+        return {
+          ok: true,
+          json: async () => ({
+            stageLabel: '一年级',
+            focusArea: 'addition-within-20',
+            focusAreaLabel: '20 以内加减',
+            questions: [
+              { prompt: '3 + 4 = ?', choices: [6, 7, 8], answer: 7 },
+              { prompt: '9 - 2 = ?', choices: [6, 7, 8], answer: 7 },
+              { prompt: '8 + 4 = ?', choices: [11, 12, 13], answer: 12 },
+              { prompt: '15 - 7 = ?', choices: [6, 8, 9], answer: 8 },
+              { prompt: '6 + 9 = ?', choices: [14, 15, 16], answer: 15 }
+            ]
+          })
+        } as Response;
+      }
+
       if (url.endsWith('/api/fluency/attempts') && init?.method === 'POST') {
         return {
           ok: true,
@@ -90,5 +108,48 @@ describe('FluencyPracticePage', () => {
         body: expect.stringContaining('"focusArea":"addition-within-20"')
       })
     );
+  });
+
+  test('falls back to local practice set when backend practice endpoint is unavailable', async () => {
+    const user = userEvent.setup();
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+
+      if (url.endsWith('/api/fluency/practice') && !init?.method) {
+        return { ok: false } as Response;
+      }
+
+      if (url.endsWith('/api/fluency/attempts') && init?.method === 'POST') {
+        return {
+          ok: true,
+          json: async () => ({
+            stageLabel: '一年级',
+            focusArea: 'addition-within-20',
+            totalQuestions: 5,
+            correctCount: 1,
+            durationSeconds: 60,
+            accuracyPercent: 20,
+            todayAttemptCount: 1,
+            encouragement: '今天已完成 1 次数感快练，正确率 20%'
+          })
+        } as Response;
+      }
+
+      throw new Error(`Unhandled fetch: ${url}`);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(
+      <MemoryRouter>
+        <SessionProvider>
+          <FluencyPracticePage />
+        </SessionProvider>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('3 + 4 = ?')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '7' }));
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/fluency/practice', expect.any(Object));
   });
 });

@@ -27,6 +27,8 @@ public class MistakeReviewAttemptEntity {
     @JoinColumn(name = "level_code", nullable = false)
     private LevelEntity level;
 
+    private String knowledgePointCode;
+
     private int correctCount;
 
     private int wrongCount;
@@ -45,6 +47,7 @@ public class MistakeReviewAttemptEntity {
     public MistakeReviewAttemptEntity(
             ChildProfileEntity childProfile,
             LevelEntity level,
+            String knowledgePointCode,
             int correctCount,
             int wrongCount,
             int durationSeconds,
@@ -54,6 +57,7 @@ public class MistakeReviewAttemptEntity {
     ) {
         this.childProfile = childProfile;
         this.level = level;
+        this.knowledgePointCode = knowledgePointCode;
         this.correctCount = correctCount;
         this.wrongCount = wrongCount;
         this.durationSeconds = durationSeconds;
@@ -72,6 +76,10 @@ public class MistakeReviewAttemptEntity {
 
     public int getCorrectCount() {
         return correctCount;
+    }
+
+    public String getKnowledgePointCode() {
+        return knowledgePointCode;
     }
 
     public int getWrongCount() {

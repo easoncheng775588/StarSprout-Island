@@ -62,8 +62,8 @@ export function OlympiadTrainingPage() {
           <span>个 MVP 主题关卡</span>
         </div>
         <div>
-          <strong>3</strong>
-          <span>步训练法：看模型、做选择、听反馈</span>
+          <strong>4</strong>
+          <span>步训练法：模型讲解、例题探索、变式挑战、思维总结</span>
         </div>
       </section>
 

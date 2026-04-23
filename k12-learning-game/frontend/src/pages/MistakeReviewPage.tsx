@@ -66,11 +66,11 @@ export function MistakeReviewPage({ data }: MistakeReviewPageProps) {
 
       <section className="mistake-pack-list">
         {reviewCenter.items.length > 0 ? reviewCenter.items.map((item) => (
-          <article className="mistake-pack-card" key={item.levelCode}>
+          <article className="mistake-pack-card" key={item.knowledgePointCode ?? item.levelCode}>
             <div>
               <span className="engagement-pill">{item.subjectTitle}</span>
-              <h2>{item.levelTitle}</h2>
-              <p>{item.knowledgePointTitle} · 错 {item.mistakeCount} 次</p>
+              <h2>{item.knowledgePointTitle}</h2>
+              <p>推荐关卡：{item.levelTitle} · 错 {item.mistakeCount} 次</p>
               <strong>{item.masteryStatus}</strong>
               <p>{item.reviewPrompt}</p>
             </div>
@@ -80,16 +80,16 @@ export function MistakeReviewPage({ data }: MistakeReviewPageProps) {
               ))}
             </ol>
             <div className="mistake-action-row">
-              <Link className="cta-button" to={`/levels/${item.levelCode}`}>
-                开始复习{item.levelTitle}
+              <Link className="cta-button" to={`/levels/${item.targetLevelCode ?? item.levelCode}`}>
+                开始复习{item.knowledgePointTitle}
               </Link>
               <button
                 className="cta-button cta-button-secondary review-submit-button"
-                disabled={submittingLevelCode === item.levelCode}
+                disabled={submittingLevelCode === (item.targetLevelCode ?? item.levelCode)}
                 type="button"
-                onClick={() => void handleSubmitReview(item.levelCode)}
+                onClick={() => void handleSubmitReview(item.targetLevelCode ?? item.levelCode)}
               >
-                {submittingLevelCode === item.levelCode ? '提交中...' : `我已复习，会做了${item.levelTitle}`}
+                {submittingLevelCode === (item.targetLevelCode ?? item.levelCode) ? '提交中...' : `我已复习，会做了${item.knowledgePointTitle}`}
               </button>
             </div>
           </article>

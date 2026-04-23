@@ -20,6 +20,8 @@ public record ParentDashboardResponse(
         List<RecentActivityDto> recentActivities,
         List<ParentChildComparisonDto> siblingComparisons,
         StageReportDto stageReport,
+        java.util.List<ParentStageTrendPointDto> stageTrend,
+        ParentWeekOverWeekDto weekOverWeek,
         List<KnowledgeMapItemDto> knowledgeMap,
         List<ParentThinkingModelProgressDto> thinkingModelProgress,
         List<MistakeReviewItemDto> mistakeReviewPlan

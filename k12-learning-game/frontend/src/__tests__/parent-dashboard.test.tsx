@@ -51,6 +51,8 @@ describe('ParentDashboard', () => {
                 subjectTitle: '数学岛',
                 knowledgePointTitle: '20 以内退位减法',
                 priorityLabel: '优先陪练',
+                actionStatusLabel: '待复习',
+                actionStatusDescription: '还没有针对这个知识点完成复习，建议今晚先安排 1 组。',
                 focusReason: '错题 3 次，建议先用实物图复盘。',
                 parentGuidance: '陪孩子摆 10 个积木，边拿走边说出算式。',
                 practicePlan: '先讲错因，再完成 1 组同类变式。',
@@ -78,7 +80,7 @@ describe('ParentDashboard', () => {
                 targetSubject: '英语岛'
               }
             ],
-            settings: { leaderboardEnabled: true, dailyStudyMinutes: 20, reminderEnabled: false },
+            settings: { leaderboardEnabled: true, dailyStudyMinutes: 20, reminderEnabled: false, practiceIntensity: 'standard' },
             learningVitals: {
               totalCompletedLevels: 5,
               averageAccuracyPercent: 86,
@@ -140,6 +142,19 @@ describe('ParentDashboard', () => {
               completionPercent: 33,
               readinessLabel: '主线起步中',
               nextMilestone: '再完成 4 关，进入一年级巩固阶段'
+            },
+            stageTrend: [
+              { weekLabel: '3周前', studyMinutes: 12, completedLevels: 2, averageAccuracyPercent: 78, fluencyAttemptCount: 0 },
+              { weekLabel: '2周前', studyMinutes: 18, completedLevels: 3, averageAccuracyPercent: 82, fluencyAttemptCount: 1 },
+              { weekLabel: '上周', studyMinutes: 24, completedLevels: 4, averageAccuracyPercent: 84, fluencyAttemptCount: 2 },
+              { weekLabel: '本周', studyMinutes: 31, completedLevels: 5, averageAccuracyPercent: 86, fluencyAttemptCount: 4 }
+            ],
+            weekOverWeek: {
+              studyMinutesDelta: 7,
+              completedLevelsDelta: 1,
+              accuracyDelta: 2,
+              fluencyAttemptDelta: 2,
+              summary: '本周比上周多学 7 分钟，多完成 1 关，数感快练也更稳定了。'
             },
             fluencySummary: {
               attemptCount: 4,
@@ -258,6 +273,8 @@ describe('ParentDashboard', () => {
     expect(screen.getByText('最近 7 天数学岛正确率 72%，比整体平均低了 14%。')).toBeInTheDocument();
     expect(screen.getByText('薄弱点陪练计划')).toBeInTheDocument();
     expect(screen.getByText('20 以内退位减法')).toBeInTheDocument();
+    expect(screen.getByText('待复习')).toBeInTheDocument();
+    expect(screen.getByText('还没有针对这个知识点完成复习，建议今晚先安排 1 组。')).toBeInTheDocument();
     expect(screen.getByText('错题 3 次，建议先用实物图复盘。')).toBeInTheDocument();
     expect(screen.getByText('陪孩子摆 10 个积木，边拿走边说出算式。')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '打开陪练关卡' })).toHaveAttribute('href', '/levels/math-subtraction-002');
@@ -269,6 +286,7 @@ describe('ParentDashboard', () => {
     expect(screen.getByText('20 以内加减')).toBeInTheDocument();
     expect(screen.getByText('建议今晚先用 20 以内加减做慢练，再进入下一组快练。')).toBeInTheDocument();
     expect(screen.getByText('排行榜已开启')).toBeInTheDocument();
+    expect(screen.getByText('练习强度：标准')).toBeInTheDocument();
     expect(screen.getByText('今日目标完成 90%')).toBeInTheDocument();
     expect(screen.getByText('已点亮 6 枚成就徽章')).toBeInTheDocument();
     expect(screen.getAllByText('再完成 2 关点亮“本周小冠军”')).toHaveLength(2);
@@ -289,6 +307,9 @@ describe('ParentDashboard', () => {
     expect(screen.getByText('一年级 · 主线起步中')).toBeInTheDocument();
     expect(screen.getByText('已完成 8 / 24 关')).toBeInTheDocument();
     expect(screen.getByText('再完成 4 关，进入一年级巩固阶段')).toBeInTheDocument();
+    expect(screen.getByText('阶段趋势')).toBeInTheDocument();
+    expect(screen.getAllByText('本周比上周多学 7 分钟，多完成 1 关，数感快练也更稳定了。')).toHaveLength(2);
+    expect(screen.getByText('快练 4 次')).toBeInTheDocument();
     expect(screen.getByText('数感快练趋势')).toBeInTheDocument();
     expect(screen.getByText('本周完成 4 次快练')).toBeInTheDocument();
     expect(screen.getByText('平均正确率 92%')).toBeInTheDocument();
@@ -336,7 +357,8 @@ describe('ParentDashboard', () => {
             json: async () => ({
               leaderboardEnabled: false,
               dailyStudyMinutes: 25,
-              reminderEnabled: true
+              reminderEnabled: true,
+              practiceIntensity: 'challenge'
             })
           } as Response;
         }
@@ -379,7 +401,7 @@ describe('ParentDashboard', () => {
               completionPercent: 90
             },
             recommendedActions: [],
-            settings: { leaderboardEnabled: true, dailyStudyMinutes: 20, reminderEnabled: false },
+            settings: { leaderboardEnabled: true, dailyStudyMinutes: 20, reminderEnabled: false, practiceIntensity: 'standard' },
             learningVitals: {
               totalCompletedLevels: 5,
               averageAccuracyPercent: 86,
@@ -398,6 +420,14 @@ describe('ParentDashboard', () => {
               completionPercent: 33,
               readinessLabel: '主线起步中',
               nextMilestone: '再完成 4 关，进入一年级巩固阶段'
+            },
+            stageTrend: [],
+            weekOverWeek: {
+              studyMinutesDelta: 0,
+              completedLevelsDelta: 0,
+              accuracyDelta: 0,
+              fluencyAttemptDelta: 0,
+              summary: '最近两周还在继续积累学习数据。'
             },
             fluencySummary: {
               attemptCount: 0,
@@ -422,10 +452,12 @@ describe('ParentDashboard', () => {
     await user.type(screen.getByLabelText('每日目标学习时长'), '25');
     await user.click(screen.getByLabelText('关闭排行榜参与'));
     await user.click(screen.getByLabelText('开启连续学习提醒'));
+    await user.selectOptions(screen.getByLabelText('练习强度偏好'), 'challenge');
     await user.click(screen.getByRole('button', { name: '保存家长设置' }));
 
     expect(await screen.findByText('排行榜已关闭')).toBeInTheDocument();
     expect(screen.getByText('建议时长 25 分钟')).toBeInTheDocument();
     expect(screen.getByText('连续学习提醒已开启')).toBeInTheDocument();
+    expect(screen.getByText('练习强度：挑战')).toBeInTheDocument();
   });
 });

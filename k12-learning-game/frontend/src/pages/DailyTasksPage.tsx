@@ -79,8 +79,8 @@ export function DailyTasksPage({ data }: DailyTasksPageProps) {
                 </button>
               ) : null}
               {task.targetLevelCode ? (
-                <Link className="cta-button cta-button-secondary" to={`/levels/${task.targetLevelCode}`}>
-                  去完成{task.title}
+                <Link className="cta-button cta-button-secondary" to={task.taskType === 'review' ? '/mistakes' : `/levels/${task.targetLevelCode}`}>
+                  {task.taskType === 'review' ? `去复习${task.title}` : `去完成${task.title}`}
                 </Link>
               ) : null}
             </div>

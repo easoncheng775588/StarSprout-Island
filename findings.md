@@ -184,9 +184,24 @@
 - `weeklyReport` 的前端归一化必须做字段级 merge；如果仍按整对象替换，旧后端只返回部分周报字段时会导致 `subjectHighlights` 等新增字段为 `undefined`
 - 现阶段 `focusArea` 仍是轻量 code，足以支撑 P2 题型洞察；等后续要做更细题型库、错题闭环或 CMS 配置时，再考虑独立题型目录或题组配置表
 
+## Next Product Maturity Execution 2026-04-23
+
+- 家长端阶段报告增强最适合沿现有 `ParentDashboardResponse` 扩展，不需要新增报表表结构；4 周趋势、周环比和行动状态都能由现有学习记录实时聚合
+- 音频体验升级的最小可行路径是继续复用 `activityConfigJson`，由前端音频层支持 `recordedAssetUrl` 优先和播放失败时的 TTS 兜底，不必先引入独立素材表
+- 练习强度偏好挂在现有 `parent_settings` 最稳，因为当前设置本来就是按孩子存储；这样首页与每日任务文案可以直接联动，不会扩大孩子档案写接口的改动面
+- 奥数训练营当前的主要短板不是“没有年级覆盖”，而是“后端地图没有显式返回全部 1-6 年级、课程路线表达不够统一”；先把学科地图和小课表达标准化，收益大于继续盲加关卡
+- 发布前检查目前最有效的投入仍是扩充 smoke test 与演示文档，而不是过早上复杂脚本；全量前后端验证已经可以覆盖当前 MVP 到产品化阶段的大部分回归风险
+
 ## Content Config Editor MVP 2026-04-23
 
 - 题库配置中心已经具备“目录 -> 详情 -> 保存 -> 健康反馈”的最小可用链路，适合作为后续 CMS 化之前的运营入口
 - 配置详情与配置目录共用一套后端配置快照逻辑，可以降低 `assetTheme`、`audioQuality`、`healthStatus` 在不同页面计算不一致的风险
 - 配置中心展示名更适合使用 `levels.detail_title` 而不是 `summary_title`，因为它更贴近运营/内容命名，也和关卡详情页的儿童化标题一致
 - 当前配置保存仍是“直接改 JSON 文本”，适合 MVP 快速推进；进入 Phase 52/53 后如果要扩大运营使用范围，建议把高频字段拆成结构化表单，JSON 仅作为高级配置区
+
+## Release Readiness & Demo Seeds 2026-04-23
+
+- Phase 59 的最高价值补强不是继续堆功能，而是补“真实受保护路由深链 smoke + 代表性错误契约 smoke”，这样最容易拦住演示时的空白页和接口回归
+- 前端关键路由 smoke 最适合直接走 `<App /> + MemoryRouter initialEntries`，因为这样才能真正覆盖 `ProtectedRoute`、顶层路由表和深链页面加载
+- Phase 60 最关键的不是继续补静态 `subject_progress` 一类表，而是补真实行为数据：跨 4 周的 `level_completions`、最近 7 天的 `fluency_attempts`、以及能体现“已复习待巩固 / 已掌握”的 `mistake_review_attempts`
+- 演示账号最好拆成“幼小衔接基础路线”与“多学段成熟路线”两组，这样既保留最早 MVP 的稳定体验，也能展示当前更成熟的年级切换、家长端趋势和复习闭环

@@ -9,6 +9,7 @@ import com.example.k12learninggame.dto.SubjectCardDto;
 import com.example.k12learninggame.repository.ChildProfileRepository;
 import com.example.k12learninggame.repository.FluencyAttemptRepository;
 import com.example.k12learninggame.repository.LevelCompletionRepository;
+import com.example.k12learninggame.repository.LevelRepository;
 import com.example.k12learninggame.repository.SubjectRepository;
 import com.example.k12learninggame.service.GameContentService;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,9 @@ class PersistenceBackedGameContentServiceTest {
 
     @Autowired
     private LevelCompletionRepository levelCompletionRepository;
+
+    @Autowired
+    private LevelRepository levelRepository;
 
     @Autowired
     private FluencyAttemptRepository fluencyAttemptRepository;
@@ -472,6 +476,31 @@ class PersistenceBackedGameContentServiceTest {
                     assertThat(insight.completedLevels()).isZero();
                     assertThat(insight.totalLevels()).isEqualTo(10);
                     assertThat(insight.nextLevelTitle()).isEqualTo("小数初步");
+                });
+    }
+
+    @Test
+    @Transactional
+    void shouldKeepSeedLevelsAndConfiguredCatalogReadyForDemoRoutes() {
+        var levels = levelRepository.findAll();
+        var configCatalog = gameContentService.getContentConfigCatalog();
+
+        assertThat(levels).isNotEmpty();
+        assertThat(levels)
+                .allSatisfy(level -> {
+                    assertThat(level.getSummaryTitle()).isNotBlank();
+                    assertThat(level.getDetailTitle()).isNotBlank();
+                    assertThat(level.getDescription()).isNotBlank();
+                    assertThat(level.getSteps()).isNotEmpty();
+                });
+        assertThat(configCatalog.items()).isNotEmpty();
+        assertThat(configCatalog.items())
+                .allSatisfy(item -> {
+                    assertThat(item.levelCode()).isNotBlank();
+                    assertThat(item.levelTitle()).isNotBlank();
+                    assertThat(item.knowledgePointCode()).isNotBlank();
+                    assertThat(item.knowledgePointTitle()).isNotBlank();
+                    assertThat(item.healthNotes()).isNotEmpty();
                 });
     }
 }
