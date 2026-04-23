@@ -1119,6 +1119,131 @@ body::before {
   background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,248,239,0.98));
 }
 
+.lesson-flow-panel {
+  display: grid;
+  gap: 1.6rem;
+  margin-top: 2.4rem;
+  padding: 2rem;
+  border-radius: 2.8rem;
+  background:
+    radial-gradient(circle at 7% 20%, rgba(103, 205, 180, 0.28), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 246, 222, 0.94));
+  box-shadow:
+    0 1.8rem 4rem rgba(33, 48, 77, 0.1),
+    inset 0 0 0 0.1rem rgba(255, 255, 255, 0.62);
+}
+
+.lesson-flow-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.6rem;
+}
+
+.lesson-flow-header h2,
+.lesson-flow-header p {
+  margin: 0;
+}
+
+.lesson-flow-header h2 {
+  font-size: clamp(2.4rem, 2vw, 3.2rem);
+}
+
+.lesson-flow-header > p {
+  padding: 0.8rem 1.2rem;
+  border-radius: 99.9rem;
+  background: rgba(255, 255, 255, 0.7);
+  color: rgba(33, 48, 77, 0.72);
+  font-weight: 900;
+}
+
+.lesson-flow-track {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.lesson-flow-item {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  min-height: 16rem;
+  padding: 1.6rem;
+  overflow: hidden;
+  border-radius: 2.4rem;
+  background: rgba(255, 255, 255, 0.68);
+  color: rgba(33, 48, 77, 0.62);
+  box-shadow: inset 0 0 0 0.1rem rgba(33, 48, 77, 0.06);
+}
+
+.lesson-flow-item::after {
+  content: '';
+  position: absolute;
+  inset: auto 1.6rem 1.2rem 1.6rem;
+  height: 0.4rem;
+  border-radius: 99.9rem;
+  background: rgba(33, 48, 77, 0.08);
+}
+
+.lesson-flow-item-done,
+.lesson-flow-item-active {
+  color: var(--ink);
+}
+
+.lesson-flow-item-done {
+  background: linear-gradient(150deg, rgba(217, 255, 239, 0.9), rgba(255, 255, 255, 0.72));
+}
+
+.lesson-flow-item-active {
+  background: linear-gradient(150deg, rgba(255, 236, 176, 0.96), rgba(255, 255, 255, 0.76));
+  transform: translateY(-0.3rem);
+}
+
+.lesson-flow-item-active::after,
+.lesson-flow-item-done::after {
+  background: linear-gradient(90deg, var(--mint), var(--sun));
+}
+
+.lesson-flow-index,
+.lesson-flow-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  border-radius: 1.6rem;
+  font-weight: 900;
+}
+
+.lesson-flow-index {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.lesson-flow-icon {
+  position: absolute;
+  right: 1.6rem;
+  top: 1.6rem;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--coral);
+  font-size: 2rem;
+}
+
+.lesson-flow-item h3,
+.lesson-flow-item p {
+  margin: 0;
+}
+
+.lesson-flow-item h3 {
+  font-size: 1.84rem;
+}
+
+.lesson-flow-item p {
+  color: rgba(33, 48, 77, 0.68);
+  font-size: 1.44rem;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
 .animated-explainer-panel {
   display: grid;
   gap: 1.6rem;
@@ -3556,6 +3681,11 @@ body::before {
     display: grid;
   }
 
+  .lesson-flow-header {
+    align-items: flex-start;
+    display: grid;
+  }
+
   .olympiad-home-card,
   .olympiad-hero,
   .olympiad-stats,
@@ -3624,6 +3754,10 @@ body::before {
   }
 
   .picture-card-row {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-flow-track {
     grid-template-columns: 1fr;
   }
 }

@@ -110,6 +110,11 @@ describe('Level completion flow', () => {
     );
 
     expect(await screen.findByRole('button', { name: '播放动画解读' })).toBeInTheDocument();
+    expect(screen.getByText('本节小课路线')).toBeInTheDocument();
+    expect(screen.getByText('动画讲解')).toBeInTheDocument();
+    expect(screen.getByText('互动练习')).toBeInTheDocument();
+    expect(screen.getByText('复盘小结')).toBeInTheDocument();
+    expect(screen.getByText('星光奖励')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '播放动画解读' }));
     expect(screen.getByLabelText('动画解读视频')).toBeInTheDocument();
     expect(screen.getByText('第一幕：先看见数量')).toBeInTheDocument();

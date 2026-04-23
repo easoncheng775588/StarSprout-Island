@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AudioModeControls, type AudioSpeedMode } from '../components/AudioModeControls';
+import { LessonFlowPanel } from '../components/LessonFlowPanel';
 import { MathModelBoard, type MathVisualModel } from '../components/MathModelBoard';
 import { PictureMathBoard, type PictureMathGroup } from '../components/PictureMathBoard';
 import { playLearningAudio } from '../audio/learningAudio';
@@ -2394,8 +2395,10 @@ export function LevelPlayer() {
   }
 
   const allStepsCompleted = currentLevel.steps.every((step) => stepProgress[step.id]?.completed);
+  const completedStepCount = currentLevel.steps.filter((step) => stepProgress[step.id]?.completed).length;
   const backTarget = subjectCode === 'olympiad' ? '/olympiad' : subjectCode ? `/subjects/${subjectCode}` : '/';
   const backLabel = subjectCode ? `返回${currentLevel.subjectTitle}` : '返回首页';
+  const showLessonFlow = subjectCode === 'math' || subjectCode === 'olympiad';
 
   function getStepConfig(step: LevelStep): StepActivityConfig | undefined {
     return parseBackendActivityConfig(step.activityConfigJson) ?? levelActivityConfigs[currentLevel!.code]?.[step.id];
@@ -2793,6 +2796,16 @@ export function LevelPlayer() {
           <h1>{currentLevel.title}</h1>
           <p>{currentLevel.description}</p>
         </div>
+
+        {showLessonFlow ? (
+          <LessonFlowPanel
+            completedStepCount={completedStepCount}
+            hasExplainer={Boolean(animatedExplainer)}
+            isRewardVisible={Boolean(completionResult)}
+            isStepPracticeComplete={allStepsCompleted}
+            stepCount={currentLevel.steps.length}
+          />
+        ) : null}
 
         {animatedExplainer ? (
           <section className="animated-explainer-panel">

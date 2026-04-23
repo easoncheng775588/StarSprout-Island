@@ -432,3 +432,10 @@
   - 前端全量测试：`npm test -- --run`，28 个测试文件、105 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成成熟产品 P0：结构化数学小课外壳：
+  - 新增 `LessonFlowPanel` 组件，展示“动画讲解、互动练习、复盘小结、星光奖励”四段式小课路线
+  - 数学岛和奥数关卡进入播放器后展示小课路线，并根据已完成步骤、是否完成本关和奖励弹窗状态更新阶段样式
+  - `LevelPlayer` 只传入当前步骤进度和奖励状态，避免把新的课程流程 UI 继续内联到播放器里
+- 结构化数学小课 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/progress-flow.test.tsx` 找不到“本节小课路线”
+  - GREEN：`npm test -- --run src/__tests__/progress-flow.test.tsx`，1 个测试文件、3 项测试通过
