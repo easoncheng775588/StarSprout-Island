@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getAchievements, normalizeAchievementsData, type AchievementsData } from '../api';
 import { PageTopBar } from '../components/PageTopBar';
+import { StageCertificatePanel } from '../components/StageCertificatePanel';
 import { useSession } from '../session';
 
 interface AchievementsPageProps {
@@ -78,6 +79,11 @@ export function AchievementsPage({ data }: AchievementsPageProps) {
           )}
         </div>
       </section>
+
+      <StageCertificatePanel
+        childNickname={achievements.childNickname}
+        stageFamilies={achievements.stageFamilies}
+      />
 
       <section className="panel-card model-achievement-panel">
         <div className="panel-heading-row">

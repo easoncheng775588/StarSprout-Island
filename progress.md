@@ -439,3 +439,10 @@
 - 结构化数学小课 TDD 验证：
   - RED：`npm test -- --run src/__tests__/progress-flow.test.tsx` 找不到“本节小课路线”
   - GREEN：`npm test -- --run src/__tests__/progress-flow.test.tsx`，1 个测试文件、3 项测试通过
+- 已完成成熟产品 P0：阶段证书雏形：
+  - 新增 `StageCertificatePanel` 组件，按学段成就家族进度生成成长证书卡
+  - 成就墙新增“阶段证书”区域，已完成学段显示“已获得”，未完成学段提示还需点亮的阶段徽章数量
+  - 证书夹提供打印入口，后续可继续演进成证书海报或 PDF 导出
+- 阶段证书 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/achievements.test.tsx` 找不到“阶段证书”
+  - GREEN：`npm test -- --run src/__tests__/achievements.test.tsx`，1 个测试文件、1 项测试通过

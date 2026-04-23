@@ -128,6 +128,11 @@ describe('AchievementsPage', () => {
     expect(screen.getByText('一年级成长路线')).toBeInTheDocument();
     expect(screen.getByText('1 / 4 枚阶段徽章')).toBeInTheDocument();
     expect(screen.getByText('幼小衔接启航星')).toBeInTheDocument();
+    expect(screen.getByText('阶段证书')).toBeInTheDocument();
+    expect(screen.getByText('幼小衔接成长证书')).toBeInTheDocument();
+    expect(screen.getByText('已获得')).toBeInTheDocument();
+    expect(screen.getByText('一年级成长证书')).toBeInTheDocument();
+    expect(screen.getByText('再点亮 3 枚阶段徽章')).toBeInTheDocument();
     expect(screen.getByText('思维模型徽章')).toBeInTheDocument();
     expect(screen.getByText('线段图模型星')).toBeInTheDocument();
     expect(screen.getByText('2 / 3')).toBeInTheDocument();
