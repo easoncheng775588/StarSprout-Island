@@ -264,6 +264,14 @@ export interface ParentDashboardData {
       statusLabel: string;
       recommendation: string;
     }>;
+    typeInsights: Array<{
+      focusArea: string;
+      focusAreaLabel: string;
+      attemptCount: number;
+      averageAccuracyPercent: number;
+      statusLabel: string;
+      recommendation: string;
+    }>;
   };
   knowledgeMap: Array<{
     subjectTitle: string;
@@ -386,6 +394,7 @@ export interface DailyTaskClaimData {
 
 export interface FluencyAttemptPayload {
   stageLabel: string;
+  focusArea: string;
   totalQuestions: number;
   correctCount: number;
   durationSeconds: number;
@@ -620,23 +629,38 @@ export function normalizeParentDashboardData(data: Partial<ParentDashboardData> 
       averageAccuracyPercent: 0,
       attemptCount: 0
     }));
+  const weeklyReport = data.weeklyReport;
+  const defaultWeeklyReport = {
+    title: `${data.childNickname} 的本周成长周报`,
+    dateRangeLabel: '暂无周报周期',
+    summary: '暂无可展示的周报数据，完成更多关卡后会自动生成。',
+    highlightText: '先完成几次学习挑战，系统会自动整理本周亮点。',
+    growthFocus: '继续保持轻松节奏，优先完成当前推荐关卡。',
+    parentAction: '可以陪孩子复盘今天最喜欢的一关，鼓励他说出自己的思路。',
+    completedLevels: todaySummary.completedLevels,
+    studyMinutes: todaySummary.studyMinutes,
+    earnedStars: todaySummary.earnedStars,
+    averageAccuracyPercent: learningVitals.averageAccuracyPercent,
+    effectiveLearningDays: learningVitals.effectiveLearningDays,
+    subjectHighlights: [] as string[]
+  };
 
   return {
     childNickname: data.childNickname,
     todaySummary,
-    weeklyReport: data.weeklyReport ?? {
-      title: `${data.childNickname} 的本周成长周报`,
-      dateRangeLabel: '暂无周报周期',
-      summary: '暂无可展示的周报数据，完成更多关卡后会自动生成。',
-      highlightText: '先完成几次学习挑战，系统会自动整理本周亮点。',
-      growthFocus: '继续保持轻松节奏，优先完成当前推荐关卡。',
-      parentAction: '可以陪孩子复盘今天最喜欢的一关，鼓励他说出自己的思路。',
-      completedLevels: todaySummary.completedLevels,
-      studyMinutes: todaySummary.studyMinutes,
-      earnedStars: todaySummary.earnedStars,
-      averageAccuracyPercent: learningVitals.averageAccuracyPercent,
-      effectiveLearningDays: learningVitals.effectiveLearningDays,
-      subjectHighlights: []
+    weeklyReport: {
+      title: weeklyReport?.title ?? defaultWeeklyReport.title,
+      dateRangeLabel: weeklyReport?.dateRangeLabel ?? defaultWeeklyReport.dateRangeLabel,
+      summary: weeklyReport?.summary ?? defaultWeeklyReport.summary,
+      highlightText: weeklyReport?.highlightText ?? defaultWeeklyReport.highlightText,
+      growthFocus: weeklyReport?.growthFocus ?? defaultWeeklyReport.growthFocus,
+      parentAction: weeklyReport?.parentAction ?? defaultWeeklyReport.parentAction,
+      completedLevels: weeklyReport?.completedLevels ?? defaultWeeklyReport.completedLevels,
+      studyMinutes: weeklyReport?.studyMinutes ?? defaultWeeklyReport.studyMinutes,
+      earnedStars: weeklyReport?.earnedStars ?? defaultWeeklyReport.earnedStars,
+      averageAccuracyPercent: weeklyReport?.averageAccuracyPercent ?? defaultWeeklyReport.averageAccuracyPercent,
+      effectiveLearningDays: weeklyReport?.effectiveLearningDays ?? defaultWeeklyReport.effectiveLearningDays,
+      subjectHighlights: weeklyReport?.subjectHighlights ?? defaultWeeklyReport.subjectHighlights
     },
     subjectProgress: data.subjectProgress ?? [],
     weeklyTrend: data.weeklyTrend ?? [],
@@ -677,7 +701,8 @@ export function normalizeParentDashboardData(data: Partial<ParentDashboardData> 
       latestRecordedAtLabel: data.fluencySummary?.latestRecordedAtLabel ?? '',
       encouragement: data.fluencySummary?.encouragement ?? '本周还没有开始数感快练，可以先用 1 分钟热热身。',
       fluencyTrend,
-      stageInsights: data.fluencySummary?.stageInsights ?? []
+      stageInsights: data.fluencySummary?.stageInsights ?? [],
+      typeInsights: data.fluencySummary?.typeInsights ?? []
     },
     knowledgeMap: data.knowledgeMap ?? [],
     thinkingModelProgress: data.thinkingModelProgress ?? [],

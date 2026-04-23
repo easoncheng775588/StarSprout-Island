@@ -27,7 +27,7 @@ describe('ParentDashboard', () => {
               earnedStars: 11,
               averageAccuracyPercent: 86,
               effectiveLearningDays: 3,
-              subjectHighlights: ['数学岛：完成 3 关，准确率 88%', '英语岛：完成 1 关，准确率 80%']
+              subjectHighlights: ['数学岛：完成 3 关，准确率 88%', '英语岛：完成 1 关，准确率 80%', '数感快练：20 以内加减仍需巩固，建议今晚先做 1 组慢练']
             },
             subjectProgress: [
               { subjectCode: 'math', subjectTitle: '数学岛', progressPercent: 78 },
@@ -179,6 +179,24 @@ describe('ParentDashboard', () => {
                   statusLabel: '稳定发挥',
                   recommendation: '可以继续保持二年级快练节奏，准备挑战更高一层。'
                 }
+              ],
+              typeInsights: [
+                {
+                  focusArea: 'addition-within-20',
+                  focusAreaLabel: '20 以内加减',
+                  attemptCount: 2,
+                  averageAccuracyPercent: 76,
+                  statusLabel: '继续巩固',
+                  recommendation: '建议今晚先用 20 以内加减做慢练，再进入下一组快练。'
+                },
+                {
+                  focusArea: 'multiplication-division',
+                  focusAreaLabel: '乘除数感',
+                  attemptCount: 2,
+                  averageAccuracyPercent: 100,
+                  statusLabel: '稳定发挥',
+                  recommendation: '乘除数感已经很稳，可以继续保持轻快节奏。'
+                }
               ]
             },
             knowledgeMap: [
@@ -233,6 +251,7 @@ describe('ParentDashboard', () => {
     expect(screen.getByText('本周完成 5 关，学习 31 分钟，收集 11 颗星星。')).toBeInTheDocument();
     expect(screen.getByText('下周重点：继续巩固 20 以内减法。')).toBeInTheDocument();
     expect(screen.getByText('数学岛：完成 3 关，准确率 88%')).toBeInTheDocument();
+    expect(screen.getByText('数感快练：20 以内加减仍需巩固，建议今晚先做 1 组慢练')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '打印/导出周报' })).toBeInTheDocument();
     expect(screen.getAllByText('数学岛').length).toBeGreaterThan(0);
     expect(screen.getByText('20 以内减法需要多练习')).toBeInTheDocument();
@@ -246,6 +265,9 @@ describe('ParentDashboard', () => {
     expect(screen.getByText('小火箭')).toBeInTheDocument();
     expect(screen.getByText('本周 14 颗星星')).toBeInTheDocument();
     expect(screen.getByText('准确率 100% · 已完成 7 关')).toBeInTheDocument();
+    expect(screen.getByText('快练题型洞察')).toBeInTheDocument();
+    expect(screen.getByText('20 以内加减')).toBeInTheDocument();
+    expect(screen.getByText('建议今晚先用 20 以内加减做慢练，再进入下一组快练。')).toBeInTheDocument();
     expect(screen.getByText('排行榜已开启')).toBeInTheDocument();
     expect(screen.getByText('今日目标完成 90%')).toBeInTheDocument();
     expect(screen.getByText('已点亮 6 枚成就徽章')).toBeInTheDocument();
@@ -281,7 +303,7 @@ describe('ParentDashboard', () => {
     expect(screen.getAllByText('幼小衔接').length).toBeGreaterThan(0);
     expect(screen.getByText('建议回看')).toBeInTheDocument();
     expect(screen.getByText('建议先回到幼小衔接做慢练，边说思路边完成 1 组。')).toBeInTheDocument();
-    expect(screen.getByText('稳定发挥')).toBeInTheDocument();
+    expect(screen.getAllByText('稳定发挥').length).toBeGreaterThan(0);
     expect(screen.getByText('可以继续保持二年级快练节奏，准备挑战更高一层。')).toBeInTheDocument();
     expect(screen.getByText('知识点掌握图谱')).toBeInTheDocument();
     expect(screen.getAllByText('20 以内加减法')).toHaveLength(2);
@@ -385,7 +407,8 @@ describe('ParentDashboard', () => {
               latestRecordedAtLabel: '',
               encouragement: '本周还没有开始数感快练，可以先用 1 分钟热热身。',
               fluencyTrend: [],
-              stageInsights: []
+              stageInsights: [],
+              typeInsights: []
             },
             knowledgeMap: [],
             thinkingModelProgress: [],

@@ -303,6 +303,7 @@ class ApiSmokeTest {
                         .content("""
                                 {
                                   "stageLabel": "一年级",
+                                  "focusArea": "addition-within-20",
                                   "totalQuestions": 5,
                                   "correctCount": 4,
                                   "durationSeconds": 60
@@ -310,6 +311,7 @@ class ApiSmokeTest {
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.stageLabel").value("一年级"))
+                .andExpect(jsonPath("$.focusArea").value("addition-within-20"))
                 .andExpect(jsonPath("$.totalQuestions").value(5))
                 .andExpect(jsonPath("$.correctCount").value(4))
                 .andExpect(jsonPath("$.accuracyPercent").value(80))
@@ -1165,6 +1167,7 @@ class ApiSmokeTest {
                         .content("""
                                 {
                                   "stageLabel": "一年级",
+                                  "focusArea": "addition-within-20",
                                   "totalQuestions": 5,
                                   "correctCount": 3,
                                   "durationSeconds": 58
@@ -1178,6 +1181,7 @@ class ApiSmokeTest {
                         .content("""
                                 {
                                   "stageLabel": "二年级",
+                                  "focusArea": "multiplication-division",
                                   "totalQuestions": 5,
                                   "correctCount": 5,
                                   "durationSeconds": 49
@@ -1206,7 +1210,17 @@ class ApiSmokeTest {
                 .andExpect(jsonPath("$.fluencySummary.stageInsights[0].statusLabel").value("建议回看"))
                 .andExpect(jsonPath("$.fluencySummary.stageInsights[0].recommendation").value(org.hamcrest.Matchers.containsString("一年级")))
                 .andExpect(jsonPath("$.fluencySummary.stageInsights[1].stageLabel").value("二年级"))
-                .andExpect(jsonPath("$.fluencySummary.stageInsights[1].statusLabel").value("稳定发挥"));
+                .andExpect(jsonPath("$.fluencySummary.stageInsights[1].statusLabel").value("稳定发挥"))
+                .andExpect(jsonPath("$.fluencySummary.typeInsights.length()").value(2))
+                .andExpect(jsonPath("$.fluencySummary.typeInsights[0].focusArea").value("addition-within-20"))
+                .andExpect(jsonPath("$.fluencySummary.typeInsights[0].focusAreaLabel").value("20 以内加减"))
+                .andExpect(jsonPath("$.fluencySummary.typeInsights[0].attemptCount").value(1))
+                .andExpect(jsonPath("$.fluencySummary.typeInsights[0].averageAccuracyPercent").value(60))
+                .andExpect(jsonPath("$.fluencySummary.typeInsights[0].statusLabel").value("建议回看"))
+                .andExpect(jsonPath("$.fluencySummary.typeInsights[0].recommendation").value(org.hamcrest.Matchers.containsString("20 以内加减")))
+                .andExpect(jsonPath("$.fluencySummary.typeInsights[1].focusArea").value("multiplication-division"))
+                .andExpect(jsonPath("$.fluencySummary.typeInsights[1].focusAreaLabel").value("乘除数感"))
+                .andExpect(jsonPath("$.weeklyReport.subjectHighlights[3]").value(org.hamcrest.Matchers.containsString("数感快练")));
     }
 
     @Test

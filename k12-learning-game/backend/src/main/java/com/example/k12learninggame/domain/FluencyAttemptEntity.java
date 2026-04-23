@@ -26,6 +26,8 @@ public class FluencyAttemptEntity {
 
     private String stageLabel;
 
+    private String focusArea;
+
     private int totalQuestions;
 
     private int correctCount;
@@ -44,6 +46,7 @@ public class FluencyAttemptEntity {
     public FluencyAttemptEntity(
             ChildProfileEntity childProfile,
             String stageLabel,
+            String focusArea,
             int totalQuestions,
             int correctCount,
             int durationSeconds,
@@ -53,6 +56,7 @@ public class FluencyAttemptEntity {
     ) {
         this.childProfile = childProfile;
         this.stageLabel = stageLabel;
+        this.focusArea = focusArea;
         this.totalQuestions = totalQuestions;
         this.correctCount = correctCount;
         this.durationSeconds = durationSeconds;
@@ -67,6 +71,10 @@ public class FluencyAttemptEntity {
 
     public ChildProfileEntity getChildProfile() {
         return childProfile;
+    }
+
+    public String getFocusArea() {
+        return focusArea;
     }
 
     public int getTotalQuestions() {

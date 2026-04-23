@@ -10,45 +10,71 @@ interface FluencyQuestion {
   answer: number;
 }
 
-const fluencyQuestionSets: Record<string, FluencyQuestion[]> = {
-  幼小衔接: [
-    { prompt: '2 + 3 = ?', choices: [4, 5, 6], answer: 5 },
-    { prompt: '6 - 1 = ?', choices: [4, 5, 7], answer: 5 },
-    { prompt: '4 + 4 = ?', choices: [7, 8, 9], answer: 8 },
-    { prompt: '10 - 3 = ?', choices: [6, 7, 8], answer: 7 },
-    { prompt: '5 + 2 = ?', choices: [6, 7, 9], answer: 7 }
-  ],
-  一年级: [
-    { prompt: '3 + 4 = ?', choices: [6, 7, 8], answer: 7 },
-    { prompt: '9 - 2 = ?', choices: [6, 7, 8], answer: 7 },
-    { prompt: '8 + 4 = ?', choices: [11, 12, 13], answer: 12 },
-    { prompt: '15 - 7 = ?', choices: [6, 8, 9], answer: 8 },
-    { prompt: '6 + 9 = ?', choices: [14, 15, 16], answer: 15 }
-  ],
-  二年级: [
-    { prompt: '3 × 4 = ?', choices: [10, 12, 14], answer: 12 },
-    { prompt: '18 ÷ 3 = ?', choices: [5, 6, 7], answer: 6 },
-    { prompt: '25 + 17 = ?', choices: [40, 42, 44], answer: 42 },
-    { prompt: '36 - 19 = ?', choices: [16, 17, 18], answer: 17 },
-    { prompt: '5 × 6 = ?', choices: [28, 30, 32], answer: 30 }
-  ],
-  三年级: [
-    { prompt: '48 ÷ 6 = ?', choices: [7, 8, 9], answer: 8 },
-    { prompt: '125 + 75 = ?', choices: [180, 200, 220], answer: 200 },
-    { prompt: '9 × 7 = ?', choices: [56, 63, 72], answer: 63 },
-    { prompt: '84 - 29 = ?', choices: [55, 56, 57], answer: 55 },
-    { prompt: '6 × 8 = ?', choices: [46, 48, 54], answer: 48 }
-  ],
-  四年级: [
-    { prompt: '0.4 + 0.3 = ?', choices: [0.6, 0.7, 0.8], answer: 0.7 },
-    { prompt: '25 × 4 = ?', choices: [80, 100, 120], answer: 100 },
-    { prompt: '120 ÷ 5 = ?', choices: [20, 24, 26], answer: 24 },
-    { prompt: '3.5 - 1.2 = ?', choices: [2.1, 2.3, 2.5], answer: 2.3 },
-    { prompt: '16 × 6 = ?', choices: [86, 96, 106], answer: 96 }
-  ]
+interface FluencyPracticeSet {
+  focusArea: string;
+  focusAreaLabel: string;
+  questions: FluencyQuestion[];
+}
+
+const fluencyQuestionSets: Record<string, FluencyPracticeSet> = {
+  幼小衔接: {
+    focusArea: 'number-sense',
+    focusAreaLabel: '数感启蒙',
+    questions: [
+      { prompt: '2 + 3 = ?', choices: [4, 5, 6], answer: 5 },
+      { prompt: '6 - 1 = ?', choices: [4, 5, 7], answer: 5 },
+      { prompt: '4 + 4 = ?', choices: [7, 8, 9], answer: 8 },
+      { prompt: '10 - 3 = ?', choices: [6, 7, 8], answer: 7 },
+      { prompt: '5 + 2 = ?', choices: [6, 7, 9], answer: 7 }
+    ]
+  },
+  一年级: {
+    focusArea: 'addition-within-20',
+    focusAreaLabel: '20 以内加减',
+    questions: [
+      { prompt: '3 + 4 = ?', choices: [6, 7, 8], answer: 7 },
+      { prompt: '9 - 2 = ?', choices: [6, 7, 8], answer: 7 },
+      { prompt: '8 + 4 = ?', choices: [11, 12, 13], answer: 12 },
+      { prompt: '15 - 7 = ?', choices: [6, 8, 9], answer: 8 },
+      { prompt: '6 + 9 = ?', choices: [14, 15, 16], answer: 15 }
+    ]
+  },
+  二年级: {
+    focusArea: 'multiplication-division',
+    focusAreaLabel: '乘除数感',
+    questions: [
+      { prompt: '3 × 4 = ?', choices: [10, 12, 14], answer: 12 },
+      { prompt: '18 ÷ 3 = ?', choices: [5, 6, 7], answer: 6 },
+      { prompt: '25 + 17 = ?', choices: [40, 42, 44], answer: 42 },
+      { prompt: '36 - 19 = ?', choices: [16, 17, 18], answer: 17 },
+      { prompt: '5 × 6 = ?', choices: [28, 30, 32], answer: 30 }
+    ]
+  },
+  三年级: {
+    focusArea: 'multi-step-arithmetic',
+    focusAreaLabel: '多步运算',
+    questions: [
+      { prompt: '48 ÷ 6 = ?', choices: [7, 8, 9], answer: 8 },
+      { prompt: '125 + 75 = ?', choices: [180, 200, 220], answer: 200 },
+      { prompt: '9 × 7 = ?', choices: [56, 63, 72], answer: 63 },
+      { prompt: '84 - 29 = ?', choices: [55, 56, 57], answer: 55 },
+      { prompt: '6 × 8 = ?', choices: [46, 48, 54], answer: 48 }
+    ]
+  },
+  四年级: {
+    focusArea: 'decimal-number-sense',
+    focusAreaLabel: '小数数感',
+    questions: [
+      { prompt: '0.4 + 0.3 = ?', choices: [0.6, 0.7, 0.8], answer: 0.7 },
+      { prompt: '25 × 4 = ?', choices: [80, 100, 120], answer: 100 },
+      { prompt: '120 ÷ 5 = ?', choices: [20, 24, 26], answer: 24 },
+      { prompt: '3.5 - 1.2 = ?', choices: [2.1, 2.3, 2.5], answer: 2.3 },
+      { prompt: '16 × 6 = ?', choices: [86, 96, 106], answer: 96 }
+    ]
+  }
 };
 
-function getFluencyQuestions(stageLabel: string) {
+function getFluencyPracticeSet(stageLabel: string) {
   return fluencyQuestionSets[stageLabel] ?? fluencyQuestionSets.幼小衔接;
 }
 
@@ -57,7 +83,8 @@ export function FluencyPracticePage() {
   const activeChild = session?.children.find((child) => child.id === session.childProfileId);
   const childNickname = activeChild?.nickname ?? session?.childNickname ?? '小朋友';
   const stageLabel = activeChild?.stageLabel ?? '幼小衔接';
-  const questions = getFluencyQuestions(stageLabel);
+  const practiceSet = getFluencyPracticeSet(stageLabel);
+  const questions = practiceSet.questions;
   const [questionIndex, setQuestionIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnsweredCount] = useState(0);
@@ -85,6 +112,7 @@ export function FluencyPracticePage() {
 
     void recordFluencyAttempt({
       stageLabel,
+      focusArea: practiceSet.focusArea,
       totalQuestions: questions.length,
       correctCount: nextCorrectCount,
       durationSeconds: 60
@@ -112,6 +140,7 @@ export function FluencyPracticePage() {
       <section className="fluency-practice-card">
         <div className="fluency-progress-row">
           <span className="node-step">{stageLabel}快练</span>
+          <p>{practiceSet.focusAreaLabel}</p>
           <strong>{answeredCount} / {questions.length} 题</strong>
         </div>
 

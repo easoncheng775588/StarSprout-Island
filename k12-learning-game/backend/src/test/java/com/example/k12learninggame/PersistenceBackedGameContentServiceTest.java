@@ -169,6 +169,7 @@ class PersistenceBackedGameContentServiceTest {
         fluencyAttemptRepository.save(new FluencyAttemptEntity(
                 child,
                 "幼小衔接",
+                "number-sense",
                 5,
                 1,
                 62,
@@ -179,6 +180,7 @@ class PersistenceBackedGameContentServiceTest {
         fluencyAttemptRepository.save(new FluencyAttemptEntity(
                 child,
                 "幼小衔接",
+                "addition-within-20",
                 5,
                 3,
                 61,
@@ -189,6 +191,7 @@ class PersistenceBackedGameContentServiceTest {
         fluencyAttemptRepository.save(new FluencyAttemptEntity(
                 child,
                 "一年级",
+                "addition-within-20",
                 5,
                 4,
                 55,
@@ -199,6 +202,7 @@ class PersistenceBackedGameContentServiceTest {
         fluencyAttemptRepository.save(new FluencyAttemptEntity(
                 child,
                 "二年级",
+                "multiplication-division",
                 5,
                 5,
                 48,
@@ -236,6 +240,15 @@ class PersistenceBackedGameContentServiceTest {
                         org.assertj.core.groups.Tuple.tuple("二年级", 1, 100, "稳定发挥")
                 );
         assertThat(dashboard.fluencySummary().stageInsights().get(0).recommendation()).contains("幼小衔接");
+        assertThat(dashboard.fluencySummary().typeInsights())
+                .extracting(item -> item.focusArea(), item -> item.focusAreaLabel(), item -> item.attemptCount(), item -> item.averageAccuracyPercent(), item -> item.statusLabel())
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple("addition-within-20", "20 以内加减", 2, 70, "建议回看"),
+                        org.assertj.core.groups.Tuple.tuple("multiplication-division", "乘除数感", 1, 100, "稳定发挥")
+                );
+        assertThat(dashboard.fluencySummary().typeInsights().get(0).recommendation()).contains("20 以内加减");
+        assertThat(dashboard.weeklyReport().subjectHighlights())
+                .anyMatch(item -> item.contains("数感快练") && item.contains("20 以内加减"));
     }
 
     @Test

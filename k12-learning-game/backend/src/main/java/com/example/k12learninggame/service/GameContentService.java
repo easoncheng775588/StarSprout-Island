@@ -54,6 +54,7 @@ import com.example.k12learninggame.dto.ParentDashboardResponse;
 import com.example.k12learninggame.dto.ParentFluencyStageInsightDto;
 import com.example.k12learninggame.dto.ParentFluencySummaryDto;
 import com.example.k12learninggame.dto.ParentFluencyTrendPointDto;
+import com.example.k12learninggame.dto.ParentFluencyTypeInsightDto;
 import com.example.k12learninggame.dto.ParentSettingsDto;
 import com.example.k12learninggame.dto.ParentActiveChildUpdateRequest;
 import com.example.k12learninggame.dto.ParentSettingsUpdateRequest;
@@ -448,6 +449,7 @@ public class GameContentService {
         fluencyAttemptRepository.save(new FluencyAttemptEntity(
                 child,
                 request.stageLabel(),
+                request.focusArea(),
                 request.totalQuestions(),
                 request.correctCount(),
                 request.durationSeconds(),
@@ -459,6 +461,7 @@ public class GameContentService {
 
         return new FluencyAttemptResponse(
                 request.stageLabel(),
+                request.focusArea(),
                 request.totalQuestions(),
                 request.correctCount(),
                 request.durationSeconds(),
@@ -692,7 +695,7 @@ public class GameContentService {
                         completedMinutes,
                         todayCompletions.stream().mapToInt(item -> item.getLevel().getRewardStars()).sum()
                 ),
-                buildWeeklyReport(child, completions),
+                buildWeeklyReport(child, completions, fluencySummary),
                 subjectProgress,
                 buildWeeklyTrend(completions),
                 buildWeakPoints(child, completions),
@@ -925,7 +928,8 @@ public class GameContentService {
                 latestAttempt != null ? toRelativeDateTimeLabel(latestAttempt.getRecordedAt()) : "",
                 buildFluencyEncouragement(recentAttempts.size()),
                 buildFluencyTrend(recentAttempts, windowStart),
-                buildFluencyStageInsights(recentAttempts)
+                buildFluencyStageInsights(recentAttempts),
+                buildFluencyTypeInsights(recentAttempts)
         );
     }
 
@@ -988,6 +992,36 @@ public class GameContentService {
                 .toList();
     }
 
+    private List<ParentFluencyTypeInsightDto> buildFluencyTypeInsights(List<FluencyAttemptEntity> recentAttempts) {
+        return recentAttempts.stream()
+                .collect(Collectors.groupingBy(
+                        FluencyAttemptEntity::getFocusArea,
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ))
+                .entrySet().stream()
+                .map(entry -> {
+                    int averageAccuracyPercent = (int) Math.round(entry.getValue().stream()
+                            .mapToInt(FluencyAttemptEntity::getAccuracyPercent)
+                            .average()
+                            .orElse(0));
+                    String statusLabel = fluencyStageStatusLabel(averageAccuracyPercent);
+
+                    return new ParentFluencyTypeInsightDto(
+                            entry.getKey(),
+                            fluencyFocusAreaLabel(entry.getKey()),
+                            entry.getValue().size(),
+                            averageAccuracyPercent,
+                            statusLabel,
+                            fluencyTypeRecommendation(entry.getKey(), statusLabel)
+                    );
+                })
+                .sorted(Comparator
+                        .comparingInt((ParentFluencyTypeInsightDto item) -> fluencyFocusAreaPriority(item.focusArea()))
+                        .thenComparing(ParentFluencyTypeInsightDto::focusAreaLabel))
+                .toList();
+    }
+
     private String fluencyStageStatusLabel(int averageAccuracyPercent) {
         if (averageAccuracyPercent >= 90) {
             return "稳定发挥";
@@ -1003,6 +1037,37 @@ public class GameContentService {
             case "稳定发挥" -> "可以继续保持" + stageLabel + "快练节奏，准备挑战更高一层。";
             case "继续巩固" -> "建议继续完成" + stageLabel + "快练，先把正确率稳在 90% 左右。";
             default -> "建议先回到" + stageLabel + "做慢练，边说思路边完成 1 组。";
+        };
+    }
+
+    private String fluencyFocusAreaLabel(String focusArea) {
+        return switch (focusArea) {
+            case "number-sense" -> "数感启蒙";
+            case "addition-within-20" -> "20 以内加减";
+            case "multiplication-division" -> "乘除数感";
+            case "multi-step-arithmetic" -> "多步运算";
+            case "decimal-number-sense" -> "小数数感";
+            default -> "数感快练";
+        };
+    }
+
+    private String fluencyTypeRecommendation(String focusArea, String statusLabel) {
+        String focusAreaLabel = fluencyFocusAreaLabel(focusArea);
+        return switch (statusLabel) {
+            case "稳定发挥" -> focusAreaLabel + "已经很稳，可以继续保持轻快节奏。";
+            case "继续巩固" -> "建议今晚先用" + focusAreaLabel + "做慢练，再进入下一组快练。";
+            default -> "建议先回看" + focusAreaLabel + "，用实物图或数轴把思路说出来。";
+        };
+    }
+
+    private int fluencyFocusAreaPriority(String focusArea) {
+        return switch (focusArea) {
+            case "number-sense" -> 0;
+            case "addition-within-20" -> 1;
+            case "multiplication-division" -> 2;
+            case "multi-step-arithmetic" -> 3;
+            case "decimal-number-sense" -> 4;
+            default -> 9;
         };
     }
 
@@ -1235,7 +1300,11 @@ public class GameContentService {
         );
     }
 
-    private ParentWeeklyReportDto buildWeeklyReport(ChildProfileEntity child, List<LevelCompletionEntity> completions) {
+    private ParentWeeklyReportDto buildWeeklyReport(
+            ChildProfileEntity child,
+            List<LevelCompletionEntity> completions,
+            ParentFluencySummaryDto fluencySummary
+    ) {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(6);
         List<LevelCompletionEntity> weeklyCompletions = completions.stream()
@@ -1257,9 +1326,29 @@ public class GameContentService {
         String highlightText = strongestSubject == null
                 ? "本周还在积累学习数据，先保持轻松开始。"
                 : strongestSubject.subjectTitle() + "推进最明显，已完成 " + strongestSubject.completedLevels() + " 关，准确率 " + strongestSubject.accuracyPercent() + "%。";
+        ParentFluencyTypeInsightDto weakestFluencyType = fluencySummary.typeInsights().stream()
+                .sorted(Comparator
+                        .comparingInt(ParentFluencyTypeInsightDto::averageAccuracyPercent)
+                        .thenComparing(Comparator.comparingInt(ParentFluencyTypeInsightDto::attemptCount).reversed()))
+                .findFirst()
+                .orElse(null);
         String growthFocus = weakPoints.isEmpty()
-                ? "下周重点：保持当前节奏，继续点亮主线下一关。"
+                ? weakestFluencyType != null && weakestFluencyType.averageAccuracyPercent() < 90
+                ? "下周重点：先把数感快练里的" + weakestFluencyType.focusAreaLabel() + "稳住。"
+                : "下周重点：保持当前节奏，继续点亮主线下一关。"
                 : "下周重点：" + weakPoints.get(0).title() + "。";
+        String parentAction = "建议每天 " + Math.max(10, Math.min(25, studyMinutes / Math.max(countEffectiveLearningDays(child, 7), 1) + 10))
+                + " 分钟，先复习错题再挑战下一关。";
+        if (weakestFluencyType != null && weakestFluencyType.averageAccuracyPercent() < 90) {
+            parentAction = parentAction + " 今晚可以先做 1 组" + weakestFluencyType.focusAreaLabel() + "慢练。";
+        }
+
+        List<String> subjectHighlights = new ArrayList<>(subjectInsights.stream()
+                .map(item -> item.subjectTitle() + "：完成 " + item.completedLevels() + " 关，准确率 " + item.accuracyPercent() + "%")
+                .toList());
+        if (weakestFluencyType != null) {
+            subjectHighlights.add(fluencyWeeklyHighlight(weakestFluencyType));
+        }
 
         return new ParentWeeklyReportDto(
                 child.getNickname() + "的本周成长周报",
@@ -1267,16 +1356,21 @@ public class GameContentService {
                 "本周完成 " + completedLevels + " 关，学习 " + studyMinutes + " 分钟，收集 " + earnedStars + " 颗星星。",
                 highlightText,
                 growthFocus,
-                "建议每天 " + Math.max(10, Math.min(25, studyMinutes / Math.max(countEffectiveLearningDays(child, 7), 1) + 10)) + " 分钟，先复习错题再挑战下一关。",
+                parentAction,
                 completedLevels,
                 studyMinutes,
                 earnedStars,
                 averageAccuracyPercent,
                 countEffectiveLearningDays(child, 7),
-                subjectInsights.stream()
-                        .map(item -> item.subjectTitle() + "：完成 " + item.completedLevels() + " 关，准确率 " + item.accuracyPercent() + "%")
-                        .toList()
+                subjectHighlights
         );
+    }
+
+    private String fluencyWeeklyHighlight(ParentFluencyTypeInsightDto weakestFluencyType) {
+        if (weakestFluencyType.averageAccuracyPercent() >= 90) {
+            return "数感快练：" + weakestFluencyType.focusAreaLabel() + "表现稳定，可以继续保持每天 1 次节奏";
+        }
+        return "数感快练：" + weakestFluencyType.focusAreaLabel() + "仍需巩固，建议今晚先做 1 组慢练";
     }
 
     private List<KnowledgeMapItemDto> buildKnowledgeMap(ChildProfileEntity child, List<LevelCompletionEntity> completions) {

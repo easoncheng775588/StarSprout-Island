@@ -40,6 +40,7 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
 
   const hasFluencyTrendActivity = dashboard.fluencySummary.fluencyTrend.some((point) => point.attemptCount > 0);
   const hasFluencyStageInsights = dashboard.fluencySummary.stageInsights.length > 0;
+  const hasFluencyTypeInsights = dashboard.fluencySummary.typeInsights.length > 0;
 
   async function handleSaveSettings() {
     setIsSaving(true);
@@ -275,6 +276,28 @@ export function ParentDashboard({ data }: ParentDashboardProps) {
               </div>
             ) : (
               <p className="fluency-stage-insight-empty">完成不同层级的快练后，这里会自动告诉你哪一层最稳、哪一层适合回看。</p>
+            )}
+          </div>
+          <div className="fluency-type-insights">
+            <div className="fluency-stage-insights-header">
+              <strong>快练题型洞察</strong>
+              <span>{hasFluencyTypeInsights ? '把题型拆开看，更容易知道今晚先慢练哪一种。' : '开始不同题型的快练后，这里会自动整理薄弱点和稳定项。'}</span>
+            </div>
+            {hasFluencyTypeInsights ? (
+              <div className="fluency-type-insight-grid">
+                {dashboard.fluencySummary.typeInsights.map((item) => (
+                  <article className="fluency-type-insight-card" key={item.focusArea}>
+                    <div className="fluency-type-insight-header">
+                      <strong>{item.focusAreaLabel}</strong>
+                      <span>{item.statusLabel}</span>
+                    </div>
+                    <p>近 7 天完成 {item.attemptCount} 次 · 平均正确率 {item.averageAccuracyPercent}%</p>
+                    <strong className="fluency-type-insight-copy">{item.recommendation}</strong>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="fluency-stage-insight-empty">完成不同题型的快练后，这里会自动告诉你哪类题更稳、哪类题更适合慢练。</p>
             )}
           </div>
         </article>

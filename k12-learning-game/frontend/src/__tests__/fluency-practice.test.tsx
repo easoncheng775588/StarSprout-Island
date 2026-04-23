@@ -44,6 +44,7 @@ describe('FluencyPracticePage', () => {
           ok: true,
           json: async () => ({
             stageLabel: '一年级',
+            focusArea: 'addition-within-20',
             totalQuestions: 5,
             correctCount: 5,
             durationSeconds: 60,
@@ -86,7 +87,7 @@ describe('FluencyPracticePage', () => {
       '/api/fluency/attempts',
       expect.objectContaining({
         method: 'POST',
-        body: expect.stringContaining('"correctCount":5')
+        body: expect.stringContaining('"focusArea":"addition-within-20"')
       })
     );
   });

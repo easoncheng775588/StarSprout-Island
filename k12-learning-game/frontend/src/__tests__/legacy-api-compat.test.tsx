@@ -48,6 +48,7 @@ describe('Legacy API compatibility', () => {
     expect(screen.getByRole('heading', { name: '小星星 的学习小结' })).toBeInTheDocument();
     expect(screen.getByText('本周成长周报')).toBeInTheDocument();
     expect(screen.getByText('暂无可展示的周报数据，完成更多关卡后会自动生成。')).toBeInTheDocument();
+    expect(screen.getByText('完成第一次快练后，这里会开始记录每天的变化。')).toBeInTheDocument();
   });
 
   test('achievements page does not blank when an older backend omits stage families', () => {

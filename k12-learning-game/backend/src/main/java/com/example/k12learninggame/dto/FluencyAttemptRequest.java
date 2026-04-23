@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record FluencyAttemptRequest(
         @NotBlank String stageLabel,
+        @NotBlank String focusArea,
         @Min(1) @Max(50) int totalQuestions,
         @Min(0) @Max(50) int correctCount,
         @Min(1) @Max(600) int durationSeconds

@@ -238,6 +238,19 @@
   - 新增 3 个幼小衔接数学关卡：一眼看数量、数字分合小屋、看图加法故事
   - 后端 `data.sql` 同步新增关卡、步骤、知识点 code/title、题型配置和变体数量
   - 前端静态兜底地图与关卡详情同步更新
+
+## 2026-04-23
+
+- 已完成 P2 家长端快练题型洞察与周报联动：
+  - 快练提交接口新增 `focusArea`，`fluency_attempts` 持久化题型维度
+  - 家长中心 `fluencySummary` 新增 `typeInsights`，展示题型、次数、平均正确率、状态与陪练建议
+  - 周报 `subjectHighlights` 与 `parentAction` 已联动快练薄弱题型，能直接给出今晚优先慢练方向
+  - 前端快练页按学段带出稳定题型标签并随提交一并上报
+  - 家长端新增“快练题型洞察”区块，与既有“快练分层洞察”并列展示
+  - `normalizeParentDashboardData()` 已改为字段级周报归一化，兼容旧后端缺字段返回，避免页面空白
+- 本轮验证通过：
+  - 前端定向测试：`npm test -- --run src/__tests__/fluency-practice.test.tsx src/__tests__/parent-dashboard.test.tsx src/__tests__/legacy-api-compat.test.tsx`
+  - 后端定向测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' -Dtest=ApiSmokeTest,PersistenceBackedGameContentServiceTest test`
   - 新增/更新前端测试与后端 smoke test，覆盖新增幼小衔接数学关卡和组件复用
 - 本轮验证通过：
   - 前端测试：`npm test -- --run`，19 个测试文件、86 项测试通过

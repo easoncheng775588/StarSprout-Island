@@ -10,6 +10,7 @@ public record ParentFluencySummaryDto(
         String latestRecordedAtLabel,
         String encouragement,
         List<ParentFluencyTrendPointDto> fluencyTrend,
-        List<ParentFluencyStageInsightDto> stageInsights
+        List<ParentFluencyStageInsightDto> stageInsights,
+        List<ParentFluencyTypeInsightDto> typeInsights
 ) {
 }
