@@ -104,6 +104,7 @@ export function HomeWorld() {
         </div>
         <div className="family-panel-actions" aria-label="家长功能入口">
           <Link className="cta-button cta-button-secondary" to="/parent">家长中心</Link>
+          <Link className="cta-button cta-button-secondary" to="/assessment">能力测评</Link>
           <Link className="cta-button cta-button-secondary" to="/daily-tasks">每日任务</Link>
           <Link className="cta-button cta-button-secondary" to="/mistakes">错题本</Link>
           <Link className="cta-button cta-button-secondary" to="/learning-path">学习路径</Link>

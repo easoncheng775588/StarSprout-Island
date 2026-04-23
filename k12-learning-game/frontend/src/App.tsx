@@ -11,6 +11,7 @@ import { LearningPathPage } from './pages/LearningPathPage';
 import { LoginPage } from './pages/LoginPage';
 import { MistakeReviewPage } from './pages/MistakeReviewPage';
 import { OlympiadTrainingPage } from './pages/OlympiadTrainingPage';
+import { PlacementAssessmentPage } from './pages/PlacementAssessmentPage';
 import { SessionProvider, useSession } from './session';
 import './styles.css';
 
@@ -36,6 +37,7 @@ function AppRoutes() {
       <Route path="/levels/:levelCode" element={<ProtectedRoute><LevelPlayer /></ProtectedRoute>} />
       <Route path="/parent" element={<ProtectedRoute><ParentDashboard /></ProtectedRoute>} />
       <Route path="/daily-tasks" element={<ProtectedRoute><DailyTasksPage /></ProtectedRoute>} />
+      <Route path="/assessment" element={<ProtectedRoute><PlacementAssessmentPage /></ProtectedRoute>} />
       <Route path="/mistakes" element={<ProtectedRoute><MistakeReviewPage /></ProtectedRoute>} />
       <Route path="/learning-path" element={<ProtectedRoute><LearningPathPage /></ProtectedRoute>} />
       <Route path="/content-configs" element={<ProtectedRoute><ContentConfigCatalog /></ProtectedRoute>} />

@@ -419,3 +419,16 @@
   - 前端测试：`npm test -- --run`，26 个测试文件、101 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成成熟产品 P0：数学能力测评入口：
+  - 新增 `/assessment` 路由和首页“能力测评”入口
+  - 新增 `PlacementAssessmentPage`，用 5 道轻量数学准备度题推荐幼小衔接、一年级或二年级
+  - 测评结果可直接应用到当前孩子，复用已有 `updateChildProfile` 和 `stageLabel`，不新增表
+  - 新增页面测试覆盖答题、推荐一年级和写回当前孩子学习路线
+- 数学能力测评 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/placement-assessment.test.tsx` 因缺少 `PlacementAssessmentPage` 失败
+  - GREEN：`npm test -- --run src/__tests__/placement-assessment.test.tsx`，1 个测试文件、1 项测试通过
+- 数学能力测评阶段验证通过：
+  - 相关入口测试：`npm test -- --run src/__tests__/placement-assessment.test.tsx src/__tests__/app-shell.test.tsx src/__tests__/product-engagement.test.tsx`，3 个测试文件、26 项测试通过
+  - 前端全量测试：`npm test -- --run`，28 个测试文件、105 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
