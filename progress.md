@@ -408,3 +408,14 @@
   - 前端测试：`npm test -- --run`，25 个测试文件、100 项测试通过
   - 前端构建：`npm run build`
   - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`
+- 已完成关卡播放器组件化：图片算式面板：
+  - 新增 `PictureMathBoard` 组件和 `PictureMathGroup` 类型，集中渲染低年级图片算式分组、数量和图标 token
+  - `LevelPlayer` 改为导入图片算式组件，保留现有 `pictureGroups` 配置结构
+  - 新增组件级测试覆盖分组标题、数量文案和图片 token 可访问标签
+- 图片算式面板 TDD 验证：
+  - RED：`npm test -- --run src/__tests__/picture-math-board.test.tsx` 因缺少 `components/PictureMathBoard` 失败
+  - GREEN：`npm test -- --run src/__tests__/picture-math-board.test.tsx src/__tests__/math-level-expansion.test.tsx src/__tests__/preschool-content-expansion.test.tsx`，3 个测试文件、12 项测试通过
+- 图片算式面板阶段验证通过：
+  - 前端测试：`npm test -- --run`，26 个测试文件、101 项测试通过
+  - 前端构建：`npm run build`
+  - 后端测试：`mvn -q -Dmaven.repo.local='/Users/easoncheng/Documents/New project/.cache/m2' test`

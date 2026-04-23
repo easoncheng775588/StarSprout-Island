@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AudioModeControls, type AudioSpeedMode } from '../components/AudioModeControls';
 import { MathModelBoard, type MathVisualModel } from '../components/MathModelBoard';
+import { PictureMathBoard, type PictureMathGroup } from '../components/PictureMathBoard';
 import { playLearningAudio } from '../audio/learningAudio';
 import { PageTopBar } from '../components/PageTopBar';
 import { Link, useParams } from 'react-router-dom';
@@ -14,13 +15,6 @@ type ActivityConfigMetadata = {
   assetTheme?: string;
   audioQuality?: string;
   variantCount?: number;
-};
-
-type PictureMathGroup = {
-  label: string;
-  emoji: string;
-  count: number;
-  tone?: 'normal' | 'add' | 'remove' | 'result';
 };
 
 type StepActivityConfig = ActivityConfigMetadata & (
@@ -166,36 +160,6 @@ interface AnimatedExplainer {
     narration: string;
     tokens: string[];
   }>;
-}
-
-function PictureMathBoard({ groups }: { groups?: PictureMathGroup[] }) {
-  if (!groups?.length) {
-    return null;
-  }
-
-  return (
-    <div aria-label="图片算式" className="picture-math-board">
-      {groups.map((group) => (
-        <div className={`picture-math-group picture-math-group-${group.tone ?? 'normal'}`} key={group.label}>
-          <div className="picture-math-group-header">
-            <strong>{group.label}</strong>
-            <span>{group.count} 个</span>
-          </div>
-          <div className="picture-math-token-row">
-            {Array.from({ length: group.count }, (_, itemIndex) => (
-              <span
-                aria-label={`${group.label} 图片 ${itemIndex + 1}`}
-                className="picture-math-token"
-                key={`${group.label}-${itemIndex + 1}`}
-              >
-                {group.emoji}
-              </span>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
 }
 
 const levelActivityConfigs: Record<string, Record<string, StepActivityConfig>> = {
