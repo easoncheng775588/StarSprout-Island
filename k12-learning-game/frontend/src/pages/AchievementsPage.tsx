@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAchievements, type AchievementsData } from '../api';
+import { getAchievements, normalizeAchievementsData, type AchievementsData } from '../api';
 import { PageTopBar } from '../components/PageTopBar';
 import { useSession } from '../session';
 
@@ -8,7 +8,7 @@ interface AchievementsPageProps {
 }
 
 export function AchievementsPage({ data }: AchievementsPageProps) {
-  const [achievements, setAchievements] = useState<AchievementsData | null>(data ?? null);
+  const [achievements, setAchievements] = useState<AchievementsData | null>(data ? normalizeAchievementsData(data) : null);
   const { session } = useSession();
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export function AchievementsPage({ data }: AchievementsPageProps) {
       <section className="panel-card stage-achievement-panel">
         <p className="eyebrow">学段成就家族</p>
         <div className="stage-family-grid">
-          {achievements.stageFamilies.map((family) => (
+          {achievements.stageFamilies.length > 0 ? achievements.stageFamilies.map((family) => (
             <article
               className={`stage-family-card ${family.stageLabel === achievements.currentStageLabel ? 'stage-family-card-current' : ''}`}
               key={family.stageLabel}
@@ -73,7 +73,9 @@ export function AchievementsPage({ data }: AchievementsPageProps) {
                 ))}
               </div>
             </article>
-          ))}
+          )) : (
+            <p>当前还没有学段徽章数据，完成关卡后会自动点亮。</p>
+          )}
         </div>
       </section>
 

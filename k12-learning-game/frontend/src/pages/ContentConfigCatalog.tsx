@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getContentConfigCatalog, type ContentConfigCatalogData } from '../api';
+import { getContentConfigCatalog, normalizeContentConfigCatalogData, type ContentConfigCatalogData } from '../api';
 import { PageTopBar } from '../components/PageTopBar';
 import { useSession } from '../session';
 
@@ -8,7 +8,7 @@ interface ContentConfigCatalogProps {
 }
 
 export function ContentConfigCatalog({ data }: ContentConfigCatalogProps) {
-  const [catalog, setCatalog] = useState<ContentConfigCatalogData | null>(data ?? null);
+  const [catalog, setCatalog] = useState<ContentConfigCatalogData | null>(data ? normalizeContentConfigCatalogData(data) : null);
   const { session } = useSession();
 
   useEffect(() => {

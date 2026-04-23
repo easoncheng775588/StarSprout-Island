@@ -564,8 +564,142 @@ export async function completeLevel(
   };
 }
 
-export function getParentDashboard(): Promise<ParentDashboardData> {
-  return fetchJson<ParentDashboardData>('/api/parent/dashboard');
+export function normalizeParentDashboardData(data: Partial<ParentDashboardData> & { childNickname: string }): ParentDashboardData {
+  const todaySummary = data.todaySummary ?? { completedLevels: 0, studyMinutes: 0, earnedStars: 0 };
+  const learningVitals = data.learningVitals ?? {
+    totalCompletedLevels: 0,
+    averageAccuracyPercent: 0,
+    strongestSubjectTitle: '学习小岛',
+    averageSessionMinutes: 0,
+    bestLearningPeriodLabel: '暂无记录',
+    effectiveLearningDays: 0
+  };
+
+  return {
+    childNickname: data.childNickname,
+    todaySummary,
+    weeklyReport: data.weeklyReport ?? {
+      title: `${data.childNickname} 的本周成长周报`,
+      dateRangeLabel: '暂无周报周期',
+      summary: '暂无可展示的周报数据，完成更多关卡后会自动生成。',
+      highlightText: '先完成几次学习挑战，系统会自动整理本周亮点。',
+      growthFocus: '继续保持轻松节奏，优先完成当前推荐关卡。',
+      parentAction: '可以陪孩子复盘今天最喜欢的一关，鼓励他说出自己的思路。',
+      completedLevels: todaySummary.completedLevels,
+      studyMinutes: todaySummary.studyMinutes,
+      earnedStars: todaySummary.earnedStars,
+      averageAccuracyPercent: learningVitals.averageAccuracyPercent,
+      effectiveLearningDays: learningVitals.effectiveLearningDays,
+      subjectHighlights: []
+    },
+    subjectProgress: data.subjectProgress ?? [],
+    weeklyTrend: data.weeklyTrend ?? [],
+    weakPoints: data.weakPoints ?? [],
+    weakPointActionPlan: data.weakPointActionPlan ?? [],
+    achievementSummary: data.achievementSummary ?? {
+      unlockedCount: 0,
+      nextMilestone: '完成更多关卡后会生成下一枚成就目标。'
+    },
+    goalProgress: data.goalProgress ?? {
+      goalMinutes: data.settings?.dailyStudyMinutes ?? 20,
+      completedMinutes: todaySummary.studyMinutes,
+      completionPercent: 0
+    },
+    recommendedActions: data.recommendedActions ?? [],
+    settings: data.settings ?? {
+      leaderboardEnabled: true,
+      dailyStudyMinutes: 20,
+      reminderEnabled: false
+    },
+    learningVitals,
+    subjectInsights: data.subjectInsights ?? [],
+    recentActivities: data.recentActivities ?? [],
+    siblingComparisons: data.siblingComparisons ?? [],
+    stageReport: data.stageReport ?? {
+      stageLabel: '当前学段',
+      completedLevels: learningVitals.totalCompletedLevels,
+      totalLevels: learningVitals.totalCompletedLevels,
+      completionPercent: learningVitals.totalCompletedLevels > 0 ? 100 : 0,
+      readinessLabel: '继续探索',
+      nextMilestone: '完成更多关卡后会生成阶段建议。'
+    },
+    knowledgeMap: data.knowledgeMap ?? [],
+    thinkingModelProgress: data.thinkingModelProgress ?? [],
+    mistakeReviewPlan: data.mistakeReviewPlan ?? []
+  };
+}
+
+export function normalizeAchievementsData(data: Partial<AchievementsData> & { childNickname: string }): AchievementsData {
+  const unlockedBadges = data.unlockedBadges ?? [];
+  const inProgressBadges = data.inProgressBadges ?? [];
+  const modelBadges = data.modelBadges ?? [];
+
+  return {
+    childNickname: data.childNickname,
+    unlockedCount: data.unlockedCount ?? unlockedBadges.length,
+    totalCount: data.totalCount ?? unlockedBadges.length + inProgressBadges.length + modelBadges.length,
+    currentStageLabel: data.currentStageLabel ?? '当前学段',
+    stageFamilies: data.stageFamilies ?? [],
+    modelBadges,
+    unlockedBadges,
+    inProgressBadges
+  };
+}
+
+function getContentConfigHealthNotes(item: Partial<ContentConfigItemData>): string[] {
+  if (Array.isArray(item.healthNotes)) {
+    return item.healthNotes;
+  }
+
+  const notes: string[] = [];
+  if (!item.assetTheme || item.assetTheme.includes('待补')) {
+    notes.push('素材主题待补齐');
+  }
+  if (!item.audioQuality || item.audioQuality.includes('待补')) {
+    notes.push('音频质量待补齐');
+  }
+
+  return notes.length > 0 ? notes : ['配置完整'];
+}
+
+export function normalizeContentConfigCatalogData(data: Partial<ContentConfigCatalogData>): ContentConfigCatalogData {
+  const items = (data.items ?? []).map((item) => {
+    const healthNotes = getContentConfigHealthNotes(item);
+    const healthStatus = item.healthStatus ?? (healthNotes.some((note) => note.includes('待补')) ? 'warning' : 'healthy');
+
+    return {
+      levelCode: item.levelCode ?? 'unknown-level',
+      levelTitle: item.levelTitle ?? '未命名关卡',
+      subjectTitle: item.subjectTitle ?? '未分类学科',
+      knowledgePointCode: item.knowledgePointCode ?? item.levelCode ?? 'unknown-knowledge-point',
+      knowledgePointTitle: item.knowledgePointTitle ?? '未命名知识点',
+      variantCount: item.variantCount ?? 0,
+      assetTheme: item.assetTheme ?? '待补素材主题',
+      audioQuality: item.audioQuality ?? '待补音频质量',
+      configSource: item.configSource ?? 'unknown',
+      healthStatus,
+      healthNotes
+    };
+  });
+  const totalLevelCount = data.totalLevelCount ?? Math.max(items.length, data.configuredLevelCount ?? 0);
+  const configuredLevelCount = data.configuredLevelCount ?? items.length;
+  const healthyLevelCount = data.healthyLevelCount ?? items.filter((item) => item.healthStatus === 'healthy').length;
+  const warningLevelCount = data.warningLevelCount ?? items.filter((item) => item.healthStatus === 'warning').length;
+
+  return {
+    totalLevelCount,
+    configuredLevelCount,
+    healthyLevelCount,
+    warningLevelCount,
+    configCoveragePercent: data.configCoveragePercent ?? (totalLevelCount === 0 ? 0 : Math.round((configuredLevelCount * 100) / totalLevelCount)),
+    totalVariantCount: data.totalVariantCount ?? items.reduce((sum, item) => sum + item.variantCount, 0),
+    items
+  };
+}
+
+export async function getParentDashboard(): Promise<ParentDashboardData> {
+  const data = await fetchJson<ParentDashboardData>('/api/parent/dashboard');
+  return normalizeParentDashboardData(data);
 }
 
 export function updateParentSettings(payload: ParentSettingsPayload): Promise<ParentSettingsPayload> {
@@ -583,8 +717,9 @@ export function getWeeklyLeaderboard(): Promise<LeaderboardData> {
   return getLeaderboard('weekly_star');
 }
 
-export function getAchievements(): Promise<AchievementsData> {
-  return fetchJson<AchievementsData>('/api/achievements');
+export async function getAchievements(): Promise<AchievementsData> {
+  const data = await fetchJson<AchievementsData>('/api/achievements');
+  return normalizeAchievementsData(data);
 }
 
 export function getDailyTasks(): Promise<DailyTaskBoardData> {
@@ -615,8 +750,9 @@ export function getLearningPath(): Promise<LearningPathData> {
   return fetchJson<LearningPathData>('/api/learning-path');
 }
 
-export function getContentConfigCatalog(): Promise<ContentConfigCatalogData> {
-  return fetchJson<ContentConfigCatalogData>('/api/content/configs');
+export async function getContentConfigCatalog(): Promise<ContentConfigCatalogData> {
+  const data = await fetchJson<ContentConfigCatalogData>('/api/content/configs');
+  return normalizeContentConfigCatalogData(data);
 }
 
 export function getSessionChildren(): Promise<SessionChildrenApiResponse> {

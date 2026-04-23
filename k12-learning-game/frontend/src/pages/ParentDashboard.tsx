@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getParentDashboard, type ParentDashboardData, updateParentSettings } from '../api';
+import { getParentDashboard, normalizeParentDashboardData, type ParentDashboardData, updateParentSettings } from '../api';
 import { PageTopBar } from '../components/PageTopBar';
 import { Link } from 'react-router-dom';
 import { useSession } from '../session';
@@ -9,7 +9,7 @@ interface ParentDashboardProps {
 }
 
 export function ParentDashboard({ data }: ParentDashboardProps) {
-  const [dashboard, setDashboard] = useState<ParentDashboardData | null>(data ?? null);
+  const [dashboard, setDashboard] = useState<ParentDashboardData | null>(data ? normalizeParentDashboardData(data) : null);
   const [dailyStudyMinutes, setDailyStudyMinutes] = useState(data?.settings.dailyStudyMinutes ?? 20);
   const [leaderboardEnabled, setLeaderboardEnabled] = useState(data?.settings.leaderboardEnabled ?? true);
   const [reminderEnabled, setReminderEnabled] = useState(data?.settings.reminderEnabled ?? false);
